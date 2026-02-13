@@ -1,0 +1,3356 @@
+:root {
+    /* Color Palette */
+    --color-white: #FAFAFA;
+    --color-red: #AD1C1C;
+    --color-brown: #442517;
+    --color-black: #202020;
+
+    /* Spacing & Layout */
+    --header-height: 80px;
+    /* Compact header */
+    --padding-sides: 40px;
+    --announcement-height: 32px;
+
+    /* Transitions */
+    --transition-fast: 0.15s;
+    --transition-base: 0.3s;
+    --transition-slow: 0.6s;
+    --transition-morph: 0.8s;
+    /* Logo morphing duration */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-morph: cubic-bezier(0.22, 1, 0.36, 1);
+    /* Premium morph easing */
+}
+
+/* Font Faces */
+@font-face {
+    font-family: 'Univers 67 Condensed';
+    src: url('/assets/fonts/UniversLTStd-CondensedBold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Univers';
+    src: url('/assets/fonts/UniversLTStd.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    /* Standard smooth scroll */
+}
+
+body {
+    font-family: 'Univers', sans-serif;
+    color: var(--color-black);
+    background-color: var(--color-white);
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+    width: 100vw;
+}
+
+/* Utility Classes */
+.font-condensed {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* =========================================
+   ANNOUNCEMENT BAR (MARQUEE)
+   ========================================= */
+#announcement-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--announcement-height);
+    background-color: var(--color-white);
+    color: var(--color-black);
+    z-index: 1100;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    transition: transform var(--transition-slow) var(--ease-out-expo),
+        left 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#announcement-bar.hidden {
+    transform: translateY(-100%);
+}
+
+.announcement-track {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee 30s linear infinite;
+}
+
+.announcement-text {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding-right: 50px;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* =========================================
+   HERO LOGO (Home Animated - State Morphing)
+   ========================================= */
+#hero-logo-container {
+    position: fixed;
+    /* Anchored to bottom edge of header */
+    top: calc(var(--announcement-height) + var(--header-height) - 10px);
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 50;
+}
+
+#hero-logo {
+    width: 85vw;
+    max-width: 1600px;
+    height: auto;
+    /* State Morphing: transform + opacity fade when morphed */
+    transform-origin: center top;
+    transition: transform var(--transition-morph) var(--ease-morph),
+        opacity var(--transition-morph) var(--ease-morph);
+    will-change: transform, opacity;
+}
+
+/* Morphed state - logo collapses and fades, header logo takes over */
+#hero-logo.morphed {
+    /* Scale down and translate to header center position */
+    transform: scale(0.12) translateY(-20px);
+    /* Fade out so header logo can be the only visible one */
+    opacity: 0;
+}
+
+/* Hide hero logo when not in home state */
+body:not(.state-home) #hero-logo-container {
+    display: none;
+}
+
+/* =========================================
+   HEADER LOGO (Small, in Header)
+   ========================================= */
+.header-logo-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-logo {
+    width: 280px;
+    /* Larger header logo */
+    height: auto;
+    opacity: 0;
+    transition: opacity var(--transition-base) ease;
+}
+
+/* Show header logo after scroll (controlled by JS adding class) */
+.header-logo.visible {
+    opacity: 1;
+}
+
+/* Shop/PDP state: always visible black logo */
+body.state-shop .header-logo,
+body.state-pdp .header-logo,
+body.state-account .header-logo,
+body.state-contact .header-logo {
+    opacity: 1;
+    filter: brightness(0);
+    /* Make white SVG appear black */
+    transition: filter var(--transition-fast) ease, opacity var(--transition-base) ease;
+}
+
+/* When header is active (hover/menu open), logo becomes white again */
+/* Note: .menu-open and .header-hover are applied to #main-header which contains .header-logo */
+body.state-shop .menu-open .header-logo,
+body.state-shop .header-hover .header-logo,
+body.state-pdp .menu-open .header-logo,
+body.state-pdp .header-hover .header-logo,
+body.state-account .menu-open .header-logo,
+body.state-account .header-hover .header-logo,
+body.state-contact .menu-open .header-logo,
+body.state-contact .header-hover .header-logo,
+#main-header.menu-open .header-logo,
+#main-header.header-hover .header-logo {
+    filter: brightness(1);
+    /* Restore white logo */
+}
+
+/* =========================================
+   SEARCH CURSOR (Blinking - Terminal Aesthetic)
+   ========================================= */
+.search-trigger-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Terminal-style blinking caret using ::after */
+.search-trigger-wrapper::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background-color: currentColor;
+    animation: blinker 1s step-end infinite;
+    margin-left: 2px;
+}
+
+@keyframes blinker {
+
+    0%,
+    49% {
+        opacity: 1;
+    }
+
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Hide cursor when search is open */
+body.search-open .search-trigger-wrapper::after {
+    display: none;
+}
+
+/* =========================================
+   SEARCH OVERLAY
+   ========================================= */
+#search-overlay {
+    position: fixed;
+    top: calc(var(--announcement-height) + var(--header-height));
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: var(--color-black);
+    z-index: 999;
+    overflow: hidden;
+    transition: height var(--transition-base) var(--ease-out-expo);
+}
+
+body.search-open #search-overlay {
+    height: 60px;
+}
+
+/* When announcement hidden, adjust position */
+body.announcement-hidden #search-overlay {
+    top: var(--header-height);
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 var(--padding-sides);
+    height: 60px;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+    /* Make SVG white */
+}
+
+#search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--color-white);
+    font-family: 'Univers', sans-serif;
+    font-size: 1rem;
+    outline: none;
+}
+
+#search-input::placeholder {
+    color: var(--color-white);
+    opacity: 0.5;
+}
+
+/* Close search button */
+.close-search-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* =========================================
+   SEARCH OVERLAY: SHOP STATE
+   (White background, Black icons/text)
+   ========================================= */
+body.state-shop #search-overlay {
+    background-color: var(--color-white);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.state-shop #search-input {
+    color: var(--color-black);
+}
+
+body.state-shop #search-input::placeholder {
+    color: var(--color-black);
+    opacity: 0.5;
+}
+
+body.state-shop .search-icon,
+body.state-shop .close-icon {
+    filter: brightness(0);
+    /* Force black */
+}
+
+/* =========================================
+   SEARCH OVERLAY: PDP STATE
+   (White background, Black icons/text - same as Shop)
+   ========================================= */
+body.state-pdp #search-overlay,
+body.state-account #search-overlay,
+body.state-contact #search-overlay {
+    background-color: var(--color-white);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.state-pdp #search-input,
+body.state-account #search-input,
+body.state-contact #search-input {
+    color: var(--color-black);
+}
+
+body.state-pdp #search-input::placeholder,
+body.state-account #search-input::placeholder,
+body.state-contact #search-input::placeholder {
+    color: var(--color-black);
+    opacity: 0.5;
+}
+
+body.state-pdp .search-icon,
+body.state-pdp .close-icon,
+body.state-account .search-icon,
+body.state-account .close-icon,
+body.state-contact .search-icon,
+body.state-contact .close-icon {
+    filter: brightness(0);
+    /* Force black */
+}
+
+/* =========================================
+   HEADER HOVER EFFECT (ALL PAGES)
+   ========================================= */
+body.state-home header.header-hover,
+body.state-shop header.header-hover,
+body.state-pdp header.header-hover,
+body.state-account header.header-hover,
+body.state-contact header.header-hover {
+    background-color: var(--color-black) !important;
+    color: var(--color-white) !important;
+}
+
+/* When search is open in Shop/PDP/Account/Contact, header should be WHITE to integrate with white search overlay */
+body.state-shop.search-open header,
+body.state-pdp.search-open header,
+body.state-account.search-open header,
+body.state-contact.search-open header {
+    background-color: var(--color-white) !important;
+    color: var(--color-black) !important;
+}
+
+/* Also reset the logo to black when search is open */
+body.state-shop.search-open .header-logo,
+body.state-pdp.search-open .header-logo,
+body.state-account.search-open .header-logo,
+body.state-contact.search-open .header-logo {
+    filter: brightness(0) !important;
+}
+
+/* =========================================
+   SECTION CONTENT BLOCKS (CTAs)
+   ========================================= */
+.section-content-block {
+    position: absolute;
+    bottom: 50px;
+    left: var(--padding-sides);
+    color: var(--color-white);
+    z-index: 60;
+}
+
+.section-subtitle {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+}
+
+.section-title {
+    font-size: 3rem;
+    line-height: 0.9;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.section-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-pill {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 1px solid var(--color-white);
+    border-radius: 25px;
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-white);
+    background: transparent;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-pill:hover {
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+
+/* Selvedge section: block starts at top and scrolls down */
+.selvedge-block {
+    color: var(--color-white);
+    /* Start at top left corner of brown section */
+    position: absolute;
+    top: 100px;
+    /* 100px from top of brown section */
+    left: var(--padding-sides);
+    bottom: auto;
+    /* Override inherited bottom positioning */
+    /* Will be controlled by JS for scroll displacement */
+    will-change: transform;
+}
+
+.selvedge-block .btn-pill {
+    border-color: var(--color-white);
+    color: var(--color-white);
+}
+
+.selvedge-block .btn-pill:hover {
+    background-color: var(--color-white);
+    color: var(--color-brown);
+}
+
+/* =========================================
+   STATE: HOME
+   ========================================= */
+body.state-home {
+    background-color: var(--color-red);
+    overflow: hidden;
+    /* Restore for scroll snap container */
+}
+
+/* =========================================
+   STATE: SHOP
+   ========================================= */
+body.state-shop {
+    background-color: var(--color-white);
+    overflow-y: auto;
+}
+
+/* =========================================
+   STATE: PDP
+   ========================================= */
+body.state-pdp {
+    background-color: var(--color-white);
+    overflow-y: auto;
+}
+
+/* =========================================
+   HEADER STRUCTURE
+   ========================================= */
+header {
+    position: fixed;
+    top: var(--announcement-height);
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--padding-sides);
+    z-index: 1000;
+    transition: background-color 0.4s ease,
+        color 0.4s ease,
+        height 0.4s ease,
+        width 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        left 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        top var(--transition-slow) var(--ease-out-expo);
+    mix-blend-mode: normal;
+}
+
+/* When announcement bar is hidden */
+body.announcement-hidden header {
+    top: 0;
+}
+
+/* Asegurar que los links respeten el color dinámico asignado al header por JS */
+#main-header a,
+#main-header .header-right a {
+    color: inherit !important;
+    /* Forzar herencia para que header.style.color funcione */
+    transition: color 0.3s ease;
+}
+
+/* State-Specific Header Styles */
+
+/* HOME: Transparent initially, but depends on section (handled via JS scroll observer ideally, simpler for now) */
+body.state-home header {
+    background-color: transparent;
+    color: var(--color-white);
+    /* For Red/Brown sections */
+}
+
+/* SHOP & PDP: Solid White */
+body.state-shop header,
+body.state-pdp header {
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ACCOUNT: Solid White (Same as Shop) */
+body.state-account header {
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Base Expanded State (Applied via JS) */
+header.menu-open {
+    /* Height remains static (80px) as requested */
+    background-color: var(--color-black) !important;
+    color: var(--color-white) !important;
+    border-bottom: none;
+}
+
+/* DROPDOWN MENU */
+#dropdown-menu {
+    position: fixed;
+    top: calc(var(--announcement-height) + var(--header-height));
+    left: 0;
+    width: 100%;
+    height: auto;
+    background-color: var(--color-black);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease,
+        top 0.3s ease,
+        left 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 900;
+    padding: 20px 0 50px 0;
+}
+
+body.announcement-hidden #dropdown-menu {
+    top: var(--header-height);
+}
+
+header.menu-open #dropdown-menu {
+    opacity: 1;
+    pointer-events: all;
+}
+
+#dropdown-menu ul {
+    list-style: none;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    /* Removed gap for fluid hit-testing */
+}
+
+.category-link {
+    display: block;
+    /* Ensures padding expands the hit area */
+    padding: 4px 0;
+    /* Visual spacing (replaces gap) */
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 1.5rem;
+    color: var(--color-white);
+    /* Always white in dropdown */
+    text-transform: uppercase;
+    cursor: pointer;
+
+    /* Ultra Soft Fade: Longer duration and smooth curve to blend states */
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Default State */
+    opacity: 1;
+    filter: blur(0);
+    backface-visibility: hidden;
+}
+
+/* Logic Update: Micro blur and softer opacity drop */
+#dropdown-menu ul:has(.category-link:hover) .category-link:not(:hover) {
+    opacity: 0.3;
+    filter: blur(0.5px);
+}
+
+
+/* Left: Trigger */
+.header-left .shop-trigger {
+    font-size: 0.9rem;
+    font-weight: normal;
+    position: relative;
+    z-index: 10;
+}
+
+/* Center: Logo */
+.header-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.header-center .logo {
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+    -webkit-text-stroke: 0.5px currentColor;
+}
+
+.inverted-letter {
+    display: inline-block;
+    transform: scaleY(-1);
+}
+
+/* Right: Utilities */
+.header-right {
+    display: flex;
+    gap: 30px;
+    font-size: 0.9rem;
+}
+
+/* =========================================
+   HOME SECTIONS
+   ========================================= */
+#home-container {
+    height: 100vh;
+    overflow-y: auto;
+    /* Smooth scroll - no snap */
+    display: block;
+    scroll-behavior: smooth;
+}
+
+.home-section {
+    min-height: 125vh;
+    /* Editorial feel */
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.campaign-section {
+    background-color: var(--color-red);
+}
+
+.selvedge-section {
+    background-color: var(--color-brown);
+}
+
+.home-footer {
+    min-height: 65vh;
+    width: 100%;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 80px !important;
+    padding-bottom: 40px;
+    padding-left: var(--padding-sides, 40px);
+    padding-right: var(--padding-sides, 40px);
+    position: relative;
+    gap: 50px;
+}
+
+/* Footer Main Content Grid */
+.footer-main-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* Navigation Columns Container */
+.footer-left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.footer-nav-columns {
+    display: flex;
+    gap: 60px;
+}
+
+/* Individual Navigation Column */
+.footer-nav-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.footer-nav-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    color: var(--color-white);
+}
+
+.footer-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.footer-nav-list li a {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    color: var(--color-white);
+    text-decoration: none;
+    transition: opacity var(--transition-fast) ease;
+}
+
+.footer-nav-list li a:hover {
+    opacity: 0.7;
+}
+
+/* Social Icons */
+.footer-social-icons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.social-icon-link {
+    display: block;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: transform var(--transition-fast) ease;
+}
+
+.social-icon-link:hover {
+    transform: scale(1.05);
+}
+
+.social-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Rotate only the icon on hover */
+.social-icon-link:hover .social-icon {
+    transform: rotate(360deg);
+}
+
+/* Brand Description */
+.footer-brand-description {
+    max-width: 480px;
+    text-align: left;
+    flex-shrink: 0;
+}
+
+.footer-brand-description p {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    letter-spacing: 0.02em;
+    margin: 0;
+    color: var(--color-white);
+}
+
+/* Manifesto Text - Estilo de bloque compacto */
+.manifesto-text {
+    /* 1. Anular la herencia de mayúsculas */
+    text-transform: none !important;
+
+    /* 2. Controlar la densidad del bloque */
+    margin: 0;
+    line-height: 1.35;
+    /* Compacto pero legible */
+
+    /* 3. Asegurar que el color y peso sean correctos */
+    font-weight: 500;
+    letter-spacing: 0.02em;
+
+    /* 4. Evitar que el texto se rompa donde no debe */
+    white-space: nowrap;
+}
+
+/* RESPONSIVE: En móviles, permitir que el texto fluya */
+@media (max-width: 768px) {
+    .manifesto-text {
+        white-space: normal;
+        text-align: left;
+    }
+}
+
+
+/* Footer Logo */
+.footer-logo-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    margin-top: 60px;
+    padding: 0;
+}
+
+.footer-logo {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    opacity: 1;
+}
+
+/* Old Footer Content (for shop footer compatibility) */
+.footer-content {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+}
+
+.brand-name {
+    font-weight: bold;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+    font-weight: normal;
+}
+
+/* =========================================
+   SHOP FOOTER (White Background, Brown Text)
+   ========================================= */
+.shop-footer {
+    min-height: 65vh;
+    width: 100%;
+    background-color: var(--color-white);
+    color: var(--color-brown);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 80px !important;
+    padding-bottom: 40px;
+    padding-left: var(--padding-sides, 40px);
+    padding-right: var(--padding-sides, 40px);
+    position: relative;
+    border-top: 1px solid rgba(68, 37, 23, 0.1);
+    gap: 50px;
+}
+
+.shop-footer .footer-nav-title {
+    color: var(--color-brown);
+}
+
+.shop-footer .footer-nav-list li a {
+    color: var(--color-brown);
+}
+
+.shop-footer .footer-brand-description p {
+    color: var(--color-brown);
+}
+
+.shop-footer .manifesto-text {
+    color: var(--color-brown);
+}
+
+
+/* =========================================
+   SHOP SECTIONS
+   ========================================= */
+/* Hiding Home when in Shop State */
+body.state-shop #home-container {
+    display: none;
+}
+
+#shop {
+    padding-top: calc(var(--header-height) + 150px);
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+
+    /* Fondo blanco explícito para evitar que se vea el body gris */
+    background-color: var(--color-white);
+
+    /* min-height para asegurar que el contenedor cubra al menos la pantalla */
+    min-height: 100vh;
+
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    display: none;
+}
+
+body.state-shop #shop {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.shop-header {
+    margin-bottom: 40px;
+    padding-left: var(--padding-sides);
+    padding-right: var(--padding-sides);
+}
+
+/* Title Row */
+.shop-title-row {
+    margin-bottom: 20px;
+}
+
+#shop-category-title {
+    font-size: 4rem;
+    /* Massive scale */
+    line-height: 0.8;
+    color: var(--color-black);
+    text-transform: uppercase;
+    margin-left: -10px;
+    margin-bottom: 60px;
+    /* Significant space added */
+    /* Slight optical adjustment */
+}
+
+/* Controls Row */
+.shop-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Univers', sans-serif;
+    /* Standard font for controls */
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 10px;
+}
+
+.shop-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.filtros-btn {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border: 2px solid var(--color-black);
+    padding: 8px 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.filtros-btn:hover {
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+
+/* GRID */
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    width: 100%;
+    margin-bottom: 100px;
+    padding-left: var(--padding-sides);
+    padding-right: var(--padding-sides);
+}
+
+.product-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.product-image {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background-color: #f0f0f0;
+    overflow: hidden;
+}
+
+.product-image img {
+    transition: transform 0.6s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.03);
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center Align Text */
+    text-align: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.product-name {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+}
+
+.product-color,
+.product-price {
+    font-family: 'Univers', sans-serif;
+    color: var(--color-black);
+    opacity: 0.8;
+}
+
+/* PDP FOOTER - Simple footer for product detail pages */
+.pdp-footer {
+    height: 120px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: var(--padding-sides);
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================
+   PRODUCT DETAIL PAGE (PDP)
+   ========================================= */
+#product-page {
+    padding-top: calc(var(--header-height) + 60px);
+    /* Removed extra padding side constraints for full bleed layout logic */
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+body.state-pdp #product-page {
+    opacity: 1;
+}
+
+body.state-pdp #home-container {
+    display: none;
+}
+
+body.state-pdp #shop {
+    display: none;
+}
+
+/* Hide Home/Shop in Account State */
+body.state-account #home-container,
+body.state-account #shop,
+body.state-account #product-page {
+    display: none;
+}
+
+/* =========================================
+   ACCOUNT LOGIN MODULE
+   ========================================= */
+#account-login {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: calc(var(--announcement-height) + var(--header-height) + 40px);
+    padding-bottom: 0;
+    box-sizing: border-box;
+    background-color: var(--color-white);
+}
+
+body.state-account #account-login {
+    display: flex;
+    opacity: 1;
+}
+
+/* =========================================
+   CREATE ACCOUNT MODULE
+   ========================================= */
+#account-create {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: calc(var(--announcement-height) + var(--header-height) + 40px);
+    padding-bottom: 0;
+    box-sizing: border-box;
+    background-color: var(--color-white);
+}
+
+body.state-account #account-create {
+    display: flex;
+    opacity: 1;
+}
+
+/* =========================================
+   CONTACT MODULE
+   ========================================= */
+#account-contact {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: calc(var(--announcement-height) + var(--header-height) + 40px);
+    padding-bottom: 0;
+    box-sizing: border-box;
+    background-color: var(--color-white);
+}
+
+body.state-contact #account-contact {
+    display: flex;
+    opacity: 1;
+}
+
+.login-container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 0 var(--padding-sides);
+    /* Aumentamos drásticamente el espacio inferior para empujar el footer */
+    padding-bottom: 200px;
+    width: 100%;
+
+    /* SOLUCIÓN: Aumentamos la altura para empujar el footer hacia abajo.
+       El +60px extra compensa el espacio que estaba quedando visible debajo del footer. */
+    min-height: calc(100vh - var(--header-height) - var(--announcement-height) + 20px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+/* Footer clonado dentro de secciones Account/Contact - comportamiento seguro */
+#account-login .shop-footer,
+#account-create .shop-footer,
+#account-contact .shop-footer {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+    display: block;
+}
+
+/* Login Header */
+.login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 60px;
+    border-bottom: 1px solid transparent;
+    /* Alignment fix */
+}
+
+.login-header h1 {
+    font-size: 3rem;
+    /* XL approx */
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.forgot-pwd {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.8rem;
+    /* XS */
+    text-decoration: underline;
+    color: var(--color-black);
+    opacity: 0.8;
+}
+
+/* Login Fields */
+.login-fields {
+    margin: 60px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 10px;
+}
+
+.input-group label {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    /* XXS */
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-black);
+}
+
+.input-custom {
+    border: none;
+    border-bottom: 1px dashed var(--color-black);
+    padding: 10px 0;
+    font-family: 'Univers', sans-serif;
+    font-size: 1rem;
+    background: transparent;
+    outline: none;
+    transition: border-bottom 0.3s ease;
+    border-radius: 0;
+}
+
+.input-custom:focus {
+    border-bottom: 1px solid var(--color-black);
+}
+
+/* Actions */
+.login-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 60px;
+}
+
+.login-actions button {
+    width: 100%;
+    padding: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    border: none;
+}
+
+.is-inactive {
+    background-color: #E0E0E0;
+    /* Grey Medium */
+    color: #999;
+    pointer-events: none;
+}
+
+.is-active {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--color-black) !important;
+    color: var(--color-black);
+}
+
+.btn-outline:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.pdp-container {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    min-height: calc(100vh - var(--header-height));
+    height: auto;
+    /* Let content dictate height */
+    position: relative;
+    /* Context for sticky */
+}
+
+/* Left Column: Visual Stack */
+.pdp-visual {
+    background-color: var(--color-white);
+    width: 100%;
+    height: auto;
+    /* Let content dictate height */
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.pdp-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    /* Remove inline gap */
+}
+
+/* Right Column */
+.pdp-info {
+    padding: 0 var(--padding-sides) 60px var(--padding-sides);
+    display: block;
+    height: 100%;
+}
+
+.pdp-sticky-wrapper {
+    position: sticky;
+    top: calc(var(--header-height) + 20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pdp-header h1 {
+    font-size: 3.5rem;
+    line-height: 0.95;
+    margin-bottom: 20px;
+}
+
+.pdp-colorway {
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.pdp-price {
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+.pdp-description {
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    line-height: 1.4;
+    max-width: 90%;
+    text-align: left;
+}
+
+.pdp-selectors {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    align-items: center;
+}
+
+.selector-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.size-options {
+    display: flex;
+    gap: 10px;
+}
+
+.size-btn {
+    background: none;
+    border: 1px solid transparent;
+    padding: 10px 15px;
+    font-family: 'Univers 67 Condensed', sans-serif;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    min-width: 40px;
+}
+
+.size-btn:hover {
+    opacity: 0.6;
+}
+
+.size-btn.active {
+    border: 1px solid var(--color-black);
+    color: var(--color-black);
+}
+
+.qty-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #eee;
+}
+
+.qty-btn {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.qty-val {
+    padding: 0 15px;
+    font-size: 0.9rem;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    padding: 20px;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #333;
+}
+
+/* RELATED PRODUCTS */
+.related-section {
+    padding: 80px var(--padding-sides);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.related-header {
+    margin-bottom: 40px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* 5 cols */
+    gap: 20px;
+}
+
+
+/* =========================================
+   CINEMATIC CART SYSTEM
+   ========================================= */
+
+/* 1. VIEWPORT SHIFT MECHANICS */
+#site-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--color-white);
+    position: relative;
+    z-index: 100;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        margin-right 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        margin-left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+    margin-right: 0;
+    margin-left: 0;
+}
+
+/* When Cart is Open -> Scale & Shift */
+/* When Cart is Open -> Resize Width */
+body.cart-open {
+    background-color: var(--color-white);
+    /* Match site bg */
+}
+
+/* Force Fixed elements to resize with site wrapper */
+body.cart-open header,
+body.cart-open #dropdown-menu,
+body.cart-open #announcement-bar {
+    width: calc(100% - 450px);
+}
+
+body.cart-open #site-wrapper {
+    width: calc(100% - 450px);
+    /* True resize to remaining space (ERD Style) */
+    /* No transform -> Full Height maintained */
+}
+
+/* Overlay (Darken the site) */
+#ui-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 200;
+    /* Above site wrapper */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+body.cart-open #ui-overlay {
+    opacity: 1;
+    pointer-events: all;
+    /* Catch clicks to close */
+    cursor: pointer;
+}
+
+/* 2. CART DRAWER CONTAINER */
+#cart-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 450px;
+    height: 100vh;
+    background-color: var(--color-white);
+    z-index: 300;
+    /* Topmost */
+    transform: translateX(100%);
+    /* Hidden by default */
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+}
+
+body.cart-open #cart-drawer {
+    transform: translateX(0);
+}
+
+/* 3. CART HEADER */
+.cart-header {
+    height: 80px;
+    /* Match main header height */
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+}
+
+#cart-title {
+    font-size: 1.5rem;
+    margin: 0;
+    letter-spacing: 0.02em;
+    font-weight: normal;
+    text-transform: uppercase;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    font-family: 'Univers', sans-serif;
+    /* Clean sans */
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+/* 4. CART CONTENT (SCROLLABLE) */
+.cart-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0 40px;
+    position: relative;
+    /* Hide scrollbar for cleaner look */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+.cart-content::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+/* Spacer is crucial for LIFO + Sticky Footer visibility */
+.cart-footer-spacer {
+    height: 140px;
+    /* Match footer height + padding */
+    width: 100%;
+}
+
+/* Empty State */
+.cart-empty-msg {
+    margin-top: 40px;
+    font-size: 2.5rem;
+    /* Larger than title size */
+    opacity: 0.4;
+    line-height: 1.2;
+    display: none;
+    /* Hidden by default */
+    text-align: left;
+}
+
+/* 5. CART ITEMS (LIFO LIST) */
+.cart-items-list {
+    display: flex;
+    flex-direction: column;
+    /* Normal order (JS checks LIFO push) */
+    gap: 40px;
+    padding-top: 40px;
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    /* Image | Info */
+    gap: 20px;
+    align-items: start;
+}
+
+.cart-item img {
+    width: 100%;
+    aspect-ratio: 4/5;
+    /* Portrait ratio */
+    object-fit: cover;
+    background-color: #f4f4f4;
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.item-name {
+    font-size: 1rem;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 5px;
+    font-family: 'Univers 67 Condensed', sans-serif;
+}
+
+.item-color {
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-family: 'Univers 67 Condensed', sans-serif;
+}
+
+.item-price {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    font-family: 'Univers 67 Condensed', sans-serif;
+}
+
+/* Qty Selector (Compact) */
+.cart-qty-selector {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: auto;
+    /* Push to bottom if needed */
+}
+
+.cart-qty-btn {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    text-align: center;
+}
+
+.cart-qty-val {
+    font-size: 0.9rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* 6. STICKY FOOTER */
+.cart-footer {
+    position: absolute;
+    /* Absolute within the Drawer Container (needs relative parent?) No, drawer is fixed flex container. */
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    /* Relative to drawer width */
+    background-color: var(--color-white);
+    padding: 30px 40px 40px 40px;
+    /* Top Right Bottom Left */
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 310;
+}
+
+.cart-subtotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+}
+
+.checkout-btn {
+    width: 100%;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border: none;
+    height: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: opacity 0.2s;
+}
+
+.checkout-btn:hover {
+    opacity: 0.9;
+}
+
+/* =========================================
+   STATE: ACCOUNT
+   ========================================= */
+/* =========================================
+   STATE: ACCOUNT
+   ========================================= */
+body.state-account {
+    background-color: var(--color-white);
+    overflow-y: auto;
+}
+
+/* Hide Home/Shop in Account State */
+body.state-account #home-container,
+body.state-account #shop,
+body.state-account #product-page {
+    display: none;
+}
+
+/* ACCOUNT LOGIN MODULE */
+#account-login,
+#account-create {
+    padding-top: calc(var(--header-height) + 60px);
+    /* Despegado del header explicitly */
+    padding-bottom: 100px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    min-height: 100vh;
+}
+
+#account-contact {
+    padding-top: calc(var(--header-height) + 60px);
+    padding-bottom: 140px;
+    /* Extra space for footer */
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    min-height: 100vh;
+}
+
+body.state-account #account-login {
+    display: flex;
+    /* Kept flex for centering, but different logic */
+    flex-direction: column;
+    justify-content: center;
+    /* Center content */
+    align-items: center;
+    /* Center horizontally */
+    opacity: 1;
+    position: relative;
+    /* For absolute footer */
+}
+
+body.state-account #account-login,
+body.state-account #account-create,
+body.state-account #account-contact {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Center content */
+    align-items: center;
+    /* Center horizontally */
+    opacity: 1;
+    position: relative;
+    /* For absolute footer */
+}
+
+.login-container {
+    max-width: 700px;
+    /* Wider "Rectangle" shape */
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--padding-sides);
+}
+
+/* Login Header with reduced margin */
+.login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 40px;
+    /* Compact */
+    border-bottom: 1px solid transparent;
+}
+
+.login-header h1 {
+    font-size: 2.8rem;
+    /* Scaled Up for 700px */
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.forgot-pwd {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    /* Slightly smaller to prevent wrapping */
+    text-decoration: underline;
+    color: var(--color-black);
+    opacity: 0.8;
+}
+
+/* Login Fields Compact */
+/* Login Fields Compact */
+.login-fields {
+    margin: 40px 0;
+    /* Compact */
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    /* Reduced gap */
+}
+
+/* Tighter spacing for Create Account */
+#account-create .login-fields {
+    margin: 15px 0;
+    /* Reduced from 25px */
+    gap: 12px;
+    /* Reduced from 15px */
+}
+
+#account-create .login-header {
+    margin-bottom: 20px;
+    /* Reduced from 40px */
+}
+
+
+
+#account-create .login-actions,
+#account-contact .login-actions {
+    margin-top: 25px;
+    /* Reduced from 40px */
+}
+
+/* Contact Button Specifics */
+#btn-contact-submit {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    /* Ensure centering works if it's flex */
+}
+
+#account-create .input-custom {
+    padding: 5px 0;
+    /* Reduced height per input */
+}
+
+/* Contact Module Specifics */
+.contact-container {
+    max-width: 500px !important;
+    /* Strict narrow width */
+    padding: 0 15px !important;
+}
+
+/* Espaciado Específico de Contacto */
+#account-contact .login-header {
+    margin-bottom: 0 !important;
+}
+
+#account-contact .login-fields {
+    margin-top: 40px !important;
+    margin-bottom: 0 !important;
+}
+
+.textarea-custom {
+    border: 1px dashed var(--color-black);
+    height: 125px;
+    width: 100%;
+    resize: none;
+    font-family: 'Univers', sans-serif;
+    font-size: 1rem;
+    padding: 10px;
+    background: transparent;
+    outline: none;
+    box-sizing: border-box;
+    /* Ensure padding doesn't break width */
+}
+
+/* --- FOOTER NAV ANIMATION (Highlight + Shuffle) --- */
+
+/* Reset base hover opacity to avoid conflict with highlight */
+.footer-nav-list li a:hover {
+    opacity: 1 !important;
+}
+
+/* Base Link Style */
+.footer-nav-list a {
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    white-space: nowrap;
+    /* PREVIENE SALTOS DE LÍNEA INDESEADOS */
+    /* Smooth color, instant background */
+    transition: color 0.1s ease, background-color 0.1s ease;
+    /* Optical adjustment for highlight box */
+    padding: 0 4px;
+    margin: 0 -4px;
+}
+
+/* SCENARIO 1: HOME (Dark Mode) */
+/* Black Footer -> White Text */
+.home-footer .footer-nav-list a {
+    color: var(--color-white);
+}
+
+.home-footer .footer-nav-list a:hover {
+    background-color: var(--color-white);
+    /* White Highlight */
+    color: var(--color-black) !important;
+    /* Text becomes Black */
+}
+
+/* SCENARIO 2: SHOP & ACCOUNT (Light Mode) */
+/* White Footer -> Brown Text */
+.shop-footer .footer-nav-list a {
+    color: var(--color-brown) !important;
+    /* Force Brown base color */
+}
+
+.shop-footer .footer-nav-list a:hover {
+    background-color: var(--color-brown);
+    /* Brown Highlight */
+    color: var(--color-white) !important;
+    /* Text becomes White */
+}
+
+.textarea-custom:focus {
+    border: 1px solid var(--color-black);
+}
+
+.name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* Force Footer to Bottom in Account Mode */
+body.state-account .shop-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 10px;
+}
+
+.input-group label {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-black);
+}
+
+.input-custom {
+    border: none;
+    border-bottom: 1px dashed var(--color-black);
+    padding: 10px 0;
+    font-family: 'Univers', sans-serif;
+    font-size: 1rem;
+    background: transparent;
+    outline: none;
+    transition: border-bottom 0.3s ease;
+    border-radius: 0;
+}
+
+.input-custom:focus {
+    border-bottom: 1px solid var(--color-black);
+}
+
+/* Actions */
+/* Actions Compact */
+.login-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    /* Tighter gap */
+    margin-top: 40px;
+    /* Compact */
+}
+
+.login-actions button {
+    width: 100%;
+    padding: 15px;
+    /* Reduced air inside buttons */
+    font-family: 'Univers 67 Condensed', 'Univers', sans-serif;
+    /* Requested Font */
+    font-weight: bold;
+    /* Bold */
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    /* Slight spacing for condensed caps */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    border: none;
+}
+
+.is-inactive {
+    background-color: #E0E0E0;
+    color: #999;
+    pointer-events: none;
+}
+
+.is-active {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--color-black) !important;
+    color: var(--color-black);
+}
+
+.btn-outline:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* GLOBAL FOOTER REFINEMENT */
+/* GLOBAL FOOTER REFINEMENT */
+/* Shared Base */
+.shop-footer,
+.home-footer {
+    padding: 15px var(--padding-sides);
+    width: 100%;
+    z-index: 10;
+}
+
+/* Shop Footer (White) */
+.shop-footer {
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+
+.shop-footer .footer-links a,
+.shop-footer .footer-links span {
+    color: var(--color-black);
+}
+
+/* Home Footer (Black) */
+.home-footer {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    margin-top: auto;
+    /* Push to bottom if container is flex col */
+}
+
+.home-footer .brand-name {
+    color: var(--color-white);
+}
+
+.home-footer .footer-links a,
+.home-footer .footer-links span {
+    color: var(--color-white);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 40px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-links a,
+.footer-links span {
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+/* Media Query for Mobile (Shift amount adjust) */
+@media (max-width: 768px) {
+    #cart-drawer {
+        width: 85%;
+        /* Full screen logic for mobile? Or almost full? */
+    }
+
+    body.cart-open #site-wrapper {
+        transform: translateX(-20%);
+        /* Less shift on mobile, overlay handles focus */
+    }
+}
+
+/* =========================================
+   FILTERS DRAWER SYSTEM (Enters from LEFT)
+   ========================================= */
+
+/* FILTERS DRAWER CONTAINER */
+#filters-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 450px;
+    height: 100vh;
+    background-color: var(--color-black);
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.15);
+}
+
+body.filters-open #filters-drawer {
+    transform: translateX(0);
+}
+
+/* When Filters is Open -> Resize Width (Mirror of Cart) */
+body.filters-open {
+    background-color: var(--color-white);
+}
+
+/* Force Fixed elements to resize with site wrapper */
+body.filters-open header,
+body.filters-open #dropdown-menu,
+body.filters-open #announcement-bar {
+    width: calc(100% - 450px);
+    left: 450px;
+}
+
+body.filters-open #site-wrapper {
+    width: calc(100% - 450px);
+    margin-left: 450px;
+}
+
+/* Overlay for Filters (reuse ui-overlay) */
+body.filters-open #ui-overlay {
+    opacity: 1;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+/* FILTERS HEADER */
+.filters-header {
+    height: 80px;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+#filters-title {
+    font-size: 2.5rem;
+    margin: 0;
+    letter-spacing: 0.02em;
+    font-weight: normal;
+    text-transform: uppercase;
+    color: var(--color-white);
+}
+
+.filters-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.filters-close-btn:hover {
+    opacity: 1;
+}
+
+.filters-close-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* FILTERS CONTENT (SCROLLABLE) */
+.filters-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 60px 30px 0 30px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.filters-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* FILTER SECTIONS */
+.filter-section {
+    margin-bottom: 55px;
+}
+
+.filter-section-title {
+    font-size: 1.3rem;
+    color: var(--color-white);
+    margin-bottom: 22px;
+    letter-spacing: 0.02em;
+    font-weight: normal;
+}
+
+/* RADIO BUTTONS (ORDENAR POR) */
+.filter-options-radio {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.filter-radio {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: var(--color-white);
+}
+
+.filter-radio input {
+    display: none;
+}
+
+.radio-circle {
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--color-white);
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.2s;
+}
+
+.filter-radio input:checked+.radio-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-white);
+    border-radius: 50%;
+}
+
+.radio-label {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+}
+
+/* CHECKBOXES (TALLE & CATEGORIA) */
+.filter-options-checkbox {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 25px;
+}
+
+.filter-talle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.filter-categoria-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 20px;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--color-white);
+}
+
+.filter-checkbox input {
+    display: none;
+}
+
+.checkbox-square {
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--color-white);
+    flex-shrink: 0;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+.filter-checkbox input:checked+.checkbox-square {
+    background-color: var(--color-white);
+}
+
+.filter-checkbox input:checked+.checkbox-square::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    width: 3px;
+    height: 6px;
+    border: solid var(--color-black);
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-label {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+}
+
+/* FILTERS FOOTER SPACER */
+.filters-footer-spacer {
+    height: 100px;
+    width: 100%;
+}
+
+/* FILTERS STICKY FOOTER */
+.filters-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-black);
+    padding: 25px 30px;
+    display: flex;
+    gap: 12px;
+    z-index: 310;
+}
+
+.filters-action-btn {
+    flex: 1;
+    height: 38px;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.filters-clear {
+    background-color: transparent;
+    border: 1px solid var(--color-white);
+    color: var(--color-white);
+}
+
+.filters-clear:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.filters-apply {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-white);
+    color: var(--color-black);
+}
+
+.filters-apply:hover {
+    opacity: 0.9;
+}
+
+/* FILTER SECTION INACTIVE STATE */
+.filter-section.inactive {
+    opacity: 0.25;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* COLOR FILTER GRID */
+.filter-color-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 20px;
+}
+
+/* COLOR-SPECIFIC CHECKBOX STYLES */
+/* Navy color checkbox */
+.filter-checkbox input[type="checkbox"][data-color="navy"]:checked+.checkbox-square {
+    background-color: #1b1c29;
+}
+
+/* Índigo color checkbox */
+.filter-checkbox input[type="checkbox"][data-color="indigo"]:checked+.checkbox-square {
+    background-color: #0a3371;
+}
+
+/* For navy and indigo, the checkmark needs to be white */
+.filter-checkbox input[type="checkbox"][data-color="navy"]:checked+.checkbox-square::after,
+.filter-checkbox input[type="checkbox"][data-color="indigo"]:checked+.checkbox-square::after {
+    border-color: var(--color-white);
+}
+
+/* =========================================
+   CHECKOUT SYSTEM (Step 1: Información)
+   Based on SVG specifications
+   Content area: 1187px within 1980px viewport (60% centered)
+   ========================================= */
+
+/* STATE: CHECKOUT */
+body.state-checkout {
+    background-color: #FAFAFA;
+    overflow-y: auto;
+}
+
+/* Hide other sections in checkout state */
+body.state-checkout #home-container,
+body.state-checkout #shop,
+body.state-checkout #product-page,
+body.state-checkout #account-login,
+body.state-checkout #account-create,
+body.state-checkout #account-contact {
+    display: none;
+}
+
+/* Hide header and announcement in checkout (standalone page feel) */
+body.state-checkout #main-header,
+body.state-checkout #announcement-bar {
+    display: none;
+}
+
+/* Main Checkout Section - Full viewport split */
+#checkout {
+    width: 100%;
+    min-height: 100vh;
+    display: none;
+    /* Create the symmetric 50/50 viewport split */
+    background: linear-gradient(to right, #FAFAFA 50%, #F5F5F5 50%);
+}
+
+body.state-checkout #checkout {
+    display: block;
+}
+
+/* Container: Centered content within the 50/50 split */
+.checkout-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 1187px;
+    /* Content width from SVG spec: 1187/1980 = ~60% */
+    margin: 0 auto;
+    /* Center the checkout content */
+}
+
+/* LEFT PANEL: Form Content */
+.checkout-main {
+    background-color: transparent;
+    /* Transparent to show the #FAFAFA from parent */
+    padding: 50px 40px 60px 60px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* RIGHT PANEL: Order Summary */
+.checkout-sidebar {
+    background-color: transparent;
+    /* Transparent to show the #F5F5F5 from parent */
+    padding: 50px 60px 60px 40px;
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========== LOGO =========== */
+.checkout-logo {
+    margin-bottom: 12px;
+}
+
+.checkout-logo-link {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.checkout-logo-img {
+    width: 280px;
+    /* Double the original size (~140px -> 280px) */
+    height: auto;
+}
+
+/* =========== BREADCRUMB =========== */
+.checkout-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 55px;
+    /* Increased vertical space between breadcrumb and CONTACTO */
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    /* 14px for breadcrumb */
+}
+
+.breadcrumb-step {
+    color: rgba(26, 26, 26, 0.5);
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-step.active {
+    color: #1A1A1A;
+    font-weight: bold;
+    /* Bold for active step */
+}
+
+.breadcrumb-separator {
+    color: rgba(26, 26, 26, 0.4);
+    font-size: 14px;
+}
+
+/* =========== SECTIONS =========== */
+.checkout-section {
+    margin-bottom: 35px;
+}
+
+.checkout-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+}
+
+.checkout-section-title {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 25px;
+    /* Increased to 25px as requested */
+    letter-spacing: 0;
+    /* NO letter-spacing for Univers 67 Condensed */
+    text-transform: uppercase;
+    margin: 0;
+    color: #1A1A1A;
+}
+
+.checkout-login-link {
+    font-family: 'Univers', sans-serif;
+    font-size: 13px;
+    /* 13px for login link */
+    color: rgba(26, 26, 26, 0.6);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.checkout-login-link:hover {
+    color: #1A1A1A;
+}
+
+/* =========== FORM GROUPS =========== */
+.checkout-form-group {
+    margin-bottom: 12px;
+}
+
+.checkout-row {
+    display: grid;
+    gap: 12px;
+}
+
+.checkout-row-half {
+    grid-template-columns: 1fr 1fr;
+}
+
+.checkout-row-thirds {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* =========== INPUTS =========== */
+.checkout-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #1A1A1A;
+    border-radius: 5px;
+    background-color: transparent;
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    /* 14px for input text */
+    color: #1A1A1A;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.checkout-input::placeholder {
+    color: rgba(26, 26, 26, 0.5);
+}
+
+.checkout-input:focus {
+    border-color: #1A1A1A;
+    box-shadow: 0 0 0 1px rgba(26, 26, 26, 0.1);
+}
+
+/* =========== CHECKBOXES =========== */
+.checkout-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-family: 'Univers', sans-serif;
+    font-size: 13px;
+    /* 13px for checkbox labels */
+    color: #1A1A1A;
+}
+
+.checkout-checkbox-group input[type="checkbox"] {
+    display: none;
+}
+
+.checkout-checkbox-square {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #1A1A1A;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.checkout-checkbox-group input[type="checkbox"]:checked+.checkout-checkbox-square {
+    background-color: #1A1A1A;
+}
+
+.checkout-checkbox-group input[type="checkbox"]:checked+.checkout-checkbox-square::after {
+    content: '';
+    width: 4px;
+    height: 8px;
+    border: solid #FAFAFA;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translateY(-1px);
+}
+
+.checkout-checkbox-label {
+    user-select: none;
+}
+
+/* =========== CONTINUE BUTTON =========== */
+.checkout-actions {
+    display: flex;
+    justify-content: flex-end;
+    /* Align button to the right */
+    margin-top: 25px;
+}
+
+.checkout-continue-btn {
+    padding: 18px 32px;
+    /* Auto-sizing based on text content (~225x73px approx) */
+    height: auto;
+    background-color: #1A1A1A;
+    color: #FAFAFA;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 17px;
+    /* 17pt as specified */
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.checkout-continue-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.checkout-continue-btn:active {
+    transform: translateY(0);
+}
+
+/* =========== VALIDATION ERROR STATES =========== */
+.checkout-input.error {
+    border-color: #c23b22;
+    box-shadow: 0 0 0 1px rgba(194, 59, 34, 0.15);
+}
+
+.checkout-error-message {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    background-color: rgba(194, 59, 34, 0.06);
+    border: 1px solid rgba(194, 59, 34, 0.3);
+    border-radius: 5px;
+    font-family: 'Univers', sans-serif;
+    font-size: 13px;
+    color: #c23b22;
+    display: none;
+}
+
+/* =========================================
+   CHECKOUT STEP 2: ENVÍO
+   ========================================= */
+
+/* =========== RESUMEN BOX =========== */
+.checkout-resumen-box {
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    background: #ffffff;
+    padding: 0;
+    overflow: hidden;
+}
+
+.resumen-row {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    align-items: center;
+    padding: 14px 20px;
+    gap: 16px;
+}
+
+.resumen-label {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    color: rgba(26, 26, 26, 0.5);
+    white-space: nowrap;
+}
+
+.resumen-value {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    color: #1A1A1A;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resumen-cambiar {
+    font-family: 'Univers', sans-serif;
+    font-size: 13px;
+    color: rgba(26, 26, 26, 0.5);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+}
+
+.resumen-cambiar:hover {
+    color: #1A1A1A;
+    text-decoration: underline;
+}
+
+.resumen-divider {
+    height: 1px;
+    background-color: #e5e5e5;
+    margin: 0 20px;
+}
+
+/* =========== SHIPPING OPTION BOXES =========== */
+.envio-opcion {
+    position: relative;
+    border: 2px solid #e5e5e5;
+    border-radius: 5px;
+    padding: 19px 23px;
+    margin-bottom: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Selected state: dark border with subtle glow, NO layout shift */
+.envio-opcion.selected {
+    border-color: #1A1A1A;
+    box-shadow: 0 0 0 1px rgba(26, 26, 26, 0.15);
+}
+
+/* Hide native radio */
+.envio-opcion input[type="radio"][name="metodo-envio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Label layout */
+.envio-opcion-label {
+    display: block;
+    cursor: pointer;
+    position: relative;
+    padding-left: 32px;
+}
+
+/* Custom radio circle (empty) */
+.envio-opcion-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #1A1A1A;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+/* Custom radio circle (filled when selected) */
+.envio-opcion.selected .envio-opcion-label::before {
+    background: #1A1A1A;
+    box-shadow: inset 0 0 0 3px #ffffff;
+}
+
+/* Header row: name + price */
+.envio-opcion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.envio-opcion-nombre {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A1A;
+}
+
+.envio-opcion-precio {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A1A;
+}
+
+.envio-opcion-plazo {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    color: #8a8a8a;
+}
+
+/* =========== "ELEGIR SUCURSAL >" BUTTON =========== */
+.envio-elegir-sucursal {
+    display: none;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 8px;
+    margin-left: 32px;
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    color: rgba(26, 26, 26, 0.1);
+    cursor: default;
+    transition: color 0.2s ease;
+}
+
+/* Visible + clickable when sucursal option is selected */
+.envio-opcion.selected .envio-elegir-sucursal {
+    display: block;
+    color: #1A1A1A;
+    cursor: pointer;
+}
+
+.envio-elegir-sucursal:hover {
+    text-decoration: underline;
+}
+
+/* =========== BRANCH LIST (Expandable) =========== */
+.envio-sucursales {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    margin-left: 32px;
+}
+
+.envio-sucursales.expandido {
+    max-height: 300px;
+}
+
+.envio-sucursales-titulo {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A1A;
+    margin: 14px 0 10px 0;
+}
+
+.envio-sucursales-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Branch item */
+.envio-sucursal-item {
+    position: relative;
+    padding-left: 28px;
+    cursor: pointer;
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    color: rgba(26, 26, 26, 0.5);
+    transition: color 0.2s ease;
+}
+
+.envio-sucursal-item.active {
+    color: #1A1A1A;
+}
+
+/* Hide native radio */
+.envio-sucursal-item input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.envio-sucursal-item label {
+    cursor: pointer;
+    position: relative;
+    display: block;
+    padding: 6px 0;
+}
+
+/* Sub-radio circle */
+.envio-sucursal-item label::before {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+/* Sub-radio filled */
+.envio-sucursal-item.active label::before {
+    background: currentColor;
+    box-shadow: inset 0 0 0 2.5px #ffffff;
+}
+
+/* =========== BACK LINK =========== */
+.checkout-back-link {
+    font-family: 'Univers', sans-serif;
+    font-size: 13px;
+    color: rgba(26, 26, 26, 0.6);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.checkout-back-link:hover {
+    color: #1A1A1A;
+}
+
+/* Checkout actions: back link + button share the row.
+   Back link sits left naturally, button pushed right via margin-left:auto on btn. */
+.checkout-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 24px;
+    margin-top: 25px;
+}
+
+/* When back link is visible, push button to the right */
+.checkout-back-link+.checkout-continue-btn {
+    margin-left: auto;
+}
+
+/* =========== STEP 2 RESPONSIVE =========== */
+@media (max-width: 768px) {
+    .resumen-row {
+        grid-template-columns: 75px 1fr auto;
+        padding: 12px 16px;
+        gap: 10px;
+    }
+
+    .resumen-divider {
+        margin: 0 16px;
+    }
+
+    .envio-opcion {
+        padding: 16px 20px;
+    }
+
+    .envio-opcion.selected {
+        box-shadow: 0 0 0 1px rgba(26, 26, 26, 0.15);
+    }
+
+    .envio-opcion-nombre,
+    .envio-opcion-precio {
+        font-size: 13px;
+    }
+
+    .envio-opcion-plazo {
+        font-size: 13px;
+    }
+
+    .envio-sucursal-item {
+        font-size: 13px;
+    }
+
+    .checkout-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .checkout-back-link {
+        text-align: center;
+    }
+}
+
+/* =========== SIDEBAR: CART ITEMS =========== */
+.checkout-cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.checkout-cart-item {
+    display: grid;
+    grid-template-columns: 65px 1fr auto;
+    gap: 12px;
+    align-items: start;
+}
+
+/* Thumbnail Container */
+.checkout-item-image {
+    position: relative;
+    width: 65px;
+    height: 65px;
+}
+
+.checkout-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #8A8A8A;
+}
+
+/* Quantity Badge */
+.checkout-item-qty-badge {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 20px;
+    height: 20px;
+    background-color: #1A1A1A;
+    color: #FAFAFA;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Univers', sans-serif;
+    font-size: 11px;
+    /* 11px for badge */
+    font-weight: 500;
+    z-index: 10;
+}
+
+/* Item Details */
+.checkout-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.checkout-item-name {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 13px;
+    /* 13px for item name */
+    text-transform: uppercase;
+    letter-spacing: 0;
+    color: #1A1A1A;
+    line-height: 1.3;
+}
+
+.checkout-item-variant {
+    font-family: 'Univers', sans-serif;
+    font-size: 11px;
+    /* 11px for variant */
+    color: rgba(26, 26, 26, 0.6);
+    text-transform: uppercase;
+}
+
+.checkout-item-price {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    /* 14px for price */
+    color: #1A1A1A;
+    white-space: nowrap;
+}
+
+/* =========== DISCOUNT CODE =========== */
+.checkout-discount-section {
+    margin-bottom: 20px;
+}
+
+.checkout-discount-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid rgba(26, 26, 26, 0.3);
+    border-radius: 5px;
+    background-color: transparent;
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    /* 14px for discount input */
+    color: #1A1A1A;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.checkout-discount-input::placeholder {
+    color: rgba(26, 26, 26, 0.5);
+}
+
+.checkout-discount-input:focus {
+    border-color: #1A1A1A;
+}
+
+/* =========== TOTALS (Directly below discount code) =========== */
+.checkout-totals {
+    padding-top: 15px;
+    border-top: 1px solid rgba(26, 26, 26, 0.1);
+}
+
+.checkout-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+}
+
+.checkout-total-label {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    /* 14px for labels */
+    color: #1A1A1A;
+}
+
+.checkout-total-value {
+    font-family: 'Univers', sans-serif;
+    font-size: 14px;
+    /* 14px for values */
+    color: #1A1A1A;
+}
+
+.checkout-total-note {
+    font-family: 'Univers', sans-serif;
+    font-size: 12px;
+    /* 12px for note */
+    color: rgba(26, 26, 26, 0.5);
+    font-style: italic;
+}
+
+/* Final Total Row */
+.checkout-total-final {
+    padding-top: 15px;
+    margin-top: 8px;
+    border-top: none;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.checkout-total-final .checkout-total-label {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 22px;
+    /* Same size as total amount */
+    font-weight: bold;
+    letter-spacing: 0;
+}
+
+.checkout-total-currency {
+    font-family: 'Univers', sans-serif;
+    font-size: 12px;
+    /* 12px for currency */
+    color: rgba(26, 26, 26, 0.5);
+    margin-left: auto;
+}
+
+.checkout-total-amount {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 22px;
+    /* 22px for total amount - larger and bold condensed */
+    letter-spacing: 0;
+}
+
+/* =========================================
+   CHECKOUT RESPONSIVE
+   ========================================= */
+@media (max-width: 1200px) {
+    .checkout-container {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .checkout-main {
+        padding-left: 40px;
+        padding-right: 30px;
+    }
+
+    .checkout-sidebar {
+        padding-left: 30px;
+        padding-right: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .checkout-container {
+        grid-template-columns: 1fr;
+        padding: 0;
+    }
+
+    .checkout-main {
+        padding: 30px 20px;
+        order: 2;
+    }
+
+    .checkout-sidebar {
+        padding: 25px 20px;
+        order: 1;
+        border-left: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .checkout-row-half,
+    .checkout-row-thirds {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-actions {
+        justify-content: center;
+    }
+
+    .checkout-continue-btn {
+        width: 100%;
+    }
+
+    .checkout-logo-img {
+        width: 200px;
+    }
+}
+
+/* FILTERS MOBILE */
+@media (max-width: 768px) {
+    #filters-drawer {
+        width: 85%;
+    }
+
+    body.filters-open #site-wrapper {
+        transform: translateX(20%);
+    }
+
+    body.filters-open header,
+    body.filters-open #dropdown-menu,
+    body.filters-open #announcement-bar {
+        width: 100%;
+        left: 0;
+    }
+}
+
+/* FORZAR EL CORTE EXACTO EN SECCIONES DE CUENTA */
+
+/* 1. Eliminamos cualquier colchón inferior del contenedor padre */
+#account-login,
+#account-create,
+#account-contact {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* 2. Aseguramos que el footer clonado no empuje hacia afuera */
+#account-login .shop-footer,
+#account-create .shop-footer,
+#account-contact .shop-footer {
+    margin-bottom: 0 !important;
+    display: block;
+    /* Asegura comportamiento sólido */
+}
+
+/* 3. DETALLE CRÍTICO: La imagen del logo */
+/* A veces la imagen del logo, al ser clonada, trae un 'line-height' fantasma */
+.footer-logo-container {
+    line-height: 0;
+    font-size: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    display: block;
+}
+
+.footer-logo {
+    display: block;
+    margin-bottom: 0;
+    vertical-align: bottom;
+    /* Obliga a la imagen a tocar el piso del contenedor */
+}
+
+/* 4. AÑADIDO: Espaciado natural entre contenido y footer en la sección de contacto */
+#account-contact .shop-footer {
+    position: relative !important;
+    /* Asegura que el footer fluya después del contenido */
+    margin-top: 80px !important;
+    /* Espacio respirable solicitado (bracket rojo) */
+}
