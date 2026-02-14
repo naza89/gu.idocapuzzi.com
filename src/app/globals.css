@@ -25,14 +25,14 @@
 /* Font Faces */
 @font-face {
     font-family: 'Univers 67 Condensed';
-    src: url('/assets/fonts/UniversLTStd-CondensedBold.otf') format('opentype');
+    src: url('/assets/fonts/UniversCnBold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Univers';
-    src: url('/assets/fonts/UniversLTStd.otf') format('opentype');
+    src: url('/assets/fonts/UniversRegular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
