@@ -2363,6 +2363,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // wait: simple Promise-based delay utility for animation sequencing
+    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     // runConfirm: muestra el texto de confirmación post-barra
     async function runConfirm(button, confirmText) {
         const span = button.querySelector('.button-text') || button.querySelector('span') || button;
