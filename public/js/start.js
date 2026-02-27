@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const shopTrigger = document.getElementById('shop-trigger');
     const homeTrigger = document.getElementById('home-trigger');
     const header = document.getElementById('main-header'); // Fixed ID reference
+    const shopTitle = document.getElementById('shop-category-title');
 
     // NEW: Home Animation Elements
     const heroLogo = document.getElementById('hero-logo');
@@ -62,12 +63,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create Account Elements
     const accountCreateSection = document.getElementById('account-create');
     const btnBackToLogin = document.getElementById('btn-back-to-login');
+    const btnFinalCreate = document.getElementById('btn-final-create');
+    const inputFname = document.getElementById('input-fname');
+    const inputLname = document.getElementById('input-lname');
+    const inputCreateEmail = document.getElementById('input-create-email');
+    const inputCreatePwd = document.getElementById('input-create-pwd');
+    const inputCreatePwdConfirm = document.getElementById('input-create-pwd-confirm');
+    const inputRecoverEmail = document.getElementById('input-recover-email');
+
+    // Recover Password Elements
+    const accountRecoverSection = document.getElementById('account-recover');
+    const linkForgotPwd = document.getElementById('link-forgot-pwd');
+    const btnRecoverSubmit = document.getElementById('btn-recover-submit');
+    const btnBackToLoginFromRecover = document.getElementById('btn-back-to-login-from-recover');
+
+    // New Password Elements (post-email-link)
+    const accountNewPasswordSection = document.getElementById('account-new-password');
+    const inputNewPwd = document.getElementById('input-new-pwd');
+    const inputNewPwdConfirm = document.getElementById('input-new-pwd-confirm');
+    const btnNewPwdSubmit = document.getElementById('btn-new-pwd-submit');
 
     // Contact DOM Elements
     const accountContactSection = document.getElementById('account-contact');
-    // Footer trigger is dynamic or need to query it globally if it exists:
-    // Actually we added id="footer-contact-link" in HTML, so we can select it efficiently.
-    // However, since footer might be cloned, we should use delegation or select it carefully.
+    const btnContactSubmit = document.getElementById('btn-contact-submit');
+    const contactName = document.getElementById('contact-name');
+    const contactEmail = document.getElementById('contact-email');
+    const contactMsg = document.getElementById('contact-msg');
 
     // Checkout DOM Elements
     const checkoutSection = document.getElementById('checkout');
@@ -131,28 +152,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const selvedgeBlock = document.querySelector('.selvedge-block');
     const selvedgeSection = document.querySelector('.selvedge-section');
 
-    // --- PHASE 1: LOGO MORPHING ---
+    // --- PHASE 1: LOGO MORPHING (B1 — Vector calculado hero → header) ---
     function triggerPhase1() {
         if (isAnimating || scrollPhase !== 0) return;
         isAnimating = true;
         console.log("[Scroll Phase] Triggering Phase 1: Logo Morphing");
 
-        // Add morphed class to hero logo (CSS handles the transition)
-        if (heroLogo) {
-            heroLogo.classList.add('morphed');
+        const heroRect   = heroLogo   ? heroLogo.getBoundingClientRect()   : null;
+        const headerRect = headerLogo ? headerLogo.getBoundingClientRect() : null;
+
+        // Fallback: si el header logo no está renderizado, usar el morph original por clase
+        if (!heroRect || !headerRect || headerRect.width === 0) {
+            if (heroLogo)   heroLogo.classList.add('morphed');
+            if (headerLogo) headerLogo.classList.add('visible');
+            setTimeout(() => {
+                scrollPhase = 1;
+                isAnimating = false;
+                console.log("[Scroll Phase] Phase 1 Complete (fallback)");
+            }, 800);
+            return;
         }
 
-        // Show header logo
-        if (headerLogo) {
-            headerLogo.classList.add('visible');
-        }
+        // Vector: centro heroLogo → centro headerLogo
+        const heroCX    = heroRect.left   + heroRect.width  / 2;
+        const heroCY    = heroRect.top    + heroRect.height / 2;
+        const headerCX  = headerRect.left + headerRect.width  / 2;
+        const headerCY  = headerRect.top  + headerRect.height / 2;
+        const dx        = headerCX - heroCX;
+        const dy        = headerCY - heroCY;
+        const scaleR    = headerRect.width / heroRect.width;
 
-        // After animation completes, advance to phase 1
+        // Desactivar la transición CSS del hero para usar inline
+        heroLogo.style.transition = 'none';
+        heroLogo.style.transformOrigin = 'center center';
+        void heroLogo.offsetWidth; // force reflow
+
+        // 1. Arrancar: translate + scale con ease-structural (900ms)
+        heroLogo.style.transition = 'transform 900ms cubic-bezier(0.16, 1, 0.3, 1)';
+        heroLogo.style.transform  = `translate(${dx}px, ${dy}px) scale(${scaleR})`;
+
+        // 2. Fade out del hero comienza tarde (cuando el logo ya está en camino)
         setTimeout(() => {
+            heroLogo.style.transition += ', opacity 400ms ease';
+            heroLogo.style.opacity = '0';
+        }, 400);
+
+        // 3. Header logo fade in sincronizado con llegada del hero
+        setTimeout(() => {
+            if (headerLogo) {
+                headerLogo.style.transition = 'opacity 350ms ease';
+                headerLogo.classList.add('visible');
+            }
+        }, 650);
+
+        // 4. Limpieza: añadir clase morphed para que el CSS tome control, resetear inline
+        setTimeout(() => {
+            heroLogo.classList.add('morphed');
+            heroLogo.style.transition  = '';
+            heroLogo.style.transform   = '';
+            heroLogo.style.opacity     = '';
+            heroLogo.style.transformOrigin = '';
+            if (headerLogo) headerLogo.style.transition = '';
+
             scrollPhase = 1;
             isAnimating = false;
-            console.log("[Scroll Phase] Phase 1 Complete");
-        }, 800); // Match CSS transition duration
+            console.log("[Scroll Phase] Phase 1 Complete (vector morph)");
+        }, 920);
     }
 
     // --- PHASE 2: MARQUEE EXIT ---
@@ -489,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         updateCartCounts();
-        openCart(); // Auto open on add
+        // openCart() se llama externamente (PDP: después de la barra de carga)
     }
 
     /**
@@ -744,51 +809,87 @@ document.addEventListener('DOMContentLoaded', () => {
     window.updateFiltersForCategory = updateFiltersForCategory;
     window.setShopCategory = setShopCategory;
 
+    // =========================================================================
+    // A1 — SISTEMA DE TRANSICIÓN ENTRE ESTADOS (Plane Shift)
+    // Exit: contenido cae (translateY + opacity), 260ms ease-cut
+    // Enter: contenido emerge desde abajo con peso, 380ms ease-expose
+    // =========================================================================
+
+    function getActiveSection() {
+        if (body.classList.contains(STATE_HOME))    return document.getElementById('home-container');
+        if (body.classList.contains(STATE_SHOP))    return document.getElementById('shop');
+        if (body.classList.contains(STATE_PDP))     return document.getElementById('product-page');
+        if (body.classList.contains(STATE_ACCOUNT) && !body.classList.contains(STATE_CONTACT)) {
+            const candidates = [
+                document.getElementById('account-login'),
+                document.getElementById('account-create'),
+                document.getElementById('account-recover'),
+                document.getElementById('account-new-password'),
+            ];
+            return candidates.find(el => el && el.style.display !== 'none' && el.style.opacity !== '0') || null;
+        }
+        if (body.classList.contains(STATE_CONTACT)) return document.getElementById('account-contact');
+        return null;
+    }
+
+    async function transitionState(exitEl, enterEl, enterDisplay, applyStateFn) {
+        // 1. EXIT — cae hacia abajo y se desvanece
+        if (exitEl) {
+            exitEl.style.transition = 'transform 260ms cubic-bezier(0.4,0,1,1), opacity 200ms ease';
+            exitEl.style.transform  = 'translateY(28px)';
+            exitEl.style.opacity    = '0';
+            await new Promise(r => setTimeout(r, 240));
+            exitEl.style.display    = 'none';
+            exitEl.style.transform  = '';
+            exitEl.style.opacity    = '';
+            exitEl.style.transition = '';
+        }
+        // 2. ESTADO
+        applyStateFn();
+        // 3. ENTER — emerge desde abajo con peso
+        if (enterEl) {
+            enterEl.style.transform  = 'translateY(28px)';
+            enterEl.style.opacity    = '0';
+            enterEl.style.display    = enterDisplay || 'block';
+            void enterEl.offsetWidth;
+            enterEl.style.transition = 'transform 380ms cubic-bezier(0.25,0,0,1), opacity 300ms ease';
+            enterEl.style.transform  = 'translateY(0)';
+            enterEl.style.opacity    = '1';
+            setTimeout(() => {
+                enterEl.style.transition = '';
+                enterEl.style.transform  = '';
+                enterEl.style.opacity    = '';
+            }, 420);
+        }
+    }
+
+    // =========================================================================
+
     // --- PDP LOGIC ---
     function enablePDPState(productIndex) {
         currentProductIndex = productIndex;
         const product = products[productIndex];
         if (!product) return;
 
-        // Visual State Switch
-        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_ACCOUNT, STATE_CONTACT); // Ensure comprehensive removal
-        body.classList.add(STATE_PDP);
-        window.scrollTo(0, 0);
-
-        // Explicitly hide potential blockers (Shop has inline block now)
-        const sectionsToHide = [
-            document.getElementById('shop'),
-            document.getElementById('home-container'),
-            document.getElementById('account-login'),
-            document.getElementById('account-contact')
-        ];
-        sectionsToHide.forEach(s => {
-            if (s) s.style.display = 'none';
-        });
-
+        const exitEl    = getActiveSection();
         const productPage = document.getElementById('product-page');
-        if (productPage) {
-            productPage.style.removeProperty('display');
-            productPage.style.display = 'block';
-            productPage.style.opacity = '1'; // Fix: Restore opacity cleared by Home
-            productPage.style.pointerEvents = 'auto'; // Fix: Restore clicks
 
-            // Generate Image Stack
+        // Pre-inyectar contenido ANTES de la animación
+        if (productPage) {
+            productPage.style.pointerEvents = 'auto';
+
             const images = product.images && product.images.length > 0 ? product.images : [];
             const imagesHTML = images.length > 0
                 ? images.map(src => `<img src="${src}" class="pdp-image" alt="${product.name}">`).join('')
                 : '<div style="background:#f4f4f4; width:100%; height:100%; min-height:500px;"></div>';
 
-            // Defines logic for unique pieces (ARCHIVO)
             const isArchive = product.category === 'ARCHIVO';
-            const sizeOtherStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
+            const sizeOtherStyle    = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
             const qtyContainerStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
 
-            // Inject Content (Fresh Template)
             productPage.innerHTML = `
                 <div class="pdp-container vertical-stack-layout">
                     <div class="pdp-visual">${imagesHTML}</div>
-                    
                     <div class="pdp-info">
                         <div class="pdp-sticky-wrapper">
                             <div class="pdp-header">
@@ -796,9 +897,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <span class="pdp-colorway font-condensed">${product.colorway || product.color}</span>
                                 <span class="pdp-price font-condensed">${product.price}</span>
                             </div>
-
                             <p class="pdp-description font-condensed">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
-
                             <div class="pdp-selectors">
                                 <div class="selector-group">
                                     <label>Talle</label>
@@ -818,31 +917,88 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </div>
                                 </div>
                             </div>
-
                             <button class="add-to-cart-btn font-condensed" id="pdp-add-btn">AÑADIR AL CARRITO</button>
-                            
-                            <!-- ERROR / SUCCESS MSG CONTAINER COULD GO HERE -->
                         </div>
                     </div>
                 </div>
-
                 <div class="related-section">
-                     <div class="related-header"><h3 class="font-condensed">TAMBIÉN TE PUEDE GUSTAR</h3></div>
+                    <div class="related-header"><h3 class="font-condensed">TAMBIÉN TE PUEDE GUSTAR</h3></div>
                     <div class="related-grid" id="related-grid"></div>
                 </div>
-                
-                 <footer class="pdp-footer">
-                    <div class="footer-content">
-                        <span class="brand-name font-condensed">GÜIDO CAPUZZI ® 2026</span>
-                        <div class="footer-links font-condensed"><span class="trigger-contact">CONTACTO</span><span>LEGALES</span></div>
+                <footer class="shop-footer pdp-footer">
+                    <div class="footer-main-content">
+                        <div class="footer-left-section">
+                            <div class="footer-nav-columns">
+                                <div class="footer-nav-column">
+                                    <h3 class="footer-nav-title font-condensed">SOPORTE</h3>
+                                    <ul class="footer-nav-list">
+                                        <li><a href="#" class="trigger-contact">CONTACTO</a></li>
+                                        <li><a href="#">PREGUNTAS FRECUENTES</a></li>
+                                    </ul>
+                                </div>
+                                <div class="footer-nav-column">
+                                    <h3 class="footer-nav-title font-condensed">LEGALES</h3>
+                                    <ul class="footer-nav-list">
+                                        <li><a href="#">TÉRMINOS Y CONDICIONES</a></li>
+                                        <li><a href="#">POLÍTICA DE PRIVACIDAD</a></li>
+                                        <li><a href="#">DEVOLUCIONES</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="footer-social-icons">
+                                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon-link">
+                                    <img src="/assets/icons/insta-footer-negro.svg" alt="Instagram" class="social-icon">
+                                </a>
+                                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="social-icon-link">
+                                    <img src="/assets/icons/tiktok-footer-negro.svg" alt="TikTok" class="social-icon">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="footer-brand-description">
+                            <p class="manifesto-text font-condensed">
+                                GÜIDO vive en la consciencia de su nieto, Nazareno Capuzzi,<br>
+                                en su afán de querer crear y compartir con el mundo una visión que lo<br>
+                                precede. "Quiero construir lo que busco y no encuentro, crear en virtud<br>
+                                de materializar lo que siento para dejar una huella de lo que llaman Alma.<br>
+                                Mi proyecto es el símbolo de una idea que se instancia en la materia,<br>
+                                pero que pertenece, esencialmente, al espíritu".
+                            </p>
+                        </div>
+                    </div>
+                    <div class="footer-logo-container">
+                        <svg class="footer-logo" viewBox="0 0 478.12614 58.217856" xmlns="http://www.w3.org/2000/svg" aria-label="GÜIDO CAPUZZI">
+                            <path fill="#442517" d="M 48.131428 0.49144286 L 48.131428 7.1597696 L 54.984757 7.1597696 L 54.984757 0.49144286 L 48.131428 0.49144286 z M 59.059443 0.49144286 L 59.059443 7.1597696 L 65.913288 7.1597696 L 65.913288 0.49144286 L 59.059443 0.49144286 z M 16.297713 11.666988 C 1.0473499 11.666988 0.49144286 23.089065 0.49144286 34.32607 C 0.49144286 51.243328 2.2817719 57.726191 17.964278 57.726191 C 21.668745 57.726191 28.028462 56.738556 30.559891 56.244628 L 30.559891 33.647041 L 16.17369 33.647041 L 16.17369 40.50037 L 21.236946 40.50037 L 21.236946 50.378836 C 19.816945 50.872765 18.149793 51.243383 16.606221 51.243383 C 11.296574 51.243383 9.9378945 48.773745 9.9378945 34.820096 C 9.9378945 26.176234 9.9379213 18.334798 15.741675 18.334798 C 20.680963 18.334798 21.360049 21.97747 21.298441 26.114168 L 30.559891 26.114168 C 31.115605 16.791164 25.435397 11.666988 16.297713 11.666988 z M 160.64084 11.666988 C 145.26708 11.666988 145.2671 22.903906 145.2671 34.69659 C 145.2671 46.365792 145.26708 57.726191 160.64084 57.726191 C 176.0146 57.726191 176.01458 46.365792 176.01458 34.69659 C 176.01458 22.903906 176.0146 11.666988 160.64084 11.666988 z M 207.4323 11.666988 C 192.05854 11.666988 192.05856 22.903906 192.05856 34.69659 C 192.05856 46.365792 192.05854 57.726191 207.4323 57.726191 C 216.13784 57.726191 220.89194 53.898099 220.89194 41.981933 L 211.6925 41.981933 C 211.56893 45.50122 211.75428 51.058381 207.4323 51.058381 C 202.18426 51.058381 201.50501 46.118827 201.50501 34.69659 C 201.50501 23.27437 202.18426 18.334798 207.4323 18.334798 C 210.21069 18.334798 211.26049 20.557471 211.26049 26.484688 L 220.39791 26.484688 C 220.76827 16.914701 216.94052 11.666988 207.4323 11.666988 z M 41.833622 12.407511 L 41.833622 44.019535 C 41.833622 52.416414 46.773246 57.726191 57.022358 57.726191 C 68.382899 57.726191 72.149083 50.687645 72.149083 44.019535 L 72.149083 12.407511 L 62.826138 12.407511 L 62.826138 43.402001 C 62.826138 48.341342 60.973854 51.058381 56.898852 51.058381 C 53.502959 51.058381 51.156567 48.897021 51.156567 43.402001 L 51.156567 12.407511 L 41.833622 12.407511 z M 83.385607 12.407511 L 83.385607 56.985151 L 92.708552 56.985151 L 92.708552 12.407511 L 83.385607 12.407511 z M 103.94559 12.407511 L 103.94559 56.985151 L 119.13433 56.985151 C 135.06362 56.985151 134.01404 41.302919 134.01404 34.449576 C 134.01404 20.557677 131.72968 12.407511 119.50485 12.407511 L 103.94559 12.407511 z M 273.04638 12.407511 L 273.04638 56.985151 L 282.36932 56.985151 L 282.36932 38.833288 L 289.28415 38.833288 C 300.21255 38.833288 301.69424 30.806989 301.69424 25.744165 C 301.69424 17.59425 298.36055 12.407511 289.84019 12.407511 L 273.04638 12.407511 z M 309.40333 12.407511 L 309.40333 44.019535 C 309.40333 52.416414 314.34244 57.726191 324.59155 57.726191 C 335.95209 57.726191 339.71828 50.687645 339.71828 44.019535 L 339.71828 12.407511 L 330.39533 12.407511 L 330.39533 43.402001 C 330.39533 48.341342 328.54357 51.058381 324.46856 51.058381 C 321.07267 51.058381 318.72628 48.897021 318.72628 43.402001 L 318.72628 12.407511 L 309.40333 12.407511 z M 348.2914 12.407511 L 348.2914 19.26084 L 366.13475 19.26084 L 347.42737 48.835261 L 347.42737 56.985151 L 375.5812 56.985151 L 375.5812 50.131823 L 356.37979 50.131823 L 375.14919 20.495906 L 375.14919 12.407511 L 348.2914 12.407511 z M 384.15484 12.407511 L 384.15484 19.26084 L 401.9982 19.26084 L 383.29029 48.835261 L 383.29029 56.985151 L 411.44465 56.985151 L 411.44465 50.131823 L 392.24272 50.131823 L 411.01212 20.495906 L 411.01212 12.407511 L 384.15484 12.407511 z M 419.15322 12.407511 L 419.15322 56.985151 L 428.47617 56.985151 L 428.47617 12.407511 L 419.15322 12.407511 z M 228.60051 13.148551 L 240.94911 57.726191 L 253.2357 57.726191 L 265.33729 13.148551 L 255.52032 13.148551 L 253.0507 23.027535 L 240.33158 23.027535 L 237.80047 13.148551 L 228.60051 13.148551 z M 457.44339 14.339176 C 446.14582 14.339176 437.08598 23.344395 437.08598 34.641813 C 437.08598 45.939247 446.14582 55.054003 457.44339 55.054003 C 468.68619 55.054003 477.69125 45.939247 477.69125 34.641813 C 477.69125 23.344395 468.68619 14.339176 457.44339 14.339176 z M 457.44339 18.159615 C 466.44853 18.159615 473.87081 25.527464 473.87081 34.641813 C 473.87081 43.756178 466.44853 51.233564 457.44339 51.233564 C 448.27441 51.233564 440.90641 43.756178 440.90641 34.641813 C 440.90641 25.527464 448.27441 18.159615 457.44339 18.159615 z M 160.64084 18.334798 C 165.88888 18.334798 166.56761 23.27437 166.56761 34.69659 C 166.56761 46.118827 165.88888 51.058381 160.64084 51.058381 C 155.3928 51.058381 154.71355 46.118827 154.71355 34.69659 C 154.71355 23.27437 155.3928 18.334798 160.64084 18.334798 z M 113.26854 19.26084 L 118.08478 19.26084 C 124.56764 19.26084 124.56759 26.484943 124.56759 34.69659 C 124.56759 45.871863 123.45595 50.131823 117.77576 50.131823 L 113.26854 50.131823 L 113.26854 19.26084 z M 282.36932 19.26084 L 287.06154 19.26084 C 291.25993 19.26084 292.24779 22.348409 292.24779 25.991178 C 292.24779 28.954787 290.33396 31.97996 287.55557 31.97996 L 282.36932 31.97996 L 282.36932 19.26084 z M 449.52966 22.744348 L 449.52966 46.37598 L 454.87817 46.37598 L 454.87817 36.606551 L 456.24295 36.606551 C 460.39076 36.606551 459.95383 39.008347 459.95383 41.791764 C 459.95383 43.374501 459.95382 44.95698 460.66335 46.37598 L 465.90282 46.37598 C 465.41175 45.393606 465.30234 40.972773 465.30234 39.44462 C 465.30234 35.187619 461.80949 34.914973 460.66335 34.860404 L 460.66335 34.75085 C 464.15623 34.205087 465.41189 31.967927 465.41189 28.96619 C 465.41189 24.927494 463.06471 22.744348 459.40813 22.744348 L 449.52966 22.744348 z M 454.87817 26.673824 L 457.27957 26.673824 C 458.97155 26.673824 460.06338 27.547092 460.06338 29.784745 C 460.06338 31.312898 459.40816 33.277555 457.27957 33.277555 L 454.87817 33.277555 L 454.87817 26.673824 z M 242.18366 29.880863 L 251.07459 29.880863 L 246.56737 49.144286 L 246.44387 49.144286 L 242.18366 29.880863 z" />
+                        </svg>
                     </div>
                 </footer>
             `;
 
-            // Initialize Local PDP Logic
+            // Resetear botón al entrar a cualquier PDP
+            const addBtnReset = document.getElementById('pdp-add-btn');
+            if (addBtnReset) {
+                addBtnReset.textContent = 'AÑADIR AL CARRITO';
+                addBtnReset.classList.remove('loading', 'done');
+                addBtnReset.style.opacity = '';
+                addBtnReset.style.transition = '';
+                delete addBtnReset.dataset.adding;
+            }
+
             initPDPInteractions();
             initPDPRelated();
+            initFooterLogoReveal();
         }
+
+        transitionState(exitEl, productPage, 'block', () => {
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_ACCOUNT, STATE_CONTACT);
+            body.classList.add(STATE_PDP);
+            window.scrollTo(0, 0);
+            [
+                document.getElementById('shop'),
+                document.getElementById('home-container'),
+                document.getElementById('account-login'),
+                document.getElementById('account-contact')
+            ].forEach(s => { if (s && s !== exitEl) s.style.display = 'none'; });
+        });
     }
 
     function initPDPInteractions() {
@@ -876,11 +1032,43 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 3. Add to Cart
+        // 3. Add to Cart — C3: barra de carga → AÑADIDO → drawer
         const addBtn = document.getElementById('pdp-add-btn');
         if (addBtn) {
-            addBtn.addEventListener('click', () => {
+            addBtn.addEventListener('click', async () => {
+                if (addBtn.dataset.adding === '1') return;
+                addBtn.dataset.adding = '1';
+
+                // Registrar en el carrito
                 addToCart(currentProductIndex, selectedSize, selectedQty);
+
+                // FASE 1: texto AÑADIENDO... + barra roja (580ms CSS)
+                addBtn.classList.add('loading');
+                addBtn.style.transition = 'opacity 120ms ease';
+                addBtn.style.opacity = '0';
+
+                await new Promise(r => setTimeout(r, 130));
+                addBtn.textContent = 'AÑADIENDO...';
+                addBtn.style.opacity = '0.6';
+
+                // Esperar que la barra CSS complete
+                await new Promise(r => setTimeout(r, 620));
+
+                // FASE 2: confirmación AÑADIDO.
+                addBtn.style.opacity = '0';
+                await new Promise(r => setTimeout(r, 130));
+                addBtn.textContent = '— AÑADIDO —';
+                addBtn.style.opacity = '0.75';
+                addBtn.classList.remove('loading');
+                addBtn.classList.add('done');
+                addBtn.style.transition = '';
+
+                // FASE 3: abrir drawer 400ms después
+                await new Promise(r => setTimeout(r, 400));
+                openCart();
+
+                // Botón queda en estado AÑADIDO (inactivo para este producto)
+                delete addBtn.dataset.adding;
             });
         }
     }
@@ -934,6 +1122,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // A3 — Shop Grid Stagger Reveal
+    function revealProductCards(grid) {
+        const cards = grid.querySelectorAll('.product-card');
+        if (!cards.length) return;
+        const maxDelay  = 400;
+        const staggerMs = Math.min(40, Math.floor(maxDelay / cards.length));
+
+        cards.forEach((card, i) => {
+            card.style.opacity    = '0';
+            card.style.transform  = 'translateY(18px)';
+            card.style.transition = 'none';
+
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    card.style.transition = 'opacity 320ms ease, transform 380ms cubic-bezier(0.25,0,0,1)';
+                    card.style.opacity    = '1';
+                    card.style.transform  = 'translateY(0)';
+                    setTimeout(() => {
+                        card.style.transition = '';
+                        card.style.transform  = '';
+                        card.style.opacity    = '';
+                    }, 400);
+                }, i * staggerMs);
+            });
+        });
+    }
+
     function updateShopContent(category) {
         if (shopTitle) shopTitle.textContent = category;
 
@@ -948,12 +1163,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (grid) {
             if (filteredProducts.length > 0) {
                 grid.innerHTML = filteredProducts.map(product => {
-                    const idx = products.indexOf(product);
+                    const idx      = products.indexOf(product);
                     const imageSrc = product.images && product.images.length > 0 ? product.images[0] : '';
+                    const hoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
                     return `
                     <div class="product-card" data-index="${idx}">
                         <div class="product-image">
-                            ${imageSrc ? `<img src="${imageSrc}" style="width:100%; height:100%; object-fit:cover;" alt="${product.name}">` : ''}
+                            ${imageSrc ? `
+                                <img
+                                    class="product-img-primary"
+                                    src="${imageSrc}"
+                                    alt="${product.name}"
+                                    style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:2; transition: opacity 220ms ease;">
+                                ${hoverSrc ? `
+                                    <img
+                                        class="product-img-hover"
+                                        src="${hoverSrc}"
+                                        alt="${product.name}"
+                                        style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:1; opacity:1;">
+                                ` : ''}
+                            ` : ''}
                         </div>
                         <div class="product-info">
                             <span class="product-name">${product.name}</span>
@@ -966,6 +1195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 50px;">SIN STOCK EN ESTA CATEGORÍA</div>';
             }
             attachProductClickListeners();
+            revealProductCards(grid); // A3: stagger reveal
         }
         if (count) count.textContent = `${filteredProducts.length} Productos`;
     }
@@ -973,167 +1203,113 @@ document.addEventListener('DOMContentLoaded', () => {
     function enableShopState(e) {
         if (e) e.preventDefault();
 
-        // 1. Logic for "Ver Todo"
+        const exitEl     = getActiveSection();
+        const shopSection = document.getElementById('shop');
+
         if (e && e.currentTarget && e.currentTarget.id === 'shop-trigger') {
             updateShopContent('VER TODO');
         }
 
-        // 2. Class Switching
-        body.classList.remove(STATE_HOME, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT);
-        body.classList.add(STATE_SHOP);
-
-        // 3. Restore visibility of Shop Container (Fix for Home->Shop deadlock)
-        const shopSection = document.getElementById('shop');
-        if (shopSection) {
-            shopSection.style.removeProperty('display');
-            shopSection.style.display = 'block'; // Force visibility
-            shopSection.style.opacity = '1';
-            shopSection.style.pointerEvents = 'auto';
-        }
-
-        // 4. Hide Others
-        const sectionsToHide = [
-            document.getElementById('account-login'),
-            document.getElementById('account-contact'),
-            document.getElementById('product-page'),
-            document.getElementById('home-container') // Keep Home separate
-        ];
-
-        sectionsToHide.forEach(sec => {
-            if (sec) sec.style.display = 'none';
+        transitionState(exitEl, shopSection, 'block', () => {
+            body.classList.remove(STATE_HOME, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT);
+            body.classList.add(STATE_SHOP);
+            [
+                document.getElementById('account-login'),
+                document.getElementById('account-contact'),
+                document.getElementById('product-page'),
+                document.getElementById('home-container')
+            ].forEach(sec => { if (sec && sec !== exitEl) sec.style.display = 'none'; });
+            if (shopSection) shopSection.style.pointerEvents = 'auto';
+            header.style.backgroundColor = '';
+            header.style.color = '';
         });
-
-        // 5. Header Reset
-        header.style.backgroundColor = '';
-        header.style.color = '';
     }
 
     function enableHomeState(e) {
         if (e) e.preventDefault();
         console.log("[Navigation] enableHomeState Triggered - Starting Sequence");
 
-        // --- 1. MASTER RESET (Inlined for Safety) ---
+        const exitEl        = getActiveSection();
+        const homeContainerEl = document.getElementById('home-container');
 
-        // A. Remove all State Classes based on known constants
-        // Force removal individually to ensure no failure
-        if (typeof STATE_SHOP !== 'undefined') body.classList.remove(STATE_SHOP);
-        if (typeof STATE_PDP !== 'undefined') body.classList.remove(STATE_PDP);
-        if (typeof STATE_ACCOUNT !== 'undefined') body.classList.remove(STATE_ACCOUNT);
-        if (typeof STATE_CONTACT !== 'undefined') body.classList.remove(STATE_CONTACT);
-        if (typeof STATE_CHECKOUT !== 'undefined') body.classList.remove(STATE_CHECKOUT);
+        transitionState(exitEl, homeContainerEl, 'block', () => {
+            if (typeof STATE_SHOP     !== 'undefined') body.classList.remove(STATE_SHOP);
+            if (typeof STATE_PDP      !== 'undefined') body.classList.remove(STATE_PDP);
+            if (typeof STATE_ACCOUNT  !== 'undefined') body.classList.remove(STATE_ACCOUNT);
+            if (typeof STATE_CONTACT  !== 'undefined') body.classList.remove(STATE_CONTACT);
+            if (typeof STATE_CHECKOUT !== 'undefined') body.classList.remove(STATE_CHECKOUT);
 
-        // Reset Body Styles
-        body.style.overflow = ''; // Let CSS control it (revert 'auto' override if it conflicts)
-        body.style.height = '';
-        body.style.backgroundColor = ''; // Clear inline
+            body.style.overflow = '';
+            body.style.height = '';
+            body.style.backgroundColor = '';
 
-        // B. Hide All Sections (Safely) - Including Checkout
-        const allSections = [
-            document.getElementById('shop'),
-            document.getElementById('product-page'),
-            document.getElementById('account-login'),
-            document.getElementById('account-create'),
-            document.getElementById('account-contact'),
-            document.getElementById('checkout')
-        ];
+            [
+                document.getElementById('shop'),
+                document.getElementById('product-page'),
+                document.getElementById('account-login'),
+                document.getElementById('account-create'),
+                document.getElementById('account-contact'),
+                document.getElementById('checkout')
+            ].forEach(sec => {
+                if (sec && sec !== exitEl) {
+                    sec.style.display = 'none';
+                    sec.style.opacity = '0';
+                    sec.style.pointerEvents = 'none';
+                }
+            });
 
-        allSections.forEach(sec => {
-            if (sec) {
-                sec.style.display = 'none';
-                sec.style.opacity = '0';
-                sec.style.pointerEvents = 'none';
+            body.classList.add(STATE_HOME);
+            if (homeContainerEl) homeContainerEl.style.pointerEvents = 'auto';
+
+            header.classList.remove('menu-open');
+            header.style.removeProperty('background-color');
+            header.style.removeProperty('color');
+            header.style.removeProperty('display');
+            header.style.display = 'flex';
+            header.style.backgroundColor = 'transparent';
+            header.style.color = 'var(--color-white)';
+
+            const announcementBarEl = document.getElementById('announcement-bar');
+            if (announcementBarEl) {
+                announcementBarEl.style.removeProperty('display');
+                announcementBarEl.style.display = 'flex';
+                announcementBarEl.classList.remove('hidden');
             }
+            body.classList.remove('announcement-hidden');
+
+            requestAnimationFrame(() => {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                if (homeContainerEl) homeContainerEl.scrollTop = 0;
+            });
+
+            resetHomeAnimations();
+            console.log("[Navigation] Sequence Complete");
         });
-
-        // --- 2. ACTIVATE HOME ---
-        console.log("[Navigation] Activating Home State");
-        body.classList.add(STATE_HOME); // Adds Red BG via CSS
-
-        const homeContainer = document.getElementById('home-container');
-        if (homeContainer) {
-            homeContainer.style.removeProperty('display');
-            homeContainer.style.display = 'block';
-            homeContainer.style.opacity = '1';
-            homeContainer.style.pointerEvents = 'auto'; // Ensure clickable
-            // Force Reflow
-            void homeContainer.offsetWidth;
-        } else {
-            console.error("[Navigation] Critical: home-container not found!");
-        }
-
-        // --- 3. RESTORE HEADER & ANNOUNCEMENT BAR ---
-        console.log("[Navigation] Resetting Header");
-        header.classList.remove('menu-open');
-        header.style.removeProperty('background-color');
-        header.style.removeProperty('color');
-        header.style.removeProperty('display');
-
-        // Make sure header is visible
-        header.style.display = 'flex';
-        header.style.backgroundColor = 'transparent';
-        header.style.color = 'var(--color-white)';
-
-        // Restore announcement bar
-        const announcementBar = document.getElementById('announcement-bar');
-        if (announcementBar) {
-            announcementBar.style.removeProperty('display');
-            announcementBar.style.display = 'flex';  // Must be 'flex' per CSS
-            announcementBar.classList.remove('hidden');
-        }
-        body.classList.remove('announcement-hidden');
-
-        // --- 4. SCROLL RESET (Delayed to ensure DOM is ready) ---
-        requestAnimationFrame(() => {
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-            // Also reset home-container scroll if it's a scroll-snap container
-            if (homeContainer) homeContainer.scrollTop = 0;
-        });
-
-        // --- 5. RESET HOME ANIMATIONS ---
-        resetHomeAnimations();
-
-        console.log("[Navigation] Sequence Complete");
     }
 
     // --- ACCOUNT LOGIC ---
     function enableAccountState(e) {
         if (e) e.preventDefault();
 
-        // Update State Classes
-        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT);
-        body.classList.add(STATE_ACCOUNT);
+        const exitEl  = getActiveSection();
+        const enterEl = accountLoginSection;
 
-        // Hide ALL other containers (including Shop which might have inline display:block)
-        const sectionsToHide = [
-            document.getElementById('shop'),
-            document.getElementById('product-page'),
-            document.getElementById('home-container'),
-            document.getElementById('account-contact')
-        ];
-        sectionsToHide.forEach(sec => {
-            if (sec) sec.style.display = 'none';
+        transitionState(exitEl, enterEl, 'flex', () => {
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT);
+            body.classList.add(STATE_ACCOUNT);
+            [
+                document.getElementById('shop'),
+                document.getElementById('product-page'),
+                document.getElementById('home-container'),
+                document.getElementById('account-contact')
+            ].forEach(sec => { if (sec && sec !== exitEl) sec.style.display = 'none'; });
+            if (accountLoginSection) accountLoginSection.style.pointerEvents = 'auto';
+            if (accountCreateSection) accountCreateSection.style.display = 'none';
+            header.style.backgroundColor = '';
+            header.style.color = '';
+            window.scrollTo(0, 0);
+            injectFooterInAccount();
         });
-
-        // Show Login Section (Default) - Restore visibility AND pointer-events
-        if (accountLoginSection) {
-            accountLoginSection.style.display = 'flex';
-            accountLoginSection.style.opacity = '1';
-            accountLoginSection.style.pointerEvents = 'auto'; // CRITICAL FIX
-
-            if (accountCreateSection) {
-                accountCreateSection.style.display = 'none';
-            }
-        }
-
-        // Header Reset (let CSS handle)
-        header.style.backgroundColor = '';
-        header.style.color = '';
-
-        // Reset scroll
-        window.scrollTo(0, 0);
-
-        // Footer Injection Logic
-        injectFooterInAccount();
     }
 
     function switchToCreateAccount() {
@@ -1154,42 +1330,72 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function switchToRecover() {
+        // Fade out Login, fade in Recover
+        if (accountLoginSection) {
+            accountLoginSection.style.opacity = '0';
+            setTimeout(() => {
+                accountLoginSection.style.display = 'none';
+                if (accountRecoverSection) {
+                    accountRecoverSection.style.display = 'flex';
+                    setTimeout(() => {
+                        accountRecoverSection.style.opacity = '1';
+                        window.scrollTo(0, 0);
+                    }, 50);
+                }
+            }, 400);
+        }
+    }
+
+    function switchToLogin() {
+        // Fade out Create Account
+        if (accountCreateSection) {
+            accountCreateSection.style.opacity = '0';
+            setTimeout(() => {
+                accountCreateSection.style.display = 'none';
+                // Fade in Login
+                if (accountLoginSection) {
+                    accountLoginSection.style.display = 'flex';
+                    setTimeout(() => {
+                        accountLoginSection.style.opacity = '1';
+                        accountLoginSection.style.pointerEvents = 'auto';
+                        window.scrollTo(0, 0);
+                    }, 50);
+                }
+            }, 400);
+        }
+    }
+
     function enableContactState(e) {
         if (e) e.preventDefault();
 
-        // Update State Classes
-        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP);
-        body.classList.add(STATE_ACCOUNT); // Shared CSS for account-like pages
-        body.classList.add(STATE_CONTACT); // Semantic
+        const exitEl  = getActiveSection();
+        const enterEl = accountContactSection;
 
-        // Hide ALL other containers (including Shop which might have inline display:block)
-        const sectionsToHide = [
-            document.getElementById('shop'),
-            document.getElementById('product-page'),
-            document.getElementById('home-container'),
-            accountLoginSection,
-            accountCreateSection
-        ];
-        sectionsToHide.forEach(sec => {
-            if (sec) sec.style.display = 'none';
+        transitionState(exitEl, enterEl, 'flex', () => {
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP);
+            body.classList.add(STATE_ACCOUNT);
+            body.classList.add(STATE_CONTACT);
+            [
+                document.getElementById('shop'),
+                document.getElementById('product-page'),
+                document.getElementById('home-container'),
+                accountLoginSection,
+                accountCreateSection,
+                accountRecoverSection,
+                accountNewPasswordSection
+            ].forEach(sec => {
+                if (sec && sec !== exitEl) {
+                    sec.style.display = 'none';
+                    sec.style.opacity = '0';
+                }
+            });
+            if (accountContactSection) accountContactSection.style.pointerEvents = 'auto';
+            header.style.backgroundColor = '';
+            header.style.color = '';
+            window.scrollTo(0, 0);
+            injectFooterInAccount();
         });
-
-        // Show Contact - Restore visibility AND pointer-events
-        if (accountContactSection) {
-            accountContactSection.style.display = 'flex';
-            accountContactSection.style.opacity = '1';
-            accountContactSection.style.pointerEvents = 'auto'; // CRITICAL FIX
-        }
-
-        // Header Reset
-        header.style.backgroundColor = '';
-        header.style.color = '';
-
-        // Scroll Reset
-        window.scrollTo(0, 0);
-
-        // Footer Injection
-        injectFooterInAccount();
     }
 
     // --- CHECKOUT LOGIC ---
@@ -1273,55 +1479,82 @@ document.addEventListener('DOMContentLoaded', () => {
         if (checkoutTotal) checkoutTotal.textContent = formattedSubtotal;
     }
 
-    function initFooterShuffle() {
-        const links = document.querySelectorAll('.footer-nav-list a');
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    function initFooterLogoReveal() {
+        const logos = document.querySelectorAll('.footer-logo:not([data-logo-init])');
+        if (!logos.length) return;
 
-        links.forEach(link => {
-            if (link.dataset.shuffleInit) return;
-            link.dataset.shuffleInit = 'true';
+        logos.forEach(logo => {
+            logo.dataset.logoInit = 'true';
 
-            link.addEventListener('mouseenter', () => {
-                const originalText = link.textContent;
+            // El home scrollea dentro de #home-container, no en window.
+            // El shop/account usan window (root: null).
+            const scrollRoot = logo.closest('#home-container') || null;
 
-                // --- STABILITY FIX: Lock width ---
-                // We capture the computed width just before animation starts
-                // and force it inline to prevent jitter
-                link.style.width = getComputedStyle(link).width;
-                link.style.display = 'inline-block'; // Should already be set by CSS, but safety first
-                link.style.textAlign = 'center'; // Optional: keeps text centered in the locked box
-
-                let counter = 0;
-
-                const interval = setInterval(() => {
-                    link.textContent = originalText.split('')
-                        .map(char => {
-                            if (char === ' ') return ' ';
-                            return chars[Math.floor(Math.random() * chars.length)];
-                        })
-                        .join('');
-
-                    counter++;
-                    if (counter > 6) {
-                        clearInterval(interval);
-                        link.textContent = originalText;
-                        // Release the lock
-                        link.style.width = '';
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('revealed');
+                        }, 120);
+                        observer.unobserve(entry.target);
                     }
-                }, 30);
-
-                // Restore immediately on leave
-                link.addEventListener('mouseleave', () => {
-                    clearInterval(interval);
-                    link.textContent = originalText;
-                    link.style.width = ''; // Release lock
-                }, { once: true });
+                });
+            }, {
+                root: scrollRoot,
+                threshold: 0,
+                rootMargin: '0px 0px -60px 0px'
             });
+
+            observer.observe(logo);
         });
     }
 
-    // Call initially for Home/Shop footers
-    initFooterShuffle();
+    // [C4] initFooterShuffle eliminado — reemplazado por highlight L→R en CSS
+
+    // ─── F1: MANIFESTO SCROLL REVEAL ───
+    function initManifestoReveal() {
+        const manifestos = document.querySelectorAll('.manifesto-text:not([data-manifesto-init])');
+        if (!manifestos.length) return;
+
+        manifestos.forEach(p => {
+            p.dataset.manifestoInit = 'true';
+
+            // Dividir por <br> en líneas individuales
+            const rawHTML = p.innerHTML;
+            const lines = rawHTML.split(/<br\s*\/?>/i);
+
+            p.innerHTML = lines.map(line => line.trim() ? `
+                <span class="manifesto-line" style="display:block; overflow:hidden;">
+                    <span class="manifesto-line-inner" style="display:block; transform:translateY(105%); opacity:0;">
+                        ${line.trim()}
+                    </span>
+                </span>` : '').filter(Boolean).join('');
+
+            // El home scrollea dentro de #home-container
+            const scrollRoot = p.closest('#home-container') || null;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const lineInners = entry.target.querySelectorAll('.manifesto-line-inner');
+                        lineInners.forEach((inner, i) => {
+                            setTimeout(() => {
+                                inner.style.transition = 'transform 380ms cubic-bezier(0.25,0,0,1), opacity 300ms ease';
+                                inner.style.transform = 'translateY(0)';
+                                inner.style.opacity = '1';
+                            }, i * 80);
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                root: scrollRoot,
+                threshold: 0.15
+            });
+
+            observer.observe(p);
+        });
+    }
 
     function injectFooterInAccount() {
         const shopFooter = document.querySelector('.shop-footer');
@@ -1331,14 +1564,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const appendAndReset = (parent) => {
             if (!parent.querySelector('.shop-footer')) {
                 const clone = shopFooter.cloneNode(true);
-                // IMPORTANTE: Limpiar la marca de "ya inicializado" en el clon
-                // o initFooterShuffle lo ignorará.
+                // Limpiar marcas de "ya inicializado" para que se re-inicialicen
                 clone.querySelectorAll('a').forEach(a => {
-                    delete a.dataset.shuffleInit;
-                    // También resetear estilos inline si quedaron pegados
+                    // C4: shuffle eliminado, solo limpiar estilos inline residuales
                     a.style.width = '';
                     a.style.display = '';
                     a.style.textAlign = '';
+                });
+                // Limpiar el logo para que el reveal se active de nuevo
+                clone.querySelectorAll('.footer-logo').forEach(logo => {
+                    delete logo.dataset.logoInit;
+                    logo.classList.remove('revealed');
+                });
+                // Limpiar el manifesto para que el reveal se active de nuevo
+                clone.querySelectorAll('.manifesto-text').forEach(p => {
+                    delete p.dataset.manifestoInit;
                 });
                 parent.appendChild(clone);
             }
@@ -1348,21 +1588,69 @@ document.addEventListener('DOMContentLoaded', () => {
         if (accountCreateSection) appendAndReset(accountCreateSection);
         if (accountContactSection) appendAndReset(accountContactSection);
 
-        // Re-initialize shuffle for new elements
+        // Re-initialize logo reveal + manifesto reveal para footers clonados
         setTimeout(() => {
-            initFooterShuffle();
+            initFooterLogoReveal();
+            initManifestoReveal();
         }, 50);
     }
 
 
 
     function checkLoginInputs() {
-        if (inputEmail.value.trim() !== '' && inputPassword.value.trim() !== '') {
+        if (inputEmail && inputPassword && inputEmail.value.trim() !== '' && inputPassword.value.trim() !== '') {
             btnLoginSubmit.classList.remove('is-inactive');
             btnLoginSubmit.classList.add('is-active');
-        } else {
+        } else if (btnLoginSubmit) {
             btnLoginSubmit.classList.add('is-inactive');
             btnLoginSubmit.classList.remove('is-active');
+        }
+    }
+
+    // --- CREATE ACCOUNT INPUT VALIDATION ---
+    function checkCreateAccountInputs() {
+        if (inputFname && inputLname && inputCreateEmail && inputCreatePwd && inputCreatePwdConfirm) {
+            const allFilled = inputFname.value.trim() !== '' &&
+                inputLname.value.trim() !== '' &&
+                inputCreateEmail.value.trim() !== '' &&
+                inputCreatePwd.value.trim() !== '' &&
+                inputCreatePwdConfirm.value.trim() !== '';
+            if (allFilled && btnFinalCreate) {
+                btnFinalCreate.classList.remove('is-inactive');
+                btnFinalCreate.classList.add('is-active');
+            } else if (btnFinalCreate) {
+                btnFinalCreate.classList.add('is-inactive');
+                btnFinalCreate.classList.remove('is-active');
+            }
+        }
+    }
+
+    // --- RECOVER PASSWORD INPUT VALIDATION ---
+    function checkRecoverInputs() {
+        if (inputRecoverEmail && inputRecoverEmail.value.trim() !== '') {
+            if (btnRecoverSubmit) {
+                btnRecoverSubmit.classList.remove('is-inactive');
+                btnRecoverSubmit.classList.add('is-active');
+            }
+        } else if (btnRecoverSubmit) {
+            btnRecoverSubmit.classList.add('is-inactive');
+            btnRecoverSubmit.classList.remove('is-active');
+        }
+    }
+
+    // --- CONTACT FORM INPUT VALIDATION ---
+    function checkContactInputs() {
+        if (contactName && contactEmail && contactMsg) {
+            const allFilled = contactName.value.trim() !== '' &&
+                contactEmail.value.trim() !== '' &&
+                contactMsg.value.trim() !== '';
+            if (allFilled && btnContactSubmit) {
+                btnContactSubmit.classList.remove('is-inactive');
+                btnContactSubmit.classList.add('is-active');
+            } else if (btnContactSubmit) {
+                btnContactSubmit.classList.add('is-inactive');
+                btnContactSubmit.classList.remove('is-active');
+            }
         }
     }
 
@@ -1378,6 +1666,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Login Validation
     if (inputEmail) inputEmail.addEventListener('input', checkLoginInputs);
     if (inputPassword) inputPassword.addEventListener('input', checkLoginInputs);
+
+    // Create Account Validation
+    if (inputFname) inputFname.addEventListener('input', checkCreateAccountInputs);
+    if (inputLname) inputLname.addEventListener('input', checkCreateAccountInputs);
+    if (inputCreateEmail) inputCreateEmail.addEventListener('input', checkCreateAccountInputs);
+    if (inputCreatePwd) inputCreatePwd.addEventListener('input', checkCreateAccountInputs);
+    if (inputCreatePwdConfirm) inputCreatePwdConfirm.addEventListener('input', checkCreateAccountInputs);
+
+    // Recover Password Validation
+    if (inputRecoverEmail) inputRecoverEmail.addEventListener('input', checkRecoverInputs);
+
+    // Contact Form Validation
+    if (contactName) contactName.addEventListener('input', checkContactInputs);
+    if (contactEmail) contactEmail.addEventListener('input', checkContactInputs);
+    if (contactMsg) contactMsg.addEventListener('input', checkContactInputs);
 
     // Navbar Links - Logo Click -> Home Reset
     const logoLink = document.querySelector('.logo');
@@ -1403,6 +1706,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Recover Password Flow
+    if (linkForgotPwd) {
+        linkForgotPwd.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchToRecover();
+        });
+    }
+
+    if (btnBackToLoginFromRecover) {
+        btnBackToLoginFromRecover.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchToLogin();
+        });
+    }
+
     // Contact Trigger (Global Delegation for class .trigger-contact)
     document.addEventListener('click', (e) => {
         if (e.target && e.target.classList.contains('trigger-contact')) {
@@ -1416,7 +1734,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Category Dropdown
     const categoryLinks = document.querySelectorAll('.category-link');
-    const shopTitle = document.getElementById('shop-category-title');
     categoryLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1781,6 +2098,607 @@ document.addEventListener('DOMContentLoaded', () => {
     // Expose Step 2 functions globally
     window.mostrarCheckoutStep2 = mostrarCheckoutStep2;
     window.volverAStep1 = volverAStep1;
+
+    // =========================================================================
+    // FORM SUBMISSION HANDLERS (Supabase)
+    // =========================================================================
+
+    // --- CONTACT FORM SUBMIT ---
+    if (btnContactSubmit) {
+        btnContactSubmit.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (btnContactSubmit.classList.contains('is-inactive')) return;
+            if (btnContactSubmit.classList.contains('loading')) return;
+
+            const nombre = contactName.value.trim();
+            const email = contactEmail.value.trim();
+            const mensaje = contactMsg.value.trim();
+
+            if (!nombre || !email || !mensaje) return;
+
+            await runLoadBar(btnContactSubmit, 'ENVIANDO...');
+
+            try {
+                const { error } = await window.supabaseClient
+                    .from('consultas')
+                    .insert([{ nombre, email, mensaje }]);
+
+                if (error) throw new Error(error.message);
+
+                console.log('[Contact] ✅ Consulta enviada con éxito');
+
+                const fields = document.querySelector('#account-contact .login-fields');
+                const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">Tu consulta fue enviada. Nos comunicamos a la brevedad.</span>`;
+
+                // Keep the button text as ENVIADO during success phase
+                await animateButtonAndForm(btnContactSubmit, fields, 'ENVIAR', 'ENVIADO', successHtml);
+
+            } catch (err) {
+                console.error('[Contact] ❌ Error al enviar consulta:', err);
+                // Reset button on error
+                btnContactSubmit.classList.remove('loading');
+                btnContactSubmit.style.pointerEvents = 'auto';
+                btnContactSubmit.querySelector('.button-text').textContent = 'ENVIAR';
+                btnContactSubmit.querySelector('.button-text').style.opacity = '1';
+                checkContactInputs();
+            }
+        });
+    }
+
+    // --- HELPER FUNC: Show Custom Error Message ---
+    function showFormError(container, message) {
+        let errorEl = container.querySelector('.form-error-msg');
+        if (!errorEl) {
+            errorEl = document.createElement('div');
+            errorEl.className = 'form-error-msg font-condensed';
+            Object.assign(errorEl.style, {
+                color: 'var(--color-red)',
+                textAlign: 'center',
+                marginTop: '20px',
+                fontSize: '1rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+            });
+            container.appendChild(errorEl);
+        }
+        errorEl.textContent = message;
+        errorEl.style.display = 'block';
+    }
+
+    function clearFormError(container) {
+        const errorEl = container.querySelector('.form-error-msg');
+        if (errorEl) errorEl.style.display = 'none';
+    }
+
+    // --- HELPER FUNC: Button Animation Sequence ---
+    // ─── SISTEMA DE BARRA DE CARGA UNIFICADO ───
+    // runLoadBar: anima el botón con barra inferior determinística (580ms)
+    // Retorna una Promise que resuelve al completarse la barra.
+    function runLoadBar(button, loadingText) {
+        return new Promise((resolve) => {
+            const span = button.querySelector('.button-text') || button.querySelector('span') || button;
+            const setOpacity = (val, ms = 140) => {
+                span.style.transition = `opacity ${ms}ms ease`;
+                span.style.opacity = val;
+            };
+
+            // Bloquear interacción
+            button.classList.add('loading');
+            button.style.pointerEvents = 'none';
+
+            // Fade out texto actual
+            setOpacity('0');
+
+            setTimeout(() => {
+                // Cambiar texto + fade in tenue
+                if (loadingText) span.textContent = loadingText;
+                setOpacity('0.5');
+
+                // Activar barra (CSS transition en ::after via clase .loading)
+                // La barra dura 580ms (definido en CSS)
+                setTimeout(() => {
+                    resolve();
+                }, 620); // 580ms barra + 40ms buffer
+            }, 150);
+        });
+    }
+
+    // runConfirm: muestra el texto de confirmación post-barra
+    async function runConfirm(button, confirmText) {
+        const span = button.querySelector('.button-text') || button.querySelector('span') || button;
+        const setOpacity = (val, ms = 140) => {
+            span.style.transition = `opacity ${ms}ms ease`;
+            span.style.opacity = val;
+        };
+
+        // Valle de opacidad → texto de confirmación
+        setOpacity('0');
+        await wait(150);
+        span.textContent = confirmText;
+        button.classList.remove('loading');
+        button.classList.add('done');
+        setOpacity('0.8', 200);
+    }
+
+    // runRestore: restaura el botón a su estado original
+    async function runRestore(button, originalText, delay = 2000) {
+        await wait(delay);
+        // Guardar si el botón sigue en el DOM antes de operar
+        if (!document.contains(button)) return;
+        const span = button.querySelector('.button-text') || button.querySelector('span') || button;
+        span.style.transition = 'opacity 140ms ease';
+        span.style.opacity = '0';
+        await wait(150);
+        if (!document.contains(button)) return;
+        span.textContent = originalText;
+        button.classList.remove('done', 'loading');
+        span.style.opacity = '1';
+        span.style.transition = '';
+        button.style.pointerEvents = 'auto';
+    }
+
+    async function animateButtonAndForm(button, fieldsContainer, defaultText, completedText, successHtml) {
+        // Barra de carga → confirmación → fade out campos → success HTML
+        await runConfirm(button, completedText);
+
+        // Esperar un momento mostrando el texto de confirmación
+        await wait(1400);
+
+        // Fade out campos + acciones
+        const inputGroups = fieldsContainer.querySelectorAll('.input-group');
+        const actions = button.closest('.login-actions');
+
+        inputGroups.forEach(g => {
+            g.style.transition = 'opacity 0.5s ease';
+            g.style.opacity = '0';
+        });
+        if (actions) {
+            actions.style.transition = 'opacity 0.5s ease';
+            actions.style.opacity = '0';
+        }
+
+        await wait(500);
+
+        // Colapsar campos extra y mostrar mensaje de éxito
+        for (let i = 1; i < inputGroups.length; i++) {
+            Object.assign(inputGroups[i].style, { visibility: 'hidden', height: '0', margin: '0', padding: '0', overflow: 'hidden' });
+        }
+        if (actions) {
+            Object.assign(actions.style, { visibility: 'hidden', height: '0', margin: '0', padding: '0', overflow: 'hidden' });
+        }
+        if (inputGroups[0]) {
+            inputGroups[0].innerHTML = successHtml;
+            inputGroups[0].style.opacity = '1';
+        }
+    }
+
+    // --- LOGIN SUBMIT ---
+    if (btnLoginSubmit) {
+        btnLoginSubmit.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (btnLoginSubmit.classList.contains('is-inactive')) return;
+            if (btnLoginSubmit.classList.contains('loading')) return;
+
+            const email = inputEmail.value.trim();
+            const password = inputPassword.value.trim();
+            const container = document.querySelector('#account-login .login-container');
+
+            if (!email || !password) return;
+
+            clearFormError(container);
+
+            // Barra de carga
+            await runLoadBar(btnLoginSubmit, 'ENTRANDO...');
+
+            try {
+                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+
+                if (error) {
+                    console.warn('[Login] ❌ Email o contraseña incorrectos');
+                    // Reset button
+                    btnLoginSubmit.classList.remove('loading');
+                    btnLoginSubmit.style.pointerEvents = 'auto';
+                    btnLoginSubmit.querySelector('.button-text').textContent = 'ENTRAR';
+                    btnLoginSubmit.querySelector('.button-text').style.opacity = '1';
+                    showFormError(container, 'EMAIL O CONTRASEÑA INCORRECTOS');
+                } else {
+                    const nombre = data.user?.user_metadata?.nombre || 'Usuario';
+                    console.log(`[Login] ✅ Bienvenido, ${nombre}`);
+
+                    const fields = document.querySelector('#account-login .login-fields');
+                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">SESIÓN INICIADA CORRECTAMENTE.</span>`;
+
+                    await animateButtonAndForm(btnLoginSubmit, fields, 'ENTRAR', '¡BIENVENIDO/A!', successHtml);
+
+                    // Proceed to login state after animation...
+                    setTimeout(() => { location.reload(); }, 1500);
+                }
+            } catch (err) {
+                console.error('[Login] Error de conexión:', err);
+                btnLoginSubmit.classList.remove('loading');
+                btnLoginSubmit.style.pointerEvents = 'auto';
+                btnLoginSubmit.querySelector('.button-text').textContent = 'ENTRAR';
+                btnLoginSubmit.querySelector('.button-text').style.opacity = '1';
+                showFormError(container, 'ERROR DE CONEXIÓN');
+            }
+        });
+    }
+
+    // --- CREATE ACCOUNT SUBMIT ---
+    if (btnFinalCreate) {
+        btnFinalCreate.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (btnFinalCreate.classList.contains('is-inactive')) return;
+            if (btnFinalCreate.classList.contains('loading')) return;
+
+            const nombre = inputFname.value.trim();
+            const apellido = inputLname.value.trim();
+            const email = inputCreateEmail.value.trim();
+            const password = inputCreatePwd.value.trim();
+            const passwordConfirm = inputCreatePwdConfirm.value.trim();
+            const container = document.querySelector('#account-create .login-container');
+
+            if (!nombre || !apellido || !email || !password || !passwordConfirm) return;
+
+            clearFormError(container);
+
+            // Validate passwords match
+            if (password !== passwordConfirm) {
+                showFormError(container, 'LAS CONTRASEÑAS NO COINCIDEN');
+                return;
+            }
+
+            // Validate password length
+            if (password.length < 6) {
+                showFormError(container, 'LA CONTRASEÑA ES MUY CORTA (MÍN. 6 CARACTERES)');
+                return;
+            }
+
+            await runLoadBar(btnFinalCreate, 'CREANDO...');
+
+            try {
+                const { data, error } = await window.supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            nombre,
+                            apellido,
+                        },
+                    },
+                });
+
+                if (error) {
+                    console.error('[Create Account] ❌ Error:', error.message);
+                    btnFinalCreate.classList.remove('loading');
+                    btnFinalCreate.style.pointerEvents = 'auto';
+                    btnFinalCreate.querySelector('.button-text').textContent = 'CREAR UNA CUENTA';
+                    btnFinalCreate.querySelector('.button-text').style.opacity = '1';
+
+                    if (error.message.includes('already registered')) {
+                        showFormError(container, 'EL EMAIL YA ESTÁ REGISTRADO');
+                    } else {
+                        showFormError(container, 'ERROR AL CREAR LA CUENTA');
+                    }
+                } else {
+                    console.log('[Create Account] ✅ Cuenta creada. Verificar email.');
+                    const fields = document.querySelector('#account-create .login-fields');
+                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">TE ENVIAMOS UN EMAIL PARA VERIFICAR TU CUENTA.</span>`;
+
+                    await animateButtonAndForm(btnFinalCreate, fields, 'CREAR UNA CUENTA', 'MAIL ENVIADO', successHtml);
+                }
+            } catch (err) {
+                console.error('[Create Account] Error de conexión:', err);
+                btnFinalCreate.classList.remove('loading');
+                btnFinalCreate.style.pointerEvents = 'auto';
+                btnFinalCreate.querySelector('.button-text').textContent = 'CREAR UNA CUENTA';
+                btnFinalCreate.querySelector('.button-text').style.opacity = '1';
+                showFormError(container, 'ERROR DE CONEXIÓN');
+            }
+        });
+    }
+
+    // --- RECOVER PASSWORD SUBMIT ---
+    if (btnRecoverSubmit) {
+        btnRecoverSubmit.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (btnRecoverSubmit.classList.contains('is-inactive')) return;
+            if (btnRecoverSubmit.classList.contains('loading')) return;
+
+            const email = inputRecoverEmail.value.trim();
+            const container = document.querySelector('#account-recover .login-container');
+
+            if (!email) return;
+
+            clearFormError(container);
+
+            await runLoadBar(btnRecoverSubmit, 'ENVIANDO...');
+
+            try {
+                // Determine origin dynamically for realistic local + prod redirects
+                const redirectUrl = window.location.origin + '/?recover=1';
+
+                const { data, error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: redirectUrl,
+                });
+
+                if (error) {
+                    console.error('[Recover Password] ❌ Error:', error.message);
+                    btnRecoverSubmit.classList.remove('loading');
+                    btnRecoverSubmit.style.pointerEvents = 'auto';
+                    btnRecoverSubmit.querySelector('.button-text').textContent = 'ENVIAR LINK';
+                    btnRecoverSubmit.querySelector('.button-text').style.opacity = '1';
+                    showFormError(container, 'HUBO UN ERROR AL ENVIAR EL CORREO');
+                } else {
+                    console.log('[Recover Password] ✅ Email de recuperación enviado');
+                    const fields = document.querySelector('#account-recover .login-fields');
+                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">TE ENVIAMOS UN EMAIL CON LAS INSTRUCCIONES.</span>`;
+
+                    await animateButtonAndForm(btnRecoverSubmit, fields, 'ENVIAR LINK', 'LINK ENVIADO', successHtml);
+                }
+            } catch (err) {
+                console.error('[Recover Password] Error de conexión:', err);
+                btnRecoverSubmit.classList.remove('loading');
+                btnRecoverSubmit.style.pointerEvents = 'auto';
+                btnRecoverSubmit.querySelector('.button-text').textContent = 'ENVIAR LINK';
+                btnRecoverSubmit.querySelector('.button-text').style.opacity = '1';
+                showFormError(container, 'ERROR DE CONEXIÓN');
+            }
+        });
+    }
+
+    // =========================================================================
+    // SUPABASE AUTH HASH DETECTION
+    // Handles: ?type=recovery (reset password) and ?type=signup (verify account)
+    // Supabase sends tokens in the URL hash: #access_token=xxx&type=recovery
+    // =========================================================================
+
+    function parseHashParams() {
+        const hash = window.location.hash.substring(1);
+        const params = {};
+        hash.split('&').forEach(pair => {
+            const [key, value] = pair.split('=');
+            if (key) params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        });
+        return params;
+    }
+
+    function handleAuthRedirect() {
+        const hashParams = parseHashParams();
+        const type = hashParams['type'];
+        const accessToken = hashParams['access_token'];
+        const refreshToken = hashParams['refresh_token'];
+
+        if (!type || !accessToken) return; // No redirect to handle
+
+        // Set the session in Supabase so we can call updateUser
+        if (window.supabaseClient) {
+            window.supabaseClient.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken || ''
+            }).then(() => {
+                if (type === 'recovery') {
+                    // Show new password section
+                    window.history.replaceState(null, '', window.location.pathname);
+                    showNewPasswordSection();
+                } else if (type === 'signup') {
+                    // Account verified — go to login with confirmation
+                    window.history.replaceState(null, '', window.location.pathname);
+                    enableAccountState(null);
+                    setTimeout(() => {
+                        const container = document.querySelector('#account-login .login-container');
+                        if (container) showFormSuccess(container, '¡TU CUENTA FUE ACTIVADA! YA PODÉS INICIAR SESIÓN.');
+                    }, 300);
+                }
+            }).catch(err => {
+                console.error('[Auth Redirect] Error setting session:', err);
+            });
+        }
+    }
+
+    function showNewPasswordSection() {
+        // Hide everything, show new password section
+        const allSections = [
+            document.getElementById('home-container'),
+            document.getElementById('shop'),
+            document.getElementById('product-page'),
+            accountLoginSection,
+            accountCreateSection,
+            accountRecoverSection,
+            accountContactSection
+        ];
+        allSections.forEach(s => { if (s) s.style.display = 'none'; });
+
+        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT);
+        body.classList.add(STATE_ACCOUNT);
+
+        if (accountNewPasswordSection) {
+            accountNewPasswordSection.style.display = 'flex';
+            setTimeout(() => {
+                accountNewPasswordSection.style.opacity = '1';
+            }, 50);
+        }
+
+        header.style.backgroundColor = '';
+        header.style.color = '';
+        window.scrollTo(0, 0);
+        injectFooterInAccount();
+    }
+
+    function showFormSuccess(container, message) {
+        let el = container.querySelector('.form-success-msg');
+        if (!el) {
+            el = document.createElement('div');
+            el.className = 'form-success-msg font-condensed';
+            Object.assign(el.style, {
+                color: 'var(--color-black)',
+                textAlign: 'left',
+                marginTop: '20px',
+                fontSize: '0.75rem',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                lineHeight: '1.5',
+                opacity: '0',
+                transition: 'opacity 0.5s ease'
+            });
+            container.appendChild(el);
+        }
+        el.textContent = message;
+        setTimeout(() => { el.style.opacity = '1'; }, 50);
+    }
+
+    // New Password validation
+    function checkNewPwdInputs() {
+        if (!inputNewPwd || !inputNewPwdConfirm || !btnNewPwdSubmit) return;
+        const filled = inputNewPwd.value.trim().length >= 6 &&
+                       inputNewPwdConfirm.value.trim().length >= 6;
+        if (filled) {
+            btnNewPwdSubmit.classList.remove('is-inactive');
+            btnNewPwdSubmit.classList.add('is-active');
+        } else {
+            btnNewPwdSubmit.classList.add('is-inactive');
+            btnNewPwdSubmit.classList.remove('is-active');
+        }
+    }
+
+    if (inputNewPwd) inputNewPwd.addEventListener('input', checkNewPwdInputs);
+    if (inputNewPwdConfirm) inputNewPwdConfirm.addEventListener('input', checkNewPwdInputs);
+
+    // New Password submit
+    if (btnNewPwdSubmit) {
+        btnNewPwdSubmit.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (btnNewPwdSubmit.classList.contains('is-inactive')) return;
+            if (btnNewPwdSubmit.classList.contains('loading')) return;
+
+            const pwd = inputNewPwd.value.trim();
+            const confirm = inputNewPwdConfirm.value.trim();
+            const container = document.querySelector('#account-new-password .login-container');
+
+            if (pwd !== confirm) {
+                showFormError(container, 'LAS CONTRASEÑAS NO COINCIDEN');
+                return;
+            }
+            if (pwd.length < 6) {
+                showFormError(container, 'LA CONTRASEÑA DEBE TENER AL MENOS 6 CARACTERES');
+                return;
+            }
+
+            clearFormError(container);
+            await runLoadBar(btnNewPwdSubmit, 'GUARDANDO...');
+
+            try {
+                const { error } = await window.supabaseClient.auth.updateUser({ password: pwd });
+
+                if (error) throw new Error(error.message);
+
+                const fields = document.querySelector('#account-new-password .login-fields');
+                const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">¡CONTRASEÑA ACTUALIZADA! YA PODÉS INICIAR SESIÓN.</span>`;
+                await animateButtonAndForm(btnNewPwdSubmit, fields, 'GUARDAR CONTRASEÑA', 'CONTRASEÑA GUARDADA', successHtml);
+
+                // After success, redirect to login after a moment
+                setTimeout(() => {
+                    if (accountNewPasswordSection) {
+                        accountNewPasswordSection.style.opacity = '0';
+                        setTimeout(() => {
+                            accountNewPasswordSection.style.display = 'none';
+                            enableAccountState(null);
+                        }, 400);
+                    }
+                }, 3000);
+
+            } catch (err) {
+                console.error('[New Password] Error:', err);
+                btnNewPwdSubmit.classList.remove('loading');
+                btnNewPwdSubmit.style.pointerEvents = 'auto';
+                btnNewPwdSubmit.querySelector('.button-text').textContent = 'GUARDAR CONTRASEÑA';
+                btnNewPwdSubmit.querySelector('.button-text').style.opacity = '1';
+                showFormError(container, 'HUBO UN ERROR. INTENTÁ DE NUEVO.');
+            }
+        });
+    }
+
+    // Run hash detection after everything is set up
+    // Small delay to ensure supabaseClient is initialized
+    setTimeout(handleAuthRedirect, 300);
+
+    // =========================================================================
+    // SCROLLBAR COMPENSATION — fixed elements
+    // Los elementos position:fixed ignoran el scrollbar del SO en algunos
+    // navegadores y se extienden por debajo de él. Medimos el ancho real
+    // del scrollbar y lo aplicamos como padding-right en los elementos
+    // fixed que llegan al borde derecho.
+    // =========================================================================
+    function applyScrollbarCompensation() {
+        // window.innerWidth incluye el scrollbar, clientWidth no
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+        const fixedElements = [
+            document.getElementById('announcement-bar'),
+            document.getElementById('main-header'),
+        ];
+
+        fixedElements.forEach(el => {
+            if (el) el.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : '';
+        });
+    }
+
+    applyScrollbarCompensation();
+    window.addEventListener('resize', applyScrollbarCompensation);
+
+    // =========================================================================
+    // MARQUEE — relleno dinámico para loop verdaderamente infinito
+    //
+    // Problema: un texto fijo puede ser más corto que el viewport,
+    // generando un hueco visible antes del reinicio del loop CSS.
+    //
+    // Solución: medir el ancho del texto base una vez renderizado,
+    // luego repetirlo las veces necesarias para que el track ocupe
+    // al menos el DOBLE del viewport (requerimiento de translateX(-50%)).
+    // El loop CSS nunca muestra un hueco porque siempre hay texto a la derecha.
+    // =========================================================================
+    function initMarquee() {
+        const track   = document.getElementById('announcement-track');
+        const content = document.getElementById('announcement-content');
+        if (!track || !content) return;
+
+        const BASE_TEXT = 'GÜIDO CAPUZZI • HASTA 6 CUOTAS SIN INTERÉS • ENVÍOS A TODO EL PAÍS • DENIM ÚNICO SIN RE-STOCK • PRENDAS ÚNICAS 1/1 • HECHO EN ARGENTINA • ';
+
+        // Render una copia para medir su ancho real
+        content.textContent = BASE_TEXT;
+        const singleWidth = content.offsetWidth;
+        if (singleWidth === 0) return; // Guard: fuente no cargada aún
+
+        // Calcular cuántas repeticiones necesitamos para cubrir 2× el viewport
+        const viewportWidth = window.innerWidth;
+        const minTotalWidth = viewportWidth * 2;
+        const reps = Math.ceil(minTotalWidth / singleWidth) + 1; // +1 de margen
+
+        content.textContent = BASE_TEXT.repeat(reps);
+    }
+
+    // Inicializar en DOMContentLoaded; re-inicializar si el viewport cambia
+    initMarquee();
+    window.addEventListener('resize', initMarquee);
+
+    // Footer logo clip-path reveal
+    initFooterLogoReveal();
+    initManifestoReveal();
+
+    // =========================================================================
+    // MARQUEE — sincroniza body.header-active cuando el header se activa (negro)
+    // =========================================================================
+    if (header) {
+        const headerClassObserver = new MutationObserver(() => {
+            const isActive = header.classList.contains('header-hover') ||
+                             header.classList.contains('menu-open');
+            body.classList.toggle('header-active', isActive);
+        });
+        headerClassObserver.observe(header, { attributes: true, attributeFilter: ['class'] });
+    }
 
     console.log("GÜIDO CAPUZZI system fully re-initialized.");
 });

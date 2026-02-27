@@ -20,6 +20,17 @@
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-morph: cubic-bezier(0.22, 1, 0.36, 1);
     /* Premium morph easing */
+
+    /* ─── A1: SISTEMA DE ANIMACIÓN GÜIDO ─── */
+    --dur-cut:          0ms;
+    --dur-enter:        280ms;
+    --dur-reveal:       400ms;
+    --dur-shift:        600ms;
+    --dur-morph-state:  900ms;
+    --ease-expose:      cubic-bezier(0.25, 0, 0, 1);
+    --ease-cut:         cubic-bezier(0.4, 0, 1, 1);
+    --ease-press:       cubic-bezier(0.4, 0, 0.6, 1);
+    --ease-structural:  cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Font Faces */
@@ -46,7 +57,6 @@
 
 html {
     scroll-behavior: smooth;
-    /* Standard smooth scroll */
 }
 
 body {
@@ -55,7 +65,6 @@ body {
     background-color: var(--color-white);
     overflow-x: hidden;
     /* Prevent horizontal scroll */
-    width: 100vw;
 }
 
 /* Utility Classes */
@@ -78,46 +87,64 @@ a {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    right: 0;           /* right:0 en vez de width:100% — evita solapar el scrollbar */
     height: var(--announcement-height);
-    background-color: var(--color-white);
-    color: var(--color-black);
+    background-color: transparent;
+    color: var(--color-white);
     z-index: 1100;
     overflow: hidden;
     display: flex;
     align-items: center;
     transition: transform var(--transition-slow) var(--ease-out-expo),
+        background-color 0.25s ease,
+        color 0.25s ease,
         left 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-        width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        right 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
+/* Páginas de fondo blanco: fondo blanco sólido, texto negro — siempre */
+body.state-shop #announcement-bar,
+body.state-pdp #announcement-bar,
+body.state-account #announcement-bar,
+body.state-contact #announcement-bar {
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+
+/* Home + header activo: bisagra con el negro del header */
+body.state-home.header-active #announcement-bar {
+    background-color: var(--color-white);
+    color: var(--color-black);
 }
 
 #announcement-bar.hidden {
     transform: translateY(-100%);
 }
 
+/* Track: position absolute, JS calcula el ancho necesario y repite el texto
+   hasta llenar el doble del viewport. translateX(-50%) = loop perfecto. */
 .announcement-track {
-    display: flex;
+    position: absolute;
     white-space: nowrap;
-    animation: marquee 30s linear infinite;
+    will-change: transform;
+    animation: marquee-loop 28s linear infinite;
 }
 
 .announcement-text {
-    font-family: 'Univers', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.15em;
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding-right: 50px;
+    /* Stroke para mayor peso visual */
+    -webkit-text-stroke: 0.4px currentColor;
+    text-stroke: 0.4px currentColor;
 }
 
-@keyframes marquee {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-    }
+@keyframes marquee-loop {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
 }
 
 /* =========================================
@@ -436,23 +463,60 @@ body.state-contact.search-open .header-logo {
     gap: 12px;
 }
 
-.btn-pill {
+/* ─── BTN-RECT ─── */
+/* Fill horizontal de izquierda a derecha — más lento que links (320ms vs 260ms) para preservar jerarquía de acción */
+.btn-rect {
     display: inline-block;
     padding: 10px 20px;
     border: 1px solid var(--color-white);
-    border-radius: 25px;
+    border-radius: 0;
     font-family: 'Univers', sans-serif;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--color-white);
     background: transparent;
-    transition: background-color var(--transition-fast), color var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
 }
 
-.btn-pill:hover {
+.btn-rect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
     background-color: var(--color-white);
+    transition: width 320ms cubic-bezier(0.25, 0, 0, 1);
+    z-index: 0;
+}
+
+.btn-rect:hover::before {
+    width: 100%;
+}
+
+.btn-rect span {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: var(--color-white);
+    transition: color 320ms cubic-bezier(0.25, 0, 0, 1);
+}
+
+.btn-rect:hover span {
     color: var(--color-black);
+}
+
+/* Selvedge: el fill es blanco pero el texto invierte a marrón */
+.selvedge-block .btn-rect span {
+    color: var(--color-white);
+}
+
+.selvedge-block .btn-rect:hover span {
+    color: var(--color-brown);
 }
 
 /* Selvedge section: block starts at top and scrolls down */
@@ -469,14 +533,9 @@ body.state-contact.search-open .header-logo {
     will-change: transform;
 }
 
-.selvedge-block .btn-pill {
+.selvedge-block .btn-rect {
     border-color: var(--color-white);
     color: var(--color-white);
-}
-
-.selvedge-block .btn-pill:hover {
-    background-color: var(--color-white);
-    color: var(--color-brown);
 }
 
 /* =========================================
@@ -511,7 +570,7 @@ header {
     position: fixed;
     top: var(--announcement-height);
     left: 0;
-    width: 100%;
+    right: 0;
     height: var(--header-height);
     display: flex;
     justify-content: space-between;
@@ -521,7 +580,7 @@ header {
     transition: background-color 0.4s ease,
         color 0.4s ease,
         height 0.4s ease,
-        width 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        right 0.6s cubic-bezier(0.22, 1, 0.36, 1),
         left 0.6s cubic-bezier(0.22, 1, 0.36, 1),
         top var(--transition-slow) var(--ease-out-expo);
     mix-blend-mode: normal;
@@ -638,6 +697,33 @@ header.menu-open #dropdown-menu {
     filter: blur(0.5px);
 }
 
+/* ─── A4: DROPDOWN STAGGER ─── */
+/* Estado base: items ocultos y desplazados */
+#dropdown-menu ul li {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: none;
+}
+
+/* Al abrir el menú: los items emergen en cascada */
+header.menu-open #dropdown-menu ul li {
+    opacity: 1;
+    transform: translateX(0);
+    transition:
+        opacity  280ms ease var(--stagger-delay, 0ms),
+        transform 320ms cubic-bezier(0.25, 0, 0, 1) var(--stagger-delay, 0ms);
+}
+
+/* Stagger por posición */
+#dropdown-menu ul li:nth-child(1) { --stagger-delay: 40ms;  }
+#dropdown-menu ul li:nth-child(2) { --stagger-delay: 80ms;  }
+#dropdown-menu ul li:nth-child(3) { --stagger-delay: 120ms; }
+#dropdown-menu ul li:nth-child(4) { --stagger-delay: 160ms; }
+#dropdown-menu ul li:nth-child(5) { --stagger-delay: 200ms; }
+#dropdown-menu ul li:nth-child(6) { --stagger-delay: 240ms; }
+/* Al cerrar el menú los items desaparecen junto con el container
+   (opacity 0 en #dropdown-menu en 0.3s) — sin animar salida individual */
+
 
 /* Left: Trigger */
 .header-left .shop-trigger {
@@ -645,6 +731,59 @@ header.menu-open #dropdown-menu {
     font-weight: normal;
     position: relative;
     z-index: 10;
+}
+
+/* ─── C5: HEADER NAV LINKS — Underline #FAFAFA izquierda a derecha ─── */
+/* Aplica a links del header-right, al search-trigger-wrapper y al shop-trigger */
+
+/* Links simples: Cuenta, Carrito */
+.header-right a,
+.header-left .shop-trigger {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+.header-right a::after,
+.header-left .shop-trigger::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0%;
+    height: 1px;
+    background-color: currentColor;
+    transition: width 240ms cubic-bezier(0.25, 0, 0, 1);
+}
+
+.header-right a:hover::after,
+.header-left .shop-trigger:hover::after {
+    width: 100%;
+}
+
+/* Caso especial: Buscar + cursor terminal — underline en el wrapper completo */
+.search-trigger-wrapper {
+    padding-bottom: 2px;
+}
+
+.search-trigger-wrapper::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0%;
+    height: 1px;
+    background-color: currentColor;
+    transition: width 240ms cubic-bezier(0.25, 0, 0, 1);
+    z-index: 1;
+}
+
+.search-trigger-wrapper:hover::before {
+    width: 100%;
+}
+
+/* El ::after del wrapper ya está declarado arriba (cursor terminal) — no se toca */
+/* Suprimir el underline individual del <a> dentro del wrapper */
+.search-trigger-wrapper a::after {
+    display: none;
 }
 
 /* Center: Logo */
@@ -774,37 +913,6 @@ header.menu-open #dropdown-menu {
     opacity: 0.7;
 }
 
-/* Social Icons */
-.footer-social-icons {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.social-icon-link {
-    display: block;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    overflow: hidden;
-    transition: transform var(--transition-fast) ease;
-}
-
-.social-icon-link:hover {
-    transform: scale(1.05);
-}
-
-.social-icon {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Rotate only the icon on hover */
-.social-icon-link:hover .social-icon {
-    transform: rotate(360deg);
-}
 
 /* Brand Description */
 .footer-brand-description {
@@ -863,6 +971,14 @@ header.menu-open #dropdown-menu {
     max-width: 100%;
     height: auto;
     opacity: 1;
+    display: block;
+    /* B2 — Clip-path reveal: comienza oculto, se expone de izquierda a derecha */
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 900ms cubic-bezier(0.25, 0, 0, 1);
+}
+
+.footer-logo.revealed {
+    clip-path: inset(0 0% 0 0);
 }
 
 /* Old Footer Content (for shop footer compatibility) */
@@ -908,9 +1024,7 @@ header.menu-open #dropdown-menu {
     color: var(--color-brown);
 }
 
-.shop-footer .footer-nav-list li a {
-    color: var(--color-brown);
-}
+/* color de links del shop-footer gestionado en bloque C4 */
 
 .shop-footer .footer-brand-description p {
     color: var(--color-brown);
@@ -1034,14 +1148,25 @@ body.state-shop #shop {
     aspect-ratio: 3/4;
     background-color: #f0f0f0;
     overflow: hidden;
+    position: relative; /* C2: necesario para imágenes apiladas */
 }
 
+/* C2 — Image swap hover: la imagen primaria se desvanece al revelar la secundaria */
+.product-card:hover .product-img-primary {
+    opacity: 0;
+}
+
+/* Sin scale genérico — eliminado del ADN GÜIDO */
 .product-image img {
-    transition: transform 0.6s ease;
+    transition: none;
 }
 
-.product-card:hover .product-image img {
-    transform: scale(1.03);
+/* Info lift condicional: solo cuando no hay imagen de hover (se auto-elimina al agregar segunda imagen) */
+.product-info {
+    transition: transform 300ms cubic-bezier(0.25, 0, 0, 1);
+}
+.product-card:not(:has(.product-img-hover)):hover .product-info {
+    transform: translateY(-5px);
 }
 
 .product-info {
@@ -1070,15 +1195,7 @@ body.state-shop #shop {
 
 /* PDP FOOTER - Simple footer for product detail pages */
 .pdp-footer {
-    height: 120px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding-left: var(--padding-sides);
-    background-color: var(--color-white);
-    color: var(--color-black);
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    /* Los estilos los hereda de .shop-footer */
 }
 
 /* =========================================
@@ -1148,6 +1265,43 @@ body.state-account #account-create {
 }
 
 /* =========================================
+   RECOVER PASSWORD MODULE
+   ========================================= */
+#account-recover {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: calc(var(--announcement-height) + var(--header-height) + 40px);
+    padding-bottom: 0;
+    box-sizing: border-box;
+    background-color: var(--color-white);
+}
+
+body.state-account #account-recover {
+    display: flex;
+    opacity: 1;
+}
+
+/* =========================================
+   NEW PASSWORD MODULE (post-email redirect)
+   ========================================= */
+#account-new-password {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: calc(var(--announcement-height) + var(--header-height) + 40px);
+    padding-bottom: 0;
+    box-sizing: border-box;
+    background-color: var(--color-white);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+body.state-account #account-new-password {
+    display: flex;
+}
+
+/* =========================================
    CONTACT MODULE
    ========================================= */
 #account-contact {
@@ -1169,23 +1323,20 @@ body.state-contact #account-contact {
     max-width: 950px;
     margin: 0 auto;
     padding: 0 var(--padding-sides);
-    /* Aumentamos drásticamente el espacio inferior para empujar el footer */
     padding-bottom: 200px;
     width: 100%;
-
-    /* SOLUCIÓN: Aumentamos la altura para empujar el footer hacia abajo.
-       El +60px extra compensa el espacio que estaba quedando visible debajo del footer. */
     min-height: calc(100vh - var(--header-height) - var(--announcement-height) + 20px);
-
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     flex-grow: 1;
 }
 
 /* Footer clonado dentro de secciones Account/Contact - comportamiento seguro */
 #account-login .shop-footer,
 #account-create .shop-footer,
+#account-recover .shop-footer,
+#account-new-password .shop-footer,
 #account-contact .shop-footer {
     width: 100%;
     position: relative;
@@ -1502,7 +1653,7 @@ body.cart-open {
 body.cart-open header,
 body.cart-open #dropdown-menu,
 body.cart-open #announcement-bar {
-    width: calc(100% - 450px);
+    right: 450px;
 }
 
 body.cart-open #site-wrapper {
@@ -1769,9 +1920,10 @@ body.state-account #product-page {
 
 /* ACCOUNT LOGIN MODULE */
 #account-login,
-#account-create {
+#account-create,
+#account-recover,
+#account-new-password {
     padding-top: calc(var(--header-height) + 60px);
-    /* Despegado del header explicitly */
     padding-bottom: 100px;
     display: none;
     opacity: 0;
@@ -1789,31 +1941,17 @@ body.state-account #product-page {
     min-height: 100vh;
 }
 
-body.state-account #account-login {
-    display: flex;
-    /* Kept flex for centering, but different logic */
-    flex-direction: column;
-    justify-content: center;
-    /* Center content */
-    align-items: center;
-    /* Center horizontally */
-    opacity: 1;
-    position: relative;
-    /* For absolute footer */
-}
-
 body.state-account #account-login,
 body.state-account #account-create,
+body.state-account #account-recover,
+body.state-account #account-new-password,
 body.state-account #account-contact {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    /* Center content */
+    justify-content: flex-start;
     align-items: center;
-    /* Center horizontally */
     opacity: 1;
     position: relative;
-    /* For absolute footer */
 }
 
 .login-container {
@@ -1884,11 +2022,45 @@ body.state-account #account-contact {
 
 /* Contact Button Specifics */
 #btn-contact-submit {
+    /* Single button — full width in its grid cell */
     width: 100%;
-    text-align: center;
-    justify-content: center;
-    display: flex;
-    /* Ensure centering works if it's flex */
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.4s ease, color 0.3s ease;
+}
+
+/* Smooth fade transition for form fields and confirmation message */
+#account-contact .login-fields,
+#account-contact .login-actions {
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Anchor the contact section + container to top (override center from body.state-account rule) */
+body.state-account #account-contact,
+body.state-contact #account-contact {
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+}
+
+#account-contact .login-container {
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+}
+
+/* Contact confirmation message — single line */
+.contact-confirmation {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-black);
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 40px;
+    white-space: nowrap;
+}
+
+.contact-confirmation.visible {
+    opacity: 1;
 }
 
 #account-create .input-custom {
@@ -1927,52 +2099,68 @@ body.state-account #account-contact {
     /* Ensure padding doesn't break width */
 }
 
-/* --- FOOTER NAV ANIMATION (Highlight + Shuffle) --- */
+/* ─── C4: FOOTER NAV ANIMATION — Highlight izquierda a derecha ─── */
 
-/* Reset base hover opacity to avoid conflict with highlight */
+/* Reset: quitar hover opacity heredado */
 .footer-nav-list li a:hover {
     opacity: 1 !important;
 }
 
-/* Base Link Style */
+/* Base link */
 .footer-nav-list a {
     position: relative;
     display: inline-block;
     text-decoration: none;
     white-space: nowrap;
-    /* PREVIENE SALTOS DE LÍNEA INDESEADOS */
-    /* Smooth color, instant background */
-    transition: color 0.1s ease, background-color 0.1s ease;
-    /* Optical adjustment for highlight box */
-    padding: 0 4px;
+    padding: 1px 4px;
     margin: 0 -4px;
+    overflow: hidden;
+    transition: color 200ms ease;
 }
 
-/* SCENARIO 1: HOME (Dark Mode) */
-/* Black Footer -> White Text */
+/* Fill que invade desde izquierda */
+.footer-nav-list a::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0%;
+    height: 100%;
+    transition: width 260ms cubic-bezier(0.25, 0, 0, 1);
+    z-index: 0;
+}
+
+/* Span del texto sobre el fill */
+.footer-nav-list a span {
+    position: relative;
+    z-index: 1;
+}
+
+/* SCENARIO 1: HOME (fondo negro — texto blanco, fill blanco, texto invierte a negro) */
 .home-footer .footer-nav-list a {
     color: var(--color-white);
 }
-
-.home-footer .footer-nav-list a:hover {
+.home-footer .footer-nav-list a::before {
     background-color: var(--color-white);
-    /* White Highlight */
-    color: var(--color-black) !important;
-    /* Text becomes Black */
+}
+.home-footer .footer-nav-list a:hover {
+    color: var(--color-black);
+}
+.home-footer .footer-nav-list a:hover::before {
+    width: 100%;
 }
 
-/* SCENARIO 2: SHOP & ACCOUNT (Light Mode) */
-/* White Footer -> Brown Text */
+/* SCENARIO 2: SHOP (fondo blanco — texto marrón, fill marrón, texto invierte a blanco) */
 .shop-footer .footer-nav-list a {
     color: var(--color-brown) !important;
-    /* Force Brown base color */
 }
-
-.shop-footer .footer-nav-list a:hover {
+.shop-footer .footer-nav-list a::before {
     background-color: var(--color-brown);
-    /* Brown Highlight */
+}
+.shop-footer .footer-nav-list a:hover {
     color: var(--color-white) !important;
-    /* Text becomes White */
+}
+.shop-footer .footer-nav-list a:hover::before {
+    width: 100%;
 }
 
 .textarea-custom:focus {
@@ -2179,8 +2367,8 @@ body.filters-open {
 body.filters-open header,
 body.filters-open #dropdown-menu,
 body.filters-open #announcement-bar {
-    width: calc(100% - 450px);
     left: 450px;
+    right: 0;
 }
 
 body.filters-open #site-wrapper {
@@ -3306,8 +3494,8 @@ body.state-checkout #checkout {
     body.filters-open header,
     body.filters-open #dropdown-menu,
     body.filters-open #announcement-bar {
-        width: 100%;
         left: 0;
+        right: 0;
     }
 }
 
@@ -3324,6 +3512,8 @@ body.state-checkout #checkout {
 /* 2. Aseguramos que el footer clonado no empuje hacia afuera */
 #account-login .shop-footer,
 #account-create .shop-footer,
+#account-recover .shop-footer,
+#account-new-password .shop-footer,
 #account-contact .shop-footer {
     margin-bottom: 0 !important;
     display: block;
@@ -3353,4 +3543,90 @@ body.state-checkout #checkout {
     /* Asegura que el footer fluya después del contenido */
     margin-top: 80px !important;
     /* Espacio respirable solicitado (bracket rojo) */
+}
+
+/* ============================================================
+   BUTTON LOAD BAR SYSTEM — loading / done
+   Barra determinística en borde inferior. Sin spinner. Sin check.
+   Aplica a: .login-actions button + .add-to-cart-btn
+   ============================================================ */
+
+/* Layout interno del botón — se mantiene para compatibilidad con el HTML existente */
+.login-actions button .button-content {
+    display: block;
+    position: relative;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+}
+
+.login-actions button .button-text {
+    display: block;
+    width: 100%;
+    text-align: center;
+    /* La opacidad se maneja via JS inline */
+}
+
+/* Ocultar los iconos legacy (spinner + check) — se mantienen en el HTML pero no se muestran */
+.login-actions button .button-icon {
+    display: none;
+}
+
+/* ─── BARRA DE PROGRESO ─── */
+/* Compartida por .login-actions button y .add-to-cart-btn */
+.login-actions button,
+.add-to-cart-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.login-actions button::after,
+.add-to-cart-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    pointer-events: none;
+    transition: none;
+}
+
+/* Color de barra — rojo GÜIDO en todos los contextos */
+.login-actions button::after {
+    background-color: var(--color-red);
+}
+.add-to-cart-btn::after {
+    background-color: var(--color-red);
+}
+
+/* Estado loading: barra crece */
+.login-actions button.loading::after,
+.add-to-cart-btn.loading::after {
+    width: 100%;
+    transition: width 580ms var(--ease-expose);
+}
+
+/* Estado done: barra se retrae desde la derecha */
+.login-actions button.done::after,
+.add-to-cart-btn.done::after {
+    width: 0%;
+    left: auto;
+    right: 0;
+    transition: width 220ms var(--ease-cut);
+}
+
+/* Bloquear interacción durante animación */
+.login-actions button.loading,
+.login-actions button.done,
+.add-to-cart-btn.loading,
+.add-to-cart-btn.done {
+    pointer-events: none;
+}
+
+/* Mantener apariencia activa durante la animación */
+.login-actions button.loading,
+.login-actions button.done {
+    background-color: var(--color-black) !important;
+    color: var(--color-white) !important;
 }
