@@ -3,6 +3,9 @@ export const OCA_CONFIG = {
     clave: process.env.OCA_CLAVE!,
     cuit: process.env.OCA_CUIT!,
     nroCuenta: process.env.OCA_NUMERO_CUENTA!,
+    // ID de la sucursal OCA donde se imponen (dejan) los paquetes
+    // 1405 = CALVIN GROUP S.R.L., Av. Rivadavia 13720, Haedo
+    imposicionOrigenId: parseInt(process.env.OCA_IMPOSICION_ORIGEN_ID || '1405'),
     sandbox: process.env.OCA_SANDBOX === 'true',
 
     get baseUrl() {

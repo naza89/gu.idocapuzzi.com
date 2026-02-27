@@ -6,17 +6,17 @@ import { CrearEnvioInput } from './types';
  * OCA requiere un XML estructurado con cabecera, orígenes y envíos.
  */
 export function generarXMLEnvio(input: CrearEnvioInput): string {
-    const { destinatario: d, paquetes, operativa, nroRemito, centroCosto = 0 } = input;
-    const o = OCA_CONFIG.origen;
+  const { destinatario: d, paquetes, operativa, nroRemito, centroCosto = 0 } = input;
+  const o = OCA_CONFIG.origen;
 
-    const fecha = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // AAAAMMDD
+  const fecha = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // AAAAMMDD
 
-    const paquetesXML = paquetes.map(p =>
-        `<paquete alto="${p.alto}" ancho="${p.ancho}" largo="${p.largo}" ` +
-        `peso="${p.peso}" valor="${p.valor}" cant="1" />`
-    ).join('\n            ');
+  const paquetesXML = paquetes.map(p =>
+    `<paquete alto="${p.alto}" ancho="${p.ancho}" largo="${p.largo}" ` +
+    `peso="${p.peso}" valor="${p.valor}" cant="1" />`
+  ).join('\n            ');
 
-    return `<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+  return `<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
 <ROWS>
   <cabecera ver="2.0" nrocuenta="${OCA_CONFIG.nroCuenta}" />
   <origenes>
@@ -34,7 +34,7 @@ export function generarXMLEnvio(input: CrearEnvioInput): string {
       observaciones=""
       centrocosto="${centroCosto}"
       idfranjahoraria="${o.franjaHoraria}"
-      idcentroimposicionorigen="0"
+      idcentroimposicionorigen="${OCA_CONFIG.imposicionOrigenId}"
       fecha="${fecha}">
       <envios>
         <envio idoperativa="${operativa}" nroremito="${nroRemito}">
@@ -67,9 +67,9 @@ export function generarXMLEnvio(input: CrearEnvioInput): string {
  * Escapar caracteres XML y eliminar acentos problemáticos para iso-8859-1.
  */
 function sanitizar(str: string): string {
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

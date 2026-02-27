@@ -158,12 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
         isAnimating = true;
         console.log("[Scroll Phase] Triggering Phase 1: Logo Morphing");
 
-        const heroRect   = heroLogo   ? heroLogo.getBoundingClientRect()   : null;
+        const heroRect = heroLogo ? heroLogo.getBoundingClientRect() : null;
         const headerRect = headerLogo ? headerLogo.getBoundingClientRect() : null;
 
         // Fallback: si el header logo no está renderizado, usar el morph original por clase
         if (!heroRect || !headerRect || headerRect.width === 0) {
-            if (heroLogo)   heroLogo.classList.add('morphed');
+            if (heroLogo) heroLogo.classList.add('morphed');
             if (headerLogo) headerLogo.classList.add('visible');
             setTimeout(() => {
                 scrollPhase = 1;
@@ -174,13 +174,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Vector: centro heroLogo → centro headerLogo
-        const heroCX    = heroRect.left   + heroRect.width  / 2;
-        const heroCY    = heroRect.top    + heroRect.height / 2;
-        const headerCX  = headerRect.left + headerRect.width  / 2;
-        const headerCY  = headerRect.top  + headerRect.height / 2;
-        const dx        = headerCX - heroCX;
-        const dy        = headerCY - heroCY;
-        const scaleR    = headerRect.width / heroRect.width;
+        const heroCX = heroRect.left + heroRect.width / 2;
+        const heroCY = heroRect.top + heroRect.height / 2;
+        const headerCX = headerRect.left + headerRect.width / 2;
+        const headerCY = headerRect.top + headerRect.height / 2;
+        const dx = headerCX - heroCX;
+        const dy = headerCY - heroCY;
+        const scaleR = headerRect.width / heroRect.width;
 
         // Desactivar la transición CSS del hero para usar inline
         heroLogo.style.transition = 'none';
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Arrancar: translate + scale con ease-structural (900ms)
         heroLogo.style.transition = 'transform 900ms cubic-bezier(0.16, 1, 0.3, 1)';
-        heroLogo.style.transform  = `translate(${dx}px, ${dy}px) scale(${scaleR})`;
+        heroLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleR})`;
 
         // 2. Fade out del hero comienza tarde (cuando el logo ya está en camino)
         setTimeout(() => {
@@ -208,9 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // 4. Limpieza: añadir clase morphed para que el CSS tome control, resetear inline
         setTimeout(() => {
             heroLogo.classList.add('morphed');
-            heroLogo.style.transition  = '';
-            heroLogo.style.transform   = '';
-            heroLogo.style.opacity     = '';
+            heroLogo.style.transition = '';
+            heroLogo.style.transform = '';
+            heroLogo.style.opacity = '';
             heroLogo.style.transformOrigin = '';
             if (headerLogo) headerLogo.style.transition = '';
 
@@ -816,9 +816,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
 
     function getActiveSection() {
-        if (body.classList.contains(STATE_HOME))    return document.getElementById('home-container');
-        if (body.classList.contains(STATE_SHOP))    return document.getElementById('shop');
-        if (body.classList.contains(STATE_PDP))     return document.getElementById('product-page');
+        if (body.classList.contains(STATE_HOME)) return document.getElementById('home-container');
+        if (body.classList.contains(STATE_SHOP)) return document.getElementById('shop');
+        if (body.classList.contains(STATE_PDP)) return document.getElementById('product-page');
         if (body.classList.contains(STATE_ACCOUNT) && !body.classList.contains(STATE_CONTACT)) {
             const candidates = [
                 document.getElementById('account-login'),
@@ -836,29 +836,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. EXIT — cae hacia abajo y se desvanece
         if (exitEl) {
             exitEl.style.transition = 'transform 260ms cubic-bezier(0.4,0,1,1), opacity 200ms ease';
-            exitEl.style.transform  = 'translateY(28px)';
-            exitEl.style.opacity    = '0';
+            exitEl.style.transform = 'translateY(28px)';
+            exitEl.style.opacity = '0';
             await new Promise(r => setTimeout(r, 240));
-            exitEl.style.display    = 'none';
-            exitEl.style.transform  = '';
-            exitEl.style.opacity    = '';
+            exitEl.style.display = 'none';
+            exitEl.style.transform = '';
+            exitEl.style.opacity = '';
             exitEl.style.transition = '';
         }
         // 2. ESTADO
         applyStateFn();
         // 3. ENTER — emerge desde abajo con peso
         if (enterEl) {
-            enterEl.style.transform  = 'translateY(28px)';
-            enterEl.style.opacity    = '0';
-            enterEl.style.display    = enterDisplay || 'block';
+            enterEl.style.transform = 'translateY(28px)';
+            enterEl.style.opacity = '0';
+            enterEl.style.display = enterDisplay || 'block';
             void enterEl.offsetWidth;
             enterEl.style.transition = 'transform 380ms cubic-bezier(0.25,0,0,1), opacity 300ms ease';
-            enterEl.style.transform  = 'translateY(0)';
-            enterEl.style.opacity    = '1';
+            enterEl.style.transform = 'translateY(0)';
+            enterEl.style.opacity = '1';
             setTimeout(() => {
                 enterEl.style.transition = '';
-                enterEl.style.transform  = '';
-                enterEl.style.opacity    = '';
+                enterEl.style.transform = '';
+                enterEl.style.opacity = '';
             }, 420);
         }
     }
@@ -871,7 +871,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const product = products[productIndex];
         if (!product) return;
 
-        const exitEl    = getActiveSection();
+        const exitEl = getActiveSection();
         const productPage = document.getElementById('product-page');
 
         // Pre-inyectar contenido ANTES de la animación
@@ -884,7 +884,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 : '<div style="background:#f4f4f4; width:100%; height:100%; min-height:500px;"></div>';
 
             const isArchive = product.category === 'ARCHIVO';
-            const sizeOtherStyle    = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
+            const sizeOtherStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
             const qtyContainerStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
 
             productPage.innerHTML = `
@@ -1126,23 +1126,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function revealProductCards(grid) {
         const cards = grid.querySelectorAll('.product-card');
         if (!cards.length) return;
-        const maxDelay  = 400;
+        const maxDelay = 400;
         const staggerMs = Math.min(40, Math.floor(maxDelay / cards.length));
 
         cards.forEach((card, i) => {
-            card.style.opacity    = '0';
-            card.style.transform  = 'translateY(18px)';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(18px)';
             card.style.transition = 'none';
 
             requestAnimationFrame(() => {
                 setTimeout(() => {
                     card.style.transition = 'opacity 320ms ease, transform 380ms cubic-bezier(0.25,0,0,1)';
-                    card.style.opacity    = '1';
-                    card.style.transform  = 'translateY(0)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
                     setTimeout(() => {
                         card.style.transition = '';
-                        card.style.transform  = '';
-                        card.style.opacity    = '';
+                        card.style.transform = '';
+                        card.style.opacity = '';
                     }, 400);
                 }, i * staggerMs);
             });
@@ -1163,7 +1163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (grid) {
             if (filteredProducts.length > 0) {
                 grid.innerHTML = filteredProducts.map(product => {
-                    const idx      = products.indexOf(product);
+                    const idx = products.indexOf(product);
                     const imageSrc = product.images && product.images.length > 0 ? product.images[0] : '';
                     const hoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
                     return `
@@ -1203,7 +1203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function enableShopState(e) {
         if (e) e.preventDefault();
 
-        const exitEl     = getActiveSection();
+        const exitEl = getActiveSection();
         const shopSection = document.getElementById('shop');
 
         if (e && e.currentTarget && e.currentTarget.id === 'shop-trigger') {
@@ -1229,14 +1229,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e) e.preventDefault();
         console.log("[Navigation] enableHomeState Triggered - Starting Sequence");
 
-        const exitEl        = getActiveSection();
+        const exitEl = getActiveSection();
         const homeContainerEl = document.getElementById('home-container');
 
         transitionState(exitEl, homeContainerEl, 'block', () => {
-            if (typeof STATE_SHOP     !== 'undefined') body.classList.remove(STATE_SHOP);
-            if (typeof STATE_PDP      !== 'undefined') body.classList.remove(STATE_PDP);
-            if (typeof STATE_ACCOUNT  !== 'undefined') body.classList.remove(STATE_ACCOUNT);
-            if (typeof STATE_CONTACT  !== 'undefined') body.classList.remove(STATE_CONTACT);
+            if (typeof STATE_SHOP !== 'undefined') body.classList.remove(STATE_SHOP);
+            if (typeof STATE_PDP !== 'undefined') body.classList.remove(STATE_PDP);
+            if (typeof STATE_ACCOUNT !== 'undefined') body.classList.remove(STATE_ACCOUNT);
+            if (typeof STATE_CONTACT !== 'undefined') body.classList.remove(STATE_CONTACT);
             if (typeof STATE_CHECKOUT !== 'undefined') body.classList.remove(STATE_CHECKOUT);
 
             body.style.overflow = '';
@@ -1291,7 +1291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function enableAccountState(e) {
         if (e) e.preventDefault();
 
-        const exitEl  = getActiveSection();
+        const exitEl = getActiveSection();
         const enterEl = accountLoginSection;
 
         transitionState(exitEl, enterEl, 'flex', () => {
@@ -1369,7 +1369,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function enableContactState(e) {
         if (e) e.preventDefault();
 
-        const exitEl  = getActiveSection();
+        const exitEl = getActiveSection();
         const enterEl = accountContactSection;
 
         transitionState(exitEl, enterEl, 'flex', () => {
@@ -1879,7 +1879,167 @@ document.addEventListener('DOMContentLoaded', () => {
         // 7. Scroll to top of checkout
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
+        // 8. Fetch real shipping options from OCA
+        cargarOpcionesEnvioOCA(cp);
+
         console.log('[Checkout] → Step 2: Envío');
+    }
+
+    // ========================
+    // OCA SHIPPING INTEGRATION
+    // ========================
+
+    async function cargarOpcionesEnvioOCA(cpDestino) {
+        const metodoEnvioSection = document.querySelector('#checkout-step-envio .checkout-section:last-child');
+        if (!metodoEnvioSection) return;
+
+        // Calculate package weight from cart
+        const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
+        const pesoKg = totalItems * 0.3 + 0.1; // estimated: 0.3kg per garment + 0.1 packaging
+        const alto = 3 * totalItems + 5;
+        const ancho = 30;
+        const largo = 35;
+        const volumenM3 = (alto / 100) * (ancho / 100) * (largo / 100);
+        const subtotalPesos = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+        // Show loading state in shipping section
+        const headerEl = metodoEnvioSection.querySelector('.checkout-section-header');
+        const existingOptions = metodoEnvioSection.querySelectorAll('.envio-opcion');
+        existingOptions.forEach(el => el.style.opacity = '0.4');
+
+        // Create a loading indicator if not present
+        let loadingEl = metodoEnvioSection.querySelector('.envio-loading');
+        if (!loadingEl) {
+            loadingEl = document.createElement('div');
+            loadingEl.className = 'envio-loading';
+            loadingEl.style.cssText = 'text-align:center;padding:20px 0;font-family:Univers,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;';
+            loadingEl.textContent = 'Calculando opciones de envío...';
+            if (headerEl) headerEl.after(loadingEl);
+        }
+
+        try {
+            const res = await fetch('/api/oca/cotizar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cpDestino: parseInt(cpDestino),
+                    pesoKg,
+                    volumenM3,
+                    cantidadPaquetes: 1,
+                    valorDeclarado: subtotalPesos,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!data.success || !data.opciones || data.opciones.length === 0) {
+                // Fallback: show error
+                if (loadingEl) loadingEl.textContent = 'No se pudieron obtener tarifas de envío. Intentá nuevamente.';
+                existingOptions.forEach(el => el.style.opacity = '1');
+                console.error('[OCA] Error cotizando:', data.error || 'Sin opciones');
+                return;
+            }
+
+            // Remove loading indicator
+            if (loadingEl) loadingEl.remove();
+
+            // Remove old static options
+            existingOptions.forEach(el => el.remove());
+
+            // Build new option elements from OCA response
+            const opciones = data.opciones;
+            const containerEl = headerEl?.parentElement;
+            if (!containerEl) return;
+
+            opciones.forEach(opcion => {
+                const tipo = opcion.nombre === 'puertaPuerta' ? 'domicilio' : 'sucursal';
+                const nombreDisplay = tipo === 'domicilio' ? 'Envío a domicilio' : 'Retiro en sucursal';
+                const precioCentavos = Math.round(opcion.precio * 100);
+                const precioDisplay = '$' + formatearPrecioARS(opcion.precio);
+                const plazoDisplay = opcion.diasHabiles > 0
+                    ? `${opcion.diasHabiles} días hábiles`
+                    : '3 a 5 días hábiles';
+                const radioId = `envio-${tipo}`;
+                const isExpandible = tipo === 'sucursal' ? ' envio-opcion-expandible' : '';
+
+                const optionHTML = `
+                    <div class="envio-opcion${isExpandible}" data-tipo="${tipo}" data-precio="${precioCentavos}" data-operativa="${opcion.operativa}">
+                        <input type="radio" name="metodo-envio" id="${radioId}" value="${tipo}">
+                        <label for="${radioId}" class="envio-opcion-label">
+                            <div class="envio-opcion-header">
+                                <span class="envio-opcion-nombre">${nombreDisplay}</span>
+                                <span class="envio-opcion-precio">${precioDisplay}</span>
+                            </div>
+                            <div class="envio-opcion-detalle">
+                                <span class="envio-opcion-plazo">${plazoDisplay}</span>
+                            </div>
+                        </label>
+                        ${tipo === 'sucursal' ? `
+                        <button type="button" class="envio-elegir-sucursal" id="btn-elegir-sucursal">
+                            Elegir sucursal &nbsp;&rsaquo;
+                        </button>
+                        <div class="envio-sucursales" id="envio-sucursales-lista">
+                            <p class="envio-sucursales-titulo">Sucursales cerca de tu domicilio:</p>
+                            <div class="envio-sucursales-list" id="envio-sucursales-list-container">
+                                <div class="envio-loading" style="text-align:center;padding:10px 0;font-family:Univers,sans-serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#888;">
+                                    Cargando sucursales...
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                containerEl.insertAdjacentHTML('beforeend', optionHTML);
+            });
+
+            // Store operativa info for later use when creating the order
+            window._ocaOpciones = opciones;
+
+            console.log('[OCA] ✅ Opciones de envío cargadas:', opciones.length);
+
+        } catch (err) {
+            console.error('[OCA] Error de red al cotizar:', err);
+            if (loadingEl) loadingEl.textContent = 'Error de conexión. Intentá nuevamente.';
+            existingOptions.forEach(el => el.style.opacity = '1');
+        }
+    }
+
+    // ========================
+    // OCA SUCURSALES DYNAMIC LOADING
+    // ========================
+
+    async function cargarSucursalesOCA() {
+        const cp = document.getElementById('checkout-cp')?.value || '';
+        const container = document.getElementById('envio-sucursales-list-container');
+        if (!container || !cp) return;
+
+        container.innerHTML = '<div class="envio-loading" style="text-align:center;padding:10px 0;font-family:Univers,sans-serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#888;">Cargando sucursales...</div>';
+
+        try {
+            const res = await fetch(`/api/oca/sucursales?cp=${encodeURIComponent(cp)}`);
+            const data = await res.json();
+
+            if (!data.success || !data.sucursales || data.sucursales.length === 0) {
+                container.innerHTML = '<p style="font-family:Univers,sans-serif;font-size:0.75rem;color:#888;padding:10px 0;">No se encontraron sucursales para tu código postal.</p>';
+                return;
+            }
+
+            container.innerHTML = data.sucursales.map((suc, i) => `
+                <div class="envio-sucursal-item${i === 0 ? ' active' : ''}">
+                    <input type="radio" name="sucursal" id="sucursal-${suc.id}" value="${suc.id}"
+                        ${i === 0 ? 'checked' : ''}
+                        data-nombre="${suc.nombre}" data-direccion="${suc.calle} ${suc.nro}, ${suc.localidad}">
+                    <label for="sucursal-${suc.id}">${suc.nombre}, ${suc.calle} ${suc.nro}, ${suc.localidad}</label>
+                </div>
+            `).join('');
+
+            console.log('[OCA] ✅ Sucursales cargadas:', data.sucursales.length);
+
+        } catch (err) {
+            console.error('[OCA] Error cargando sucursales:', err);
+            container.innerHTML = '<p style="font-family:Univers,sans-serif;font-size:0.75rem;color:#888;padding:10px 0;">Error al cargar sucursales.</p>';
+        }
     }
 
     function volverAStep1() {
@@ -2019,10 +2179,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide the trigger button
         btnElegir.style.display = 'none';
 
-        // Set active state on first (pre-checked) branch
-        actualizarSucursalActiva();
+        // Load real branches from OCA
+        cargarSucursalesOCA();
 
-        console.log('[Checkout] Sucursales expanded');
+        console.log('[Checkout] Sucursales expanded — loading from OCA');
     });
 
     // ========================
@@ -2554,7 +2714,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkNewPwdInputs() {
         if (!inputNewPwd || !inputNewPwdConfirm || !btnNewPwdSubmit) return;
         const filled = inputNewPwd.value.trim().length >= 6 &&
-                       inputNewPwdConfirm.value.trim().length >= 6;
+            inputNewPwdConfirm.value.trim().length >= 6;
         if (filled) {
             btnNewPwdSubmit.classList.remove('is-inactive');
             btnNewPwdSubmit.classList.add('is-active');
@@ -2661,7 +2821,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // El loop CSS nunca muestra un hueco porque siempre hay texto a la derecha.
     // =========================================================================
     function initMarquee() {
-        const track   = document.getElementById('announcement-track');
+        const track = document.getElementById('announcement-track');
         const content = document.getElementById('announcement-content');
         if (!track || !content) return;
 
@@ -2694,7 +2854,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (header) {
         const headerClassObserver = new MutationObserver(() => {
             const isActive = header.classList.contains('header-hover') ||
-                             header.classList.contains('menu-open');
+                header.classList.contains('menu-open');
             body.classList.toggle('header-active', isActive);
         });
         headerClassObserver.observe(header, { attributes: true, attributeFilter: ['class'] });

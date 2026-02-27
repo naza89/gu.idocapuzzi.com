@@ -190,7 +190,13 @@ async function guardarDireccion(clienteId, datos) {
         ciudad: datos.ciudad,
         provincia: datos.provincia,
         codigo_postal: datos.cp,
-        es_predeterminada: true
+        es_predeterminada: true,
+        // OCA requires separate calle/numero fields
+        // Parse from the direccion field: "Calle 123" → calle="Calle", numero="123"
+        calle: datos.direccion ? datos.direccion.replace(/\s+\d+\s*$/, '').trim() : null,
+        numero: datos.direccion ? (datos.direccion.match(/(\d+)\s*$/) || [])[1] || '' : null,
+        piso: datos.departamento ? datos.departamento.replace(/[^\d]/g, '').slice(0, 5) || null : null,
+        depto: datos.departamento ? datos.departamento.replace(/^\d+\s*/, '').trim() || null : null,
     };
 
     // Check if we already saved a dirección in this session (re-entry case)
