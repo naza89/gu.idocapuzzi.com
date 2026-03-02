@@ -30,6 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const STATE_CONTACT = 'state-contact';
     const STATE_CHECKOUT = 'state-checkout';
 
+    // History API — URLs por estado
+    const URL_HOME = '/';
+    const URL_SHOP = '/shop';
+    const URL_PDP = '/shop/producto';
+    const URL_ACCOUNT = '/cuenta';
+    const URL_CONTACT = '/contacto';
+
     // Animation Constants
     const LOGO_TRANSITION_START = 0;
     const LOGO_TRANSITION_END = 150; // px of scroll to complete transition
@@ -103,40 +110,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Products Data Source
     const products = [
         // REMERAS (12: 3 Güido + 3 Afligida + 3 Baby Tee + 2 Termal + 1 extra)
-        { category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-negra-front.png', 'assets/images/products/remera-güido-negra-back.png'] },
-        { category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO<br>OVERSIZED', color: 'Rojo en Negro', colorway: 'ROJO EN NEGRO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-rojo-front.png', 'assets/images/products/remera-güido-rojo-back.png'] },
-        { category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-güido-blanca-front.png', 'assets/images/products/remera-güido-blanca-back.png'] },
-        { category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Negro', colorway: 'NEGRO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-negra-front.png', 'assets/images/products/remera-afligida-negra-back.png'] },
-        { category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Navy', colorway: 'NAVY', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-navy-front.png', 'assets/images/products/remera-afligida-navy-back.png'] },
-        { category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanca-front.png', 'assets/images/products/remera-afligida-blanca-back.png'] },
+        { slug: 'remera-guido-negro', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-negra-front.png', 'assets/images/products/remera-güido-negra-back.png'] },
+        { slug: 'remera-guido-rojo', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO<br>OVERSIZED', color: 'Rojo en Negro', colorway: 'ROJO EN NEGRO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-rojo-front.png', 'assets/images/products/remera-güido-rojo-back.png'] },
+        { slug: 'remera-guido-blanco', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-güido-blanca-front.png', 'assets/images/products/remera-güido-blanca-back.png'] },
+        { slug: 'remera-afligida-negro', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Negro', colorway: 'NEGRO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-negra-front.png', 'assets/images/products/remera-afligida-negra-back.png'] },
+        { slug: 'remera-afligida-navy', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Navy', colorway: 'NAVY', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-navy-front.png', 'assets/images/products/remera-afligida-navy-back.png'] },
+        { slug: 'remera-afligida-blanco', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanca-front.png', 'assets/images/products/remera-afligida-blanca-back.png'] },
 
         // MUSCULOSAS (2)
-        { category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Negra', colorway: 'NEGRA', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
-        { category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Blanca', colorway: 'BLANCA', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
+        { slug: 'musculosa-negra', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Negra', colorway: 'NEGRA', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
+        { slug: 'musculosa-blanca', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Blanca', colorway: 'BLANCA', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
 
         // JEANS (4)
-        // JEANS (4)
-        { category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE SUELTO.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
-        { category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE SUELTO.', images: ['assets/images/products/jean-negro-suelto-front.png', 'assets/images/products/jean-negro-suelto-back.png', 'assets/images/products/jean-negro-fold.png'] },
-        { category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE REGULAR.', images: ['assets/images/products/jean-indigo-bootcut-front.png', 'assets/images/products/jean-indigo-bootcut-back.png', 'assets/images/products/jean-indigo-fold.png'] },
-        { category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE REGULAR.', images: ['assets/images/products/jean-negro-bootcut-font.png', 'assets/images/products/jean-negro-bootcut-back.png', 'assets/images/products/jean-negro-fold.png'] },
+        { slug: 'jean-selvedge-suelto-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE SUELTO.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
+        { slug: 'jean-selvedge-suelto-negro', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE SUELTO.', images: ['assets/images/products/jean-negro-suelto-front.png', 'assets/images/products/jean-negro-suelto-back.png', 'assets/images/products/jean-negro-fold.png'] },
+        { slug: 'jean-selvedge-regular-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE REGULAR.', images: ['assets/images/products/jean-indigo-bootcut-front.png', 'assets/images/products/jean-indigo-bootcut-back.png', 'assets/images/products/jean-indigo-fold.png'] },
+        { slug: 'jean-selvedge-regular-negro', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE REGULAR.', images: ['assets/images/products/jean-negro-bootcut-font.png', 'assets/images/products/jean-negro-bootcut-back.png', 'assets/images/products/jean-negro-fold.png'] },
 
         // BERMUDAS (2)
-        { category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE', title: 'BERMUDA SELVEDGE<br>DOUBLE KNEE', color: 'Negro', colorway: 'NEGRO', price: '$175.000', description: 'WORKWEAR ESTILO.', images: ['assets/images/products/bermuda-DK-front.png', 'assets/images/products/bermuda-DK-back.png'] },
-        { category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE<br>PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$160.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-front.png', 'assets/images/products/bermuda-patchwork-back.png'] },
+        { slug: 'bermuda-double-knee-negro', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE', title: 'BERMUDA SELVEDGE<br>DOUBLE KNEE', color: 'Negro', colorway: 'NEGRO', price: '$175.000', description: 'WORKWEAR ESTILO.', images: ['assets/images/products/bermuda-DK-front.png', 'assets/images/products/bermuda-DK-back.png'] },
+        { slug: 'bermuda-patchwork-indigo', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE<br>PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$160.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-front.png', 'assets/images/products/bermuda-patchwork-back.png'] },
 
         // ARCHIVO (2)
-        { category: 'ARCHIVO', name: 'JEAN INTERVENIDO "SUELA ROJA" BOOTCUT', title: 'JEAN INTERVENIDO<br>"SUELA ROJA"<br>FIT BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-archivo-1-front.png', 'assets/images/products/jean-archivo-1-back.png'] },
-        { category: 'ARCHIVO', name: 'JEAN INTERVENIDO "ENCERADO" BOOTCUT', title: 'JEAN INTERVENIDO<br>"ENCERADO"<br>FIT BOOTCUT', color: 'Negro Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-archivo-2-front.png', 'assets/images/products/jean-archivo-2-back.png'] },
+        { slug: 'jean-intervenido-suela-roja', category: 'ARCHIVO', name: 'JEAN INTERVENIDO "SUELA ROJA" BOOTCUT', title: 'JEAN INTERVENIDO<br>"SUELA ROJA"<br>FIT BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-archivo-1-front.png', 'assets/images/products/jean-archivo-1-back.png'] },
+        { slug: 'jean-intervenido-encerado', category: 'ARCHIVO', name: 'JEAN INTERVENIDO "ENCERADO" BOOTCUT', title: 'JEAN INTERVENIDO<br>"ENCERADO"<br>FIT BOOTCUT', color: 'Negro Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-archivo-2-front.png', 'assets/images/products/jean-archivo-2-back.png'] },
 
         // REMERA BABY TEE (3 colorways - mujer)
-        { category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-negra-front.png'] },
-        { category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-blanca-front.png'] },
-        { category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Navy', colorway: 'NAVY', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-navy-front.png'] },
+        { slug: 'baby-tee-negro', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-negra-front.png'] },
+        { slug: 'baby-tee-blanco', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-blanca-front.png'] },
+        { slug: 'baby-tee-navy', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Navy', colorway: 'NAVY', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-navy-front.png'] },
 
         // REMERA MANGA LARGA TERMAL (2 colorways)
-        { category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA<br>TERMAL', color: 'Negro', colorway: 'NEGRO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-negra-front.png', 'assets/images/products/remera-termal-negra-back.png'] },
-        { category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA<br>TERMAL', color: 'Blanco', colorway: 'BLANCO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-blanca-front.png', 'assets/images/products/remera-termal-blanca-back.png'] },
+        { slug: 'termal-negro', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA<br>TERMAL', color: 'Negro', colorway: 'NEGRO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-negra-front.png', 'assets/images/products/remera-termal-negra-back.png'] },
+        { slug: 'termal-blanco', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA<br>TERMAL', color: 'Blanco', colorway: 'BLANCO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-blanca-front.png', 'assets/images/products/remera-termal-blanca-back.png'] },
     ];
 
     // -------------------------------------------------------------------------
@@ -815,6 +821,59 @@ document.addEventListener('DOMContentLoaded', () => {
     // Enter: contenido emerge desde abajo con peso, 380ms ease-expose
     // =========================================================================
 
+    // --- SLUG GENERATOR FOR PRODUCT URLs ---
+    function generateSlug(product) {
+        // Use explicit slug if provided
+        if (product.slug) return product.slug;
+        // Fallback: auto-generate from name + color
+        const raw = `${product.name} ${product.color}`;
+        return raw
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/["']/g, '')
+            .replace(/[^a-zA-Z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-')
+            .toLowerCase();
+    }
+
+    // Pre-compute slugs for all products
+    products.forEach((p, i) => { p._slug = generateSlug(p); });
+
+    // Find product index by slug
+    function findProductBySlug(slug) {
+        return products.findIndex(p => p._slug === slug);
+    }
+
+    // --- HISTORY API HELPER ---
+    function pushHistory(stateObj) {
+        let url;
+        switch (stateObj.state) {
+            case 'home':
+                url = URL_HOME;
+                break;
+            case 'shop':
+                url = stateObj.category && stateObj.category !== 'VER TODO'
+                    ? `${URL_SHOP}?cat=${encodeURIComponent(stateObj.category)}`
+                    : URL_SHOP;
+                break;
+            case 'pdp': {
+                const pdpProduct = products[stateObj.productIndex];
+                const slug = pdpProduct ? pdpProduct._slug : stateObj.productIndex;
+                url = `/shop/${slug}`;
+                break;
+            }
+            case 'account':
+                url = URL_ACCOUNT;
+                break;
+            case 'contact':
+                url = URL_CONTACT;
+                break;
+            default:
+                url = URL_HOME;
+        }
+        history.pushState(stateObj, '', url);
+    }
+
     function getActiveSection() {
         if (body.classList.contains(STATE_HOME)) return document.getElementById('home-container');
         if (body.classList.contains(STATE_SHOP)) return document.getElementById('shop');
@@ -866,8 +925,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
 
     // --- PDP LOGIC ---
-    function enablePDPState(productIndex) {
+    function enablePDPState(productIndex, skipHistory = false) {
         currentProductIndex = productIndex;
+        if (!skipHistory) pushHistory({ state: 'pdp', productIndex: Number(productIndex) });
         const product = products[productIndex];
         if (!product) return;
 
@@ -880,9 +940,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const images = product.images && product.images.length > 0 ? product.images : [];
             const imagesHTML = images.length > 0
-                ? images.map(src => `<img src="${src}" class="pdp-image" alt="${product.name}">`).join('')
+                ? images.map(src => {
+                    // Ensure absolute path (leading /)
+                    const absSrc = src.startsWith('/') ? src : '/' + src;
+                    return `<img src="${absSrc}" class="pdp-image" alt="${product.name}">`;
+                }).join('')
                 : '<div style="background:#f4f4f4; width:100%; height:100%; min-height:500px;"></div>';
 
+            // Set page title per product
+            document.title = `${product.name} ${product.color} — GÜIDO CAPUZZI`;
             const isArchive = product.category === 'ARCHIVO';
             const sizeOtherStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
             const qtyContainerStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
@@ -932,26 +998,25 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="footer-nav-column">
                                     <h3 class="footer-nav-title font-condensed">SOPORTE</h3>
                                     <ul class="footer-nav-list">
-                                        <li><a href="#" class="trigger-contact">CONTACTO</a></li>
-                                        <li><a href="#">PREGUNTAS FRECUENTES</a></li>
+                                        <li><a href="#" class="trigger-contact"><span>CONTACTO</span></a></li>
+                                        <li><a href="#"><span>PREGUNTAS FRECUENTES</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="footer-nav-column">
                                     <h3 class="footer-nav-title font-condensed">LEGALES</h3>
                                     <ul class="footer-nav-list">
-                                        <li><a href="#">TÉRMINOS Y CONDICIONES</a></li>
-                                        <li><a href="#">POLÍTICA DE PRIVACIDAD</a></li>
-                                        <li><a href="#">DEVOLUCIONES</a></li>
+                                        <li><a href="#"><span>TÉRMINOS Y CONDICIONES</span></a></li>
+                                        <li><a href="#"><span>POLÍTICA DE PRIVACIDAD</span></a></li>
+                                        <li><a href="#"><span>DEVOLUCIONES</span></a></li>
                                     </ul>
                                 </div>
-                            </div>
-                            <div class="footer-social-icons">
-                                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon-link">
-                                    <img src="/assets/icons/insta-footer-negro.svg" alt="Instagram" class="social-icon">
-                                </a>
-                                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="social-icon-link">
-                                    <img src="/assets/icons/tiktok-footer-negro.svg" alt="TikTok" class="social-icon">
-                                </a>
+                                <div class="footer-nav-column">
+                                    <h3 class="footer-nav-title font-condensed">SOCIALES</h3>
+                                    <ul class="footer-nav-list">
+                                        <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer"><span>INSTAGRAM</span></a></li>
+                                        <li><a href="https://tiktok.com" target="_blank" rel="noopener noreferrer"><span>TIKTOK</span></a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="footer-brand-description">
@@ -1083,10 +1148,11 @@ document.addEventListener('DOMContentLoaded', () => {
         relatedContainer.innerHTML = shuffled.map(p => {
             const idx = products.indexOf(p);
             const img = p.images && p.images.length > 0 ? p.images[0] : '';
+            const absImg = img && !img.startsWith('/') ? '/' + img : img;
             return `
              <div class="product-card" data-index="${idx}">
                 <div class="product-image">
-                   ${img ? `<img src="${img}" style="width:100%; height:100%; object-fit:cover;">` : ''}
+                   ${absImg ? `<img src="${absImg}" style="width:100%; height:100%; object-fit:cover;">` : ''}
                 </div>
                 <div class="product-info">
                     <span class="product-name">${p.name}</span>
@@ -1152,6 +1218,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateShopContent(category) {
         if (shopTitle) shopTitle.textContent = category;
 
+        // Update URL without adding a new history entry (category change within shop)
+        const url = category !== 'VER TODO'
+            ? `${URL_SHOP}?cat=${encodeURIComponent(category)}`
+            : URL_SHOP;
+        history.replaceState({ state: 'shop', category }, '', url);
+
         let filteredProducts = products;
         if (category !== 'VER TODO') {
             filteredProducts = products.filter(p => p.category === category);
@@ -1164,8 +1236,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (filteredProducts.length > 0) {
                 grid.innerHTML = filteredProducts.map(product => {
                     const idx = products.indexOf(product);
-                    const imageSrc = product.images && product.images.length > 0 ? product.images[0] : '';
-                    const hoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
+                    const rawImgSrc = product.images && product.images.length > 0 ? product.images[0] : '';
+                    const imageSrc = rawImgSrc && !rawImgSrc.startsWith('/') ? '/' + rawImgSrc : rawImgSrc;
+                    const rawHoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
+                    const hoverSrc = rawHoverSrc && !rawHoverSrc.startsWith('/') ? '/' + rawHoverSrc : rawHoverSrc;
                     return `
                     <div class="product-card" data-index="${idx}">
                         <div class="product-image">
@@ -1200,15 +1274,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (count) count.textContent = `${filteredProducts.length} Productos`;
     }
 
-    function enableShopState(e) {
+    function enableShopState(e, category = 'VER TODO', skipHistory = false) {
         if (e) e.preventDefault();
+        if (!skipHistory) pushHistory({ state: 'shop', category });
+        document.title = 'Shop — GÜIDO CAPUZZI';
 
         const exitEl = getActiveSection();
         const shopSection = document.getElementById('shop');
 
-        if (e && e.currentTarget && e.currentTarget.id === 'shop-trigger') {
-            updateShopContent('VER TODO');
-        }
+        // Always update shop content with the requested category
+        updateShopContent(category);
 
         transitionState(exitEl, shopSection, 'block', () => {
             body.classList.remove(STATE_HOME, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT);
@@ -1225,8 +1300,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function enableHomeState(e) {
+    function enableHomeState(e, skipHistory = false) {
         if (e) e.preventDefault();
+        if (!skipHistory) pushHistory({ state: 'home' });
+        document.title = 'GÜIDO CAPUZZI';
         console.log("[Navigation] enableHomeState Triggered - Starting Sequence");
 
         const exitEl = getActiveSection();
@@ -1288,8 +1365,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- ACCOUNT LOGIC ---
-    function enableAccountState(e) {
+    function enableAccountState(e, skipHistory = false) {
         if (e) e.preventDefault();
+        if (!skipHistory) pushHistory({ state: 'account' });
+        document.title = 'Cuenta — GÜIDO CAPUZZI';
 
         const exitEl = getActiveSection();
         const enterEl = accountLoginSection;
@@ -1366,8 +1445,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function enableContactState(e) {
+    function enableContactState(e, skipHistory = false) {
         if (e) e.preventDefault();
+        if (!skipHistory) pushHistory({ state: 'contact' });
+        document.title = 'Contacto — GÜIDO CAPUZZI';
 
         const exitEl = getActiveSection();
         const enterEl = accountContactSection;
@@ -1723,7 +1804,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Contact Trigger (Global Delegation for class .trigger-contact)
     document.addEventListener('click', (e) => {
-        if (e.target && e.target.classList.contains('trigger-contact')) {
+        const contactLink = e.target.closest('.trigger-contact');
+        if (contactLink) {
             e.preventDefault();
             enableContactState(e);
         }
@@ -1739,9 +1821,8 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const category = link.getAttribute('data-cat');
             header.classList.remove('menu-open');
-            enableShopState();
+            enableShopState(null, category);
             setShopCategory(category); // Update filters category automatically
-            updateShopContent(category);
             if (document.activeElement) document.activeElement.blur();
         });
     });
@@ -2864,4 +2945,94 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     console.log("GÜIDO CAPUZZI system fully re-initialized.");
+
+    // =========================================================================
+    // HISTORY API — popstate listener + deep link restore
+    // =========================================================================
+
+    // Restore state from a history state object (called by popstate)
+    function restoreState(stateObj) {
+        switch (stateObj.state) {
+            case 'home':
+                enableHomeState(null, /* skipHistory */ true);
+                break;
+            case 'shop':
+                enableShopState(null, stateObj.category || 'VER TODO', /* skipHistory */ true);
+                break;
+            case 'pdp':
+                if (stateObj.productIndex !== undefined && products[stateObj.productIndex]) {
+                    enablePDPState(stateObj.productIndex, /* skipHistory */ true);
+                } else {
+                    enableHomeState(null, true);
+                }
+                break;
+            case 'account':
+                enableAccountState(null, /* skipHistory */ true);
+                break;
+            case 'contact':
+                enableContactState(null, /* skipHistory */ true);
+                break;
+            default:
+                enableHomeState(null, true);
+        }
+    }
+
+    // Listen for browser back/forward
+    window.addEventListener('popstate', (e) => {
+        const stateObj = e.state;
+        if (!stateObj) {
+            restoreState({ state: 'home' });
+            return;
+        }
+        restoreState(stateObj);
+    });
+
+    // Restore correct state if user lands on a deep URL (e.g. /shop/remera-guido-oversized-negro)
+    function restoreFromURL() {
+        const path = window.location.pathname;
+        const params = new URLSearchParams(window.location.search);
+
+        // Legacy support: /shop/producto?id=N
+        if (path === '/shop/producto' && params.has('id')) {
+            const id = parseInt(params.get('id'));
+            if (!isNaN(id) && products[id]) {
+                enablePDPState(id, /* skipHistory */ true);
+                // Upgrade URL to slug format
+                const slug = products[id]._slug;
+                history.replaceState({ state: 'pdp', productIndex: id }, '', `/shop/${slug}`);
+                return;
+            }
+        }
+        // Slug-based PDP: /shop/remera-guido-oversized-negro
+        if (path.startsWith('/shop/') && path !== '/shop') {
+            const slug = path.replace('/shop/', '');
+            const idx = findProductBySlug(slug);
+            if (idx !== -1) {
+                enablePDPState(idx, /* skipHistory */ true);
+                history.replaceState({ state: 'pdp', productIndex: idx }, '', path);
+                return;
+            }
+        }
+        if (path === '/shop' || path === '/shop/') {
+            const cat = params.get('cat') || 'VER TODO';
+            enableShopState(null, cat, /* skipHistory */ true);
+            history.replaceState({ state: 'shop', category: cat }, '', window.location.href);
+            return;
+        }
+        if (path.startsWith('/cuenta')) {
+            enableAccountState(null, /* skipHistory */ true);
+            history.replaceState({ state: 'account' }, '', window.location.href);
+            return;
+        }
+        if (path.startsWith('/contacto')) {
+            enableContactState(null, /* skipHistory */ true);
+            history.replaceState({ state: 'contact' }, '', window.location.href);
+            return;
+        }
+
+        // Default: home — register initial state
+        history.replaceState({ state: 'home' }, '', URL_HOME);
+    }
+
+    restoreFromURL();
 });
