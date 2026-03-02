@@ -553,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 priceString: product.price,
                 // Clean price string for calculation
                 priceValue: parseInt(product.price.replace('$', '').replace('.', '')),
-                image: product.images && product.images.length > 0 ? product.images[0] : '',
+                image: (() => { const raw = product.images && product.images.length > 0 ? product.images[0] : ''; return raw && !raw.startsWith('/') ? '/' + raw : raw; })(),
                 size: size,
                 qty: qty,
                 color: product.color
