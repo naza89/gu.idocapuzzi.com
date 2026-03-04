@@ -121,9 +121,10 @@ const siteHTML = `
                             <div class="footer-nav-column">
                                 <h3 class="footer-nav-title font-condensed">LEGALES</h3>
                                 <ul class="footer-nav-list">
-                                    <li><a href="#"><span>TÉRMINOS Y CONDICIONES</span></a></li>
-                                    <li><a href="#"><span>POLÍTICA DE PRIVACIDAD</span></a></li>
-                                    <li><a href="#"><span>DEVOLUCIONES</span></a></li>
+                                    <li><a href="#" class="trigger-legales" data-section="terminos"><span>TÉRMINOS Y CONDICIONES</span></a></li>
+                                    <li><a href="#" class="trigger-legales" data-section="privacidad"><span>POLÍTICA DE PRIVACIDAD</span></a></li>
+                                    <li><a href="#" class="trigger-legales" data-section="devoluciones"><span>DEVOLUCIONES</span></a></li>
+                                    <li><a href="#" class="trigger-legales" data-section="cookies"><span>POLÍTICA DE COOKIES</span></a></li>
                                 </ul>
                             </div>
                             <div class="footer-nav-column">
@@ -187,9 +188,10 @@ const siteHTML = `
                             <div class="footer-nav-column">
                                 <h3 class="footer-nav-title font-condensed">LEGALES</h3>
                                 <ul class="footer-nav-list">
-                                    <li><a href="#"><span>TÉRMINOS Y CONDICIONES</span></a></li>
-                                    <li><a href="#"><span>POLÍTICA DE PRIVACIDAD</span></a></li>
-                                    <li><a href="#"><span>DEVOLUCIONES</span></a></li>
+                                    <li><a href="#" class="trigger-legales" data-section="terminos"><span>TÉRMINOS Y CONDICIONES</span></a></li>
+                                    <li><a href="#" class="trigger-legales" data-section="privacidad"><span>POLÍTICA DE PRIVACIDAD</span></a></li>
+                                    <li><a href="#" class="trigger-legales" data-section="devoluciones"><span>DEVOLUCIONES</span></a></li>
+                                    <li><a href="#" class="trigger-legales" data-section="cookies"><span>POLÍTICA DE COOKIES</span></a></li>
                                 </ul>
                             </div>
                             <div class="footer-nav-column">
@@ -563,12 +565,130 @@ const siteHTML = `
                     </div>
                     <!-- END STEP 2 -->
 
+                    <!-- STEP 3: PAGO — NAVE Integration (Hidden by default) -->
+                    <div id="checkout-step-pago" style="display: none;">
+
+                        <!-- RESUMEN EXTENDIDO (Contacto + Dirección + Envío confirmados) -->
+                        <div class="checkout-section">
+                            <div class="checkout-section-header">
+                                <h2 class="checkout-section-title font-condensed">RESUMEN</h2>
+                            </div>
+                            <div class="checkout-resumen-box">
+                                <div class="resumen-row">
+                                    <span class="resumen-label">Contacto</span>
+                                    <span class="resumen-value" id="resumen-pago-email">—</span>
+                                    <a href="#" class="resumen-cambiar" id="resumen-pago-cambiar-contacto">Cambiar</a>
+                                </div>
+                                <div class="resumen-divider"></div>
+                                <div class="resumen-row">
+                                    <span class="resumen-label">Envío a</span>
+                                    <span class="resumen-value" id="resumen-pago-ubicacion">—</span>
+                                    <a href="#" class="resumen-cambiar" id="resumen-pago-cambiar-ubicacion">Cambiar</a>
+                                </div>
+                                <div class="resumen-divider"></div>
+                                <div class="resumen-row">
+                                    <span class="resumen-label">Método</span>
+                                    <span class="resumen-value" id="resumen-pago-envio">—</span>
+                                    <a href="#" class="resumen-cambiar" id="resumen-pago-cambiar-envio">Cambiar</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MÉTODOS DE PAGO -->
+                        <div class="checkout-section">
+                            <div class="checkout-section-header">
+                                <h2 class="checkout-section-title font-condensed">PAGO</h2>
+                                <span class="pago-secure-badge">
+                                    <svg width="11" height="13" viewBox="0 0 11 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.5 0L0 2.3V6C0 8.95 2.37 11.72 5.5 12.5C8.63 11.72 11 8.95 11 6V2.3L5.5 0Z" fill="currentColor" opacity="0.3"/>
+                                        <path d="M3.5 6.2L4.9 7.6L7.5 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Transacciones seguras y encriptadas
+                                </span>
+                            </div>
+
+                            <!-- TAB: Tarjeta de crédito / débito -->
+                            <div class="pago-metodo-tab pago-tab-activo" id="pago-tab-tarjeta">
+                                <div class="pago-metodo-header" id="pago-header-tarjeta">
+                                    <div class="pago-radio-circle"></div>
+                                    <div class="pago-metodo-label">
+                                        <span class="pago-metodo-nombre font-body">Tarjeta de crédito / débito</span>
+                                        <div class="pago-metodo-icons">
+                                            <span class="pago-card-badge visa">VISA</span>
+                                            <span class="pago-card-badge mc">MC</span>
+                                            <span class="pago-card-badge amex">AMEX</span>
+                                            <span class="pago-card-badge cabal">CABAL</span>
+                                            <span class="pago-card-badge naranja">NARANJA</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pago-metodo-content" id="pago-content-tarjeta">
+                                    <div id="nave-payment-container" class="nave-sdk-container">
+                                        <div class="nave-sdk-loading" id="nave-sdk-loading">
+                                            <div class="pago-spinner"></div>
+                                            <span class="font-body">Inicializando pasarela de pago...</span>
+                                        </div>
+                                        <!-- RantySDK monta el formulario aquí -->
+                                    </div>
+                                    <p class="pago-nave-disclaimer font-body">Procesado de forma segura por <strong>NAVE · Banco Galicia</strong></p>
+                                </div>
+                            </div>
+
+                            <!-- TAB: QR / MODO / Billetera virtual -->
+                            <div class="pago-metodo-tab" id="pago-tab-qr">
+                                <div class="pago-metodo-header" id="pago-header-qr">
+                                    <div class="pago-radio-circle"></div>
+                                    <div class="pago-metodo-label">
+                                        <span class="pago-metodo-nombre font-body">QR · MODO · Billetera virtual</span>
+                                        <div class="pago-metodo-icons">
+                                            <span class="pago-card-badge modo">MODO</span>
+                                            <span class="pago-card-badge bancos">BANCOS</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pago-metodo-content" id="pago-content-qr">
+                                    <div class="pago-qr-wrapper">
+                                        <p class="pago-qr-instruccion font-body">
+                                            Escaneá con tu app bancaria o billetera virtual.<br>
+                                            En dispositivos móviles, abrí directamente con MODO.
+                                        </p>
+                                        <div class="pago-qr-frame">
+                                            <div class="pago-qr-loading" id="pago-qr-loading">
+                                                <div class="pago-spinner"></div>
+                                                <span class="font-body">Generando código QR...</span>
+                                            </div>
+                                            <div id="pago-qr-image-wrapper" style="display: none;"></div>
+                                        </div>
+                                        <p class="pago-qr-expiry font-body" id="pago-qr-expiry"></p>
+                                    </div>
+                                    <p class="pago-nave-disclaimer font-body" style="margin-top: 18px;">Procesado de forma segura por <strong>NAVE · Banco Galicia</strong></p>
+                                </div>
+                            </div>
+
+                            <!-- BANNER DE ERROR (oculto por defecto) -->
+                            <div class="pago-error-banner" id="pago-error-banner" style="display: none;">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0; margin-top: 1px;">
+                                    <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                                    <path d="M8 4.5V8.5M8 11H8.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <span class="font-body" id="pago-error-msg">Tu pago fue rechazado. Verificá los datos de la tarjeta o probá con otro método de pago.</span>
+                            </div>
+
+                        </div>
+                        <!-- END MÉTODOS DE PAGO -->
+
+                    </div>
+                    <!-- END STEP 3 -->
+
                     <div class="checkout-actions">
                         <a href="#" class="checkout-back-link" id="checkout-back-link" style="display: none;">
                             ‹ Volver a Información
                         </a>
                         <button id="checkout-continue-btn" class="checkout-continue-btn font-condensed">
                             CONTINUAR A ENVÍOS
+                        </button>
+                        <button id="checkout-pay-btn" class="checkout-pay-btn font-condensed" style="display: none;">
+                            PAGAR
                         </button>
                     </div>
                 </div>
@@ -599,6 +719,130 @@ const siteHTML = `
                 </aside>
             </div>
         </section>
+
+
+        <!-- ═══════════════════════════════════════
+             STATE: LEGALES
+             ═══════════════════════════════════════ -->
+        <section id="legales-container" style="display:none;">
+            <div class="legales-layout">
+
+                <!-- ── COLUMNA IZQUIERDA: Título + Nav ── -->
+                <aside class="legales-sidebar">
+                    <h1 class="legales-title">LEGALES</h1>
+                    <nav class="legales-nav" aria-label="Secciones de legales">
+                        <button class="legales-nav-link active" data-section="terminos">Términos y Condiciones</button>
+                        <button class="legales-nav-link" data-section="privacidad">Política de Privacidad</button>
+                        <button class="legales-nav-link" data-section="devoluciones">Devoluciones y Envíos</button>
+                        <button class="legales-nav-link" data-section="cookies">Política de Cookies</button>
+                    </nav>
+                </aside>
+
+                <!-- ── COLUMNA DERECHA: Contenido ── -->
+                <div class="legales-content">
+
+                    <!-- ─── TÉRMINOS Y CONDICIONES ─── -->
+                    <section class="legales-section active" id="legales-terminos">
+                        <h2 class="legales-section-title">Términos y Condiciones</h2>
+                        <div class="legales-body">
+                            <p>Los siguientes términos y condiciones rigen la venta de productos por parte de Güido Capuzzi a través de guido.com.ar. Al realizar una compra en el sitio, aceptás estos términos en su totalidad.</p>
+                            <span class="legales-block-title">1. Pedidos y Productos</span>
+                            <p>Todos los pedidos están sujetos a confirmación por email de nuestra parte. Los productos publicados en el sitio pueden estar agotados o discontinuados, y la disponibilidad no está garantizada. Los colores que se ven en pantalla pueden variar según el monitor del usuario.</p>
+                            <span class="legales-block-title">2. Precios</span>
+                            <p>Todos los precios están expresados en pesos argentinos (ARS) e incluyen IVA. Los precios pueden modificarse sin previo aviso. El monto total a pagar, incluyendo el costo de envío, se detalla antes de confirmar la compra.</p>
+                            <span class="legales-block-title">3. Pago</span>
+                            <p>Aceptamos pagos a través de NAVE (Banco Galicia), que incluye tarjetas de crédito, débito y transferencias bancarias. Al completar el pago, aceptás también los términos y condiciones del procesador de pagos correspondiente.</p>
+                            <span class="legales-block-title">4. Envíos</span>
+                            <p>Los envíos se realizan a través de OCA ePak a todo el país. El costo de envío se calcula en el checkout según el código postal de destino. Una vez despachado el pedido, te enviamos el número de seguimiento por email. Los tiempos de entrega dependen de OCA y pueden variar según la zona.</p>
+                            <span class="legales-block-title">5. Devoluciones y Cambios</span>
+                            <p>Consultar la sección Devoluciones y Envíos para conocer nuestra política completa.</p>
+                            <span class="legales-block-title">6. Acuerdo Vinculante</span>
+                            <p>La confirmación del pedido, estos términos y condiciones, y las demás políticas del sitio constituyen el acuerdo completo entre vos y Güido Capuzzi respecto a la compra realizada.</p>
+                            <span class="legales-block-title">7. Ley Aplicable</span>
+                            <p>Estos términos se rigen por las leyes de la República Argentina. Cualquier conflicto que surja será sometido a la jurisdicción de los tribunales ordinarios de la Ciudad Autónoma de Buenos Aires.</p>
+                            <span class="legales-block-title">8. Errores e Inexactitudes</span>
+                            <p>Nos esforzamos por mantener la información del sitio actualizada y precisa. Sin embargo, puede haber errores tipográficos o de disponibilidad. Nos reservamos el derecho de corregirlos, cancelar un pedido o actualizar la información en cualquier momento sin previo aviso.</p>
+                        </div>
+                    </section>
+
+                    <!-- ─── POLÍTICA DE PRIVACIDAD ─── -->
+                    <section class="legales-section" id="legales-privacidad">
+                        <h2 class="legales-section-title">Política de Privacidad</h2>
+                        <span class="legales-update-date">Última actualización: Marzo 2026</span>
+                        <div class="legales-body">
+                            <p>En Güido Capuzzi nos tomamos en serio la protección de tus datos. Esta política explica qué información recopilamos, cómo la usamos y qué derechos tenés sobre ella.</p>
+                            <span class="legales-block-title">1. Quiénes Somos</span>
+                            <p>El responsable del tratamiento de los datos es Güido Capuzzi. Para cualquier consulta escribinos a <a href="mailto:shop@güidocapuzzi.com.ar">shop@güidocapuzzi.com.ar</a>.</p>
+                            <span class="legales-block-title">2. Qué Datos Recopilamos</span>
+                            <p>Cuando realizás una compra o te registrás en el sitio, recopilamos: nombre y apellido, dirección de email, número de teléfono, dirección de envío (calle, número, localidad, provincia y código postal), y los datos necesarios para procesar el pago a través de NAVE. Si te suscribís al newsletter, guardamos tu email con tu consentimiento expreso.</p>
+                            <span class="legales-block-title">3. Para Qué Usamos Tus Datos</span>
+                            <p>Usamos tus datos para procesar y gestionar tu pedido, coordinar el envío a través de OCA ePak, enviarte confirmaciones y novedades sobre tu compra, y, si lo autorizaste, enviarte comunicaciones sobre productos y lanzamientos de Güido Capuzzi.</p>
+                            <span class="legales-block-title">4. Con Quiénes Compartimos Tus Datos</span>
+                            <p>Tus datos pueden ser procesados por los siguientes terceros exclusivamente en el marco de la prestación de sus servicios: Supabase (base de datos), NAVE / Banco Galicia (procesamiento de pagos), OCA ePak (logística y envíos). No vendemos ni compartimos tus datos con terceros para fines publicitarios.</p>
+                            <span class="legales-block-title">5. Seguridad</span>
+                            <p>Implementamos medidas técnicas y organizativas para proteger tus datos contra accesos no autorizados, pérdida o alteración. Las transacciones de pago se procesan de forma encriptada a través de NAVE.</p>
+                            <span class="legales-block-title">6. Cookies</span>
+                            <p>Ver la sección Política de Cookies para más información.</p>
+                            <span class="legales-block-title">7. Tus Derechos</span>
+                            <p>De acuerdo con la Ley 25.326 de Protección de Datos Personales de la República Argentina, tenés derecho a acceder, rectificar, actualizar y suprimir tus datos personales en cualquier momento. Escribinos a <a href="mailto:shop@güidocapuzzi.com.ar">shop@güidocapuzzi.com.ar</a>. La AAIP es el organismo competente para atender denuncias y consultas sobre el cumplimiento de esta ley.</p>
+                            <span class="legales-block-title">8. Cambios a Esta Política</span>
+                            <p>Podemos actualizar esta política cuando sea necesario. Los cambios se publicarán en esta página con la fecha de última actualización.</p>
+                        </div>
+                    </section>
+
+                    <!-- ─── DEVOLUCIONES Y ENVÍOS ─── -->
+                    <section class="legales-section" id="legales-devoluciones">
+                        <h2 class="legales-section-title">Devoluciones y Envíos</h2>
+                        <div class="legales-body">
+                            <span class="legales-block-title">Envíos</span>
+                            <p>Despachamos de lunes a viernes en horario hábil, exceptuando feriados nacionales. Si hacés tu compra un viernes a la noche o durante el fin de semana, tu pedido será preparado y despachado el siguiente día hábil.</p>
+                            <p>Todos los envíos se realizan a través de <strong>OCA ePak</strong> desde CABA. El costo se calcula automáticamente en el checkout según tu código postal de destino. Una vez despachado, te enviamos el número de seguimiento por email para que puedas rastrearlo en tiempo real.</p>
+                            <span class="legales-block-title">Tiempos Estimados de Entrega</span>
+                            <p>Los tiempos comienzan a contar desde que el pedido es despachado, no desde la compra. En días de alta demanda los tiempos pueden extenderse.</p>
+                            <ul class="legales-list">
+                                <li>CABA y GBA: 1 a 7 días hábiles.</li>
+                                <li>Interior del país: 3 a 15 días hábiles.</li>
+                            </ul>
+                            <span class="legales-block-title">Modalidades de Envío</span>
+                            <p><strong>Envío a domicilio:</strong> OCA realiza hasta dos intentos de entrega entre las 8 y las 18 hs de lunes a sábado. Si en la segunda visita tampoco hay nadie, el paquete se deriva a la sucursal OCA más cercana por 4 días hábiles. Pasado ese plazo, nos es devuelto y un nuevo envío correrá por cuenta del cliente.</p>
+                            <p><strong>Envío a sucursal OCA:</strong> Disponible en todo el país. Suele ser más económico y rápido. Una vez llegado, el paquete se retiene por pocos días: si no lo retirás a tiempo, nos es devuelto.</p>
+                            <p><strong>SmartLocker OCA:</strong> Disponible en supermercados y shoppings del AMBA, Córdoba y Neuquén. Al llegar tu paquete recibís un código único por SMS o email. Tenés 72 horas para retirarlo.</p>
+                            <span class="legales-block-title">Cancelaciones</span>
+                            <p>Los pedidos pueden cancelarse dentro de las primeras 24 horas desde la confirmación, siempre que no hayan sido empaquetados. Para cancelar, escribinos a <a href="mailto:shop@güidocapuzzi.com.ar">shop@güidocapuzzi.com.ar</a> con tu número de orden. Un pedido ya despachado no puede cancelarse.</p>
+                            <span class="legales-block-title">Cambios de Talle</span>
+                            <p>Realizamos cambios de talle dentro de los <strong>7 días corridos</strong> desde que recibís tu pedido. Únicamente cambios por el mismo producto en otro talle, sujeto a disponibilidad de stock. Para que el cambio sea válido, el producto debe:</p>
+                            <ul class="legales-list">
+                                <li>No haber sido usado, lavado ni alterado de ninguna forma.</li>
+                                <li>Conservar todas sus etiquetas originales intactas.</li>
+                                <li>Enviarse en su packaging original junto con el comprobante de compra.</li>
+                            </ul>
+                            <p>Para iniciar el cambio, escribinos a <a href="mailto:shop@güidocapuzzi.com.ar">shop@güidocapuzzi.com.ar</a> con tu número de orden y el talle que necesitás. Te enviamos la etiqueta de OCA sin costo. Si el talle no tiene stock, podés optar por una nota de crédito válida por 60 días corridos.</p>
+                            <span class="legales-block-title">Defectos de Fabricación</span>
+                            <p>Si tu producto presenta algún defecto de fabricación, escribinos a <a href="mailto:shop@güidocapuzzi.com.ar">shop@güidocapuzzi.com.ar</a> dentro de los 7 días de recibido con foto del defecto y tu número de orden. Evaluamos el caso y, de corresponder, enviamos un reemplazo o tramitamos el reembolso sin costo de envío.</p>
+                        </div>
+                    </section>
+
+                    <!-- ─── POLÍTICA DE COOKIES ─── -->
+                    <section class="legales-section" id="legales-cookies">
+                        <h2 class="legales-section-title">Política de Cookies</h2>
+                        <div class="legales-body">
+                            <span class="legales-block-title">Qué Son las Cookies</span>
+                            <p>Las cookies son pequeños archivos que se almacenan en tu dispositivo cuando visitás un sitio web. Nos permiten recordar tus preferencias y mejorar tu experiencia de navegación.</p>
+                            <span class="legales-block-title">Qué Cookies Usamos</span>
+                            <p>Usamos cookies estrictamente necesarias para el funcionamiento del sitio (como mantener el contenido de tu carrito), cookies de sesión para que el proceso de checkout funcione correctamente, y cookies analíticas para entender cómo se usa el sitio. No usamos cookies de publicidad ni compartimos datos de navegación con redes publicitarias.</p>
+                            <span class="legales-block-title">Cómo Controlar las Cookies</span>
+                            <p>Podés configurar tu navegador para bloquear o eliminar cookies en cualquier momento. Tené en cuenta que desactivar ciertas cookies puede afectar el funcionamiento del sitio, incluyendo el proceso de compra.</p>
+                            <span class="legales-block-title">Cambios a Esta Política</span>
+                            <p>Podemos actualizar esta política cuando incorporemos nuevas tecnologías al sitio. Los cambios se publicarán en esta página.</p>
+                        </div>
+                    </section>
+
+                </div>
+                <!-- /legales-content -->
+            </div>
+            <!-- /legales-layout -->
+        </section>
+        <!-- /legales-container -->
 
     </div><!-- END SITE WRAPPER -->
 
@@ -748,6 +992,12 @@ const siteHTML = `
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/supabase-config.js"></script>
     <script src="/js/checkout-logic.js"></script>
+    <!-- qrcode.js para QR de MODO / billeteras virtuales -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Ranty SDK — checkout embebido NAVE (tarjeta de crédito/débito) -->
+    <script src="https://cdn.jsdelivr.net/npm/@ranty/ranty-sdk/dist/ranty-sdk.umd.min.js"></script>
+    <!-- Módulo de pago NAVE — Step 3 -->
+    <script src="/js/checkout-payment.js"></script>
     <script src="/js/start.js"></script>
 `;
 

@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const STATE_ACCOUNT = 'state-account';
     const STATE_CONTACT = 'state-contact';
     const STATE_CHECKOUT = 'state-checkout';
+    const STATE_LEGALES = 'state-legales';
 
     // History API — URLs por estado
     const URL_HOME = '/';
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const URL_PDP = '/shop/producto';
     const URL_ACCOUNT = '/cuenta';
     const URL_CONTACT = '/contacto';
+    const URL_LEGALES = '/legales';
 
     // Animation Constants
     const LOGO_TRANSITION_START = 0;
@@ -868,6 +870,9 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'contact':
                 url = URL_CONTACT;
                 break;
+            case 'legales':
+                url = URL_LEGALES;
+                break;
             default:
                 url = URL_HOME;
         }
@@ -888,6 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return candidates.find(el => el && el.style.display !== 'none' && el.style.opacity !== '0') || null;
         }
         if (body.classList.contains(STATE_CONTACT)) return document.getElementById('account-contact');
+        if (body.classList.contains(STATE_LEGALES)) return document.getElementById('legales-container');
         return null;
     }
 
@@ -1005,9 +1011,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="footer-nav-column">
                                     <h3 class="footer-nav-title font-condensed">LEGALES</h3>
                                     <ul class="footer-nav-list">
-                                        <li><a href="#"><span>TÉRMINOS Y CONDICIONES</span></a></li>
-                                        <li><a href="#"><span>POLÍTICA DE PRIVACIDAD</span></a></li>
-                                        <li><a href="#"><span>DEVOLUCIONES</span></a></li>
+                                        <li><a href="#" class="trigger-legales" data-section="terminos"><span>TÉRMINOS Y CONDICIONES</span></a></li>
+                                        <li><a href="#" class="trigger-legales" data-section="privacidad"><span>POLÍTICA DE PRIVACIDAD</span></a></li>
+                                        <li><a href="#" class="trigger-legales" data-section="devoluciones"><span>DEVOLUCIONES</span></a></li>
+                                        <li><a href="#" class="trigger-legales" data-section="cookies"><span>POLÍTICA DE COOKIES</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="footer-nav-column">
@@ -1054,7 +1061,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         transitionState(exitEl, productPage, 'block', () => {
-            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_ACCOUNT, STATE_CONTACT);
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES);
             body.classList.add(STATE_PDP);
             window.scrollTo(0, 0);
             [
@@ -1286,7 +1293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateShopContent(category);
 
         transitionState(exitEl, shopSection, 'block', () => {
-            body.classList.remove(STATE_HOME, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT);
+            body.classList.remove(STATE_HOME, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES);
             body.classList.add(STATE_SHOP);
             [
                 document.getElementById('account-login'),
@@ -1315,6 +1322,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof STATE_ACCOUNT !== 'undefined') body.classList.remove(STATE_ACCOUNT);
             if (typeof STATE_CONTACT !== 'undefined') body.classList.remove(STATE_CONTACT);
             if (typeof STATE_CHECKOUT !== 'undefined') body.classList.remove(STATE_CHECKOUT);
+            if (typeof STATE_LEGALES !== 'undefined') body.classList.remove(STATE_LEGALES);
 
             body.style.overflow = '';
             body.style.height = '';
@@ -1326,7 +1334,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('account-login'),
                 document.getElementById('account-create'),
                 document.getElementById('account-contact'),
-                document.getElementById('checkout')
+                document.getElementById('checkout'),
+                document.getElementById('legales-container')
             ].forEach(sec => {
                 if (sec && sec !== exitEl) {
                     sec.style.display = 'none';
@@ -1374,7 +1383,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const enterEl = accountLoginSection;
 
         transitionState(exitEl, enterEl, 'flex', () => {
-            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT);
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT, STATE_LEGALES);
             body.classList.add(STATE_ACCOUNT);
             [
                 document.getElementById('shop'),
@@ -1454,7 +1463,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const enterEl = accountContactSection;
 
         transitionState(exitEl, enterEl, 'flex', () => {
-            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP);
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_LEGALES);
             body.classList.add(STATE_ACCOUNT);
             body.classList.add(STATE_CONTACT);
             [
@@ -1479,6 +1488,75 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- LEGALES ---
+    function enableLegalesState(targetSection, skipHistory = false) {
+        if (!skipHistory) pushHistory({ state: 'legales' });
+        document.title = 'Legales — GÜIDO CAPUZZI';
+
+        const legalesContainer = document.getElementById('legales-container');
+        if (!legalesContainer) return;
+
+        const exitEl = getActiveSection();
+
+        transitionState(exitEl, legalesContainer, 'flex', () => {
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_CHECKOUT);
+            body.classList.add(STATE_LEGALES);
+
+            [
+                document.getElementById('home-container'),
+                document.getElementById('shop'),
+                document.getElementById('product-page'),
+                accountLoginSection,
+                accountCreateSection,
+                accountContactSection,
+                accountRecoverSection,
+                accountNewPasswordSection
+            ].forEach(sec => {
+                if (sec && sec !== exitEl) {
+                    sec.style.display = 'none';
+                    sec.style.opacity = '0';
+                }
+            });
+
+            // Limpiar inline styles del header — el CSS de state-legales se encarga
+            header.style.removeProperty('background-color');
+            header.style.removeProperty('color');
+            window.scrollTo(0, 0);
+
+            // Activar sección (la pedida o la primera por defecto)
+            activateLegalesSection(legalesContainer, targetSection || 'terminos');
+
+            // Inicializar navegación interna (una sola vez)
+            initLegalesNav(legalesContainer);
+        });
+    }
+
+    function activateLegalesSection(container, section) {
+        const navLinks = container.querySelectorAll('.legales-nav-link');
+        const sections = container.querySelectorAll('.legales-section');
+        navLinks.forEach(l => l.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        const targetLink = container.querySelector(`.legales-nav-link[data-section="${section}"]`);
+        const targetEl = container.querySelector(`#legales-${section}`);
+        // Fallback a terminos si no existe la sección
+        if (targetLink) targetLink.classList.add('active');
+        else { const first = container.querySelector('.legales-nav-link'); if (first) first.classList.add('active'); }
+        if (targetEl) targetEl.classList.add('active');
+        else { const first = container.querySelector('.legales-section'); if (first) first.classList.add('active'); }
+    }
+
+    function initLegalesNav(container) {
+        // Remover listeners viejos clonando el nav (patrón seguro contra doble binding)
+        if (container.dataset.navInit) return;
+        container.dataset.navInit = '1';
+
+        container.querySelectorAll('.legales-nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                activateLegalesSection(container, link.dataset.section);
+            });
+        });
+    }
+
     // --- CHECKOUT LOGIC ---
     function enableCheckoutState(e) {
         if (e) e.preventDefault();
@@ -1493,7 +1571,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeCart();
 
         // Update State Classes
-        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT);
+        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES);
         body.classList.add(STATE_CHECKOUT);
 
         // Hide ALL other containers
@@ -1811,6 +1889,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Legales Trigger (Global Delegation for class .trigger-legales)
+    document.addEventListener('click', (e) => {
+        const legalesLink = e.target.closest('.trigger-legales');
+        if (legalesLink) {
+            e.preventDefault();
+            const section = legalesLink.dataset.section || 'terminos';
+            enableLegalesState(section);
+        }
+    });
+
     // Navbar Hover Interactions handled in setupHeaderHover()
     // (Listeners removed from here to avoid duplication)
 
@@ -1867,7 +1955,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const resultado = await window.procesarCheckoutStep1(cart);
 
                     if (resultado.success) {
-                        console.log('[Checkout] ✅ Orden pendiente creada:', resultado.numeroOrden);
+                        console.log('[Checkout] ✅ Orden pendiente creada:', resultado.numeroOrden, '| ID:', resultado.ordenId);
+                        // Guardar el UUID de la orden para usarlo en Step 3 (NAVE)
+                        // NAVE external_payment_id acepta máx 36 chars — un UUID tiene exactamente 36
+                        window._currentCheckoutOrdenId = resultado.ordenId;
+                        window._currentCheckoutNumeroOrden = resultado.numeroOrden;
                         mostrarCheckoutStep2();
                     } else {
                         if (window.mostrarErroresCheckout) {
@@ -1884,7 +1976,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
             } else if (checkoutCurrentStep === 2) {
-                // === STEP 2: Validate shipping selection, then move to Step 3 ===
+                // === STEP 2: Validate shipping selection, persist in Supabase, then move to Step 3 ===
                 const selectedEnvio = document.querySelector('input[name="metodo-envio"]:checked');
                 if (!selectedEnvio) {
                     alert('Por favor seleccioná un método de envío.');
@@ -1898,9 +1990,91 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
                 }
-                // TODO: Transicionar a Step 3 (Pago)
-                console.log('[Checkout] ✅ Envío seleccionado:', selectedEnvio.value);
-                alert('Próximo paso: selección de pago (en desarrollo).');
+
+                // Armar texto legible del método de envío seleccionado
+                const envioOpcionEl = selectedEnvio.closest('.envio-opcion');
+                const envioNombre = envioOpcionEl?.querySelector('.envio-opcion-nombre')?.textContent?.trim() || '';
+                const envioPrecio = envioOpcionEl?.querySelector('.envio-opcion-precio')?.textContent?.trim() || '';
+                const metodoEnvioTexto = envioPrecio ? `${envioNombre} · ${envioPrecio}` : envioNombre;
+
+                // Calcular total con envío
+                const envioPrecioNum = parseFloat((envioOpcionEl?.dataset?.precio || '0')) / 100;
+                const subtotalNum = cart.reduce((acc, item) => acc + (item.priceValue * item.qty), 0);
+                const totalARS = subtotalNum + envioPrecioNum;
+
+                // Datos de Step 1 para el resumen del Step 3
+                const emailVal = document.getElementById('checkout-email')?.value || '—';
+                const direccionVal = document.getElementById('checkout-direccion')?.value || '';
+                const ciudadVal = document.getElementById('checkout-ciudad')?.value || '';
+                const provinciaVal = document.getElementById('checkout-provincia')?.value || '';
+                const cpVal = document.getElementById('checkout-cp')?.value || '';
+                const ubicacion = [direccionVal, ciudadVal, provinciaVal, cpVal].filter(Boolean).join(', ');
+
+                // Guardar en globals para onPagoExpirado() en checkout-payment.js
+                window._checkoutTotalARS = totalARS;
+                window._checkoutCartItems = cart;
+
+                console.log('[Checkout] ✅ Envío seleccionado:', selectedEnvio.value, '→ persistiendo en Supabase');
+
+                // ── PATCH /api/ordenes/{id} — Persistir envío en Supabase antes del Step 3 ──
+                const ordenId = window._currentCheckoutOrdenId;
+                if (ordenId) {
+                    try {
+                        if (window.setBotonCargando) setBotonCargando(true);
+
+                        // Gather OCA-specific data from the selected option
+                        const operativaOca = envioOpcionEl?.dataset?.operativa
+                            ? parseInt(envioOpcionEl.dataset.operativa) : null;
+                        let idSucursalOca = null;
+                        if (selectedEnvio.value === 'sucursal') {
+                            const selectedSucursalRadio = document.querySelector('input[name="sucursal"]:checked');
+                            idSucursalOca = selectedSucursalRadio ? parseInt(selectedSucursalRadio.value) : null;
+                        }
+
+                        const patchRes = await fetch(`/api/ordenes/${ordenId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                tipo_envio: selectedEnvio.value === 'domicilio' ? 'puerta_puerta' : 'sucursal',
+                                precio_envio: envioPrecioNum,
+                                id_sucursal_oca: idSucursalOca,
+                                operativa_oca: operativaOca,
+                            }),
+                        });
+
+                        if (!patchRes.ok) {
+                            const errData = await patchRes.json().catch(() => ({}));
+                            console.error('[Checkout] Error PATCH ordenes:', errData);
+                            alert('Error al guardar el envío. Intentá nuevamente.');
+                            if (window.setBotonCargando) setBotonCargando(false);
+                            return;
+                        }
+
+                        console.log('[Checkout] ✅ Envío persistido en Supabase → pasando a Step 3');
+                    } catch (patchErr) {
+                        console.error('[Checkout] Error de red PATCH ordenes:', patchErr);
+                        alert('Error de conexión. Intentá nuevamente.');
+                        if (window.setBotonCargando) setBotonCargando(false);
+                        return;
+                    } finally {
+                        if (window.setBotonCargando) setBotonCargando(false);
+                    }
+                }
+
+                // Invocar el módulo de pago (checkout-payment.js)
+                if (typeof window.mostrarCheckoutStep3 === 'function') {
+                    window.mostrarCheckoutStep3({
+                        email: emailVal,
+                        ubicacion: ubicacion,
+                        metodoEnvio: metodoEnvioTexto,
+                        ordenId: ordenId || `orden-${Date.now()}`,
+                        totalARS: totalARS,
+                        cartItems: cart
+                    });
+                } else {
+                    console.error('[Checkout] checkout-payment.js no está cargado. Verificar orden de scripts.');
+                    alert('Error al cargar el módulo de pago. Por favor recargá la página.');
+                }
             }
         });
     }
@@ -2756,7 +2930,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
         allSections.forEach(s => { if (s) s.style.display = 'none'; });
 
-        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT);
+        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT, STATE_LEGALES);
         body.classList.add(STATE_ACCOUNT);
 
         if (accountNewPasswordSection) {
@@ -2972,6 +3146,9 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'contact':
                 enableContactState(null, /* skipHistory */ true);
                 break;
+            case 'legales':
+                enableLegalesState(null, /* skipHistory */ true);
+                break;
             default:
                 enableHomeState(null, true);
         }
@@ -3027,6 +3204,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (path.startsWith('/contacto')) {
             enableContactState(null, /* skipHistory */ true);
             history.replaceState({ state: 'contact' }, '', window.location.href);
+            return;
+        }
+        if (path.startsWith('/legales')) {
+            enableLegalesState(null, /* skipHistory */ true);
+            history.replaceState({ state: 'legales' }, '', window.location.href);
             return;
         }
 

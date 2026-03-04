@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>GÜIDO CAPUZZI — Diagrama Flujo de Pagos</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    background: #F5F5F3;
+    color: #1A1A1A;
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+}
+
+.page {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+}
+
+h1 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #1A1A1A;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 11px;
+    color: rgba(26,26,26,0.4);
+    letter-spacing: 0.06em;
+    margin-bottom: 48px;
+}
+
+/* ── LEGEND ── */
+.legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    padding: 16px 20px;
+    background: #EBEBEA;
+    border-radius: 6px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: rgba(26,26,26,0.7);
+    letter-spacing: 0.04em;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+/* ── SECTIONS ── */
+.diagram-section {
+    margin-bottom: 12px;
+}
+
+.section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.35);
+    margin-bottom: 10px;
+    padding-left: 2px;
+}
+
+/* ── SWIMLANE GRID ── */
+.swimlane {
+    display: grid;
+    gap: 0;
+    border: 1px solid #DDDDD8;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    margin-bottom: 28px;
+}
+
+.swimlane-header {
+    display: grid;
+    background: #1A1A1A;
+    color: #FAFAFA;
+}
+
+.lane-title {
+    padding: 10px 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+}
+
+.lane-title:last-child { border-right: none; }
+
+.swimlane-body {
+    display: grid;
+}
+
+.lane-col {
+    padding: 20px 16px;
+    border-right: 1px solid #EBEBEA;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.lane-col:last-child { border-right: none; }
+
+/* ── NODES ── */
+.node {
+    border-radius: 5px;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.45;
+    position: relative;
+}
+
+.node-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.node-detail {
+    font-size: 11px;
+    color: rgba(26,26,26,0.6);
+    font-family: 'SF Mono', 'Fira Mono', monospace;
+}
+
+/* Tipos de nodo */
+.node-action  { background: #EEF0F8; border-left: 3px solid #3A4DB7; }
+.node-db      { background: #EBF5F0; border-left: 3px solid #1A7A4A; }
+.node-api     { background: #FDF2E3; border-left: 3px solid #C07A10; }
+.node-ext     { background: #F5EBFA; border-left: 3px solid #7A30AA; }
+.node-event   { background: #FEF0EE; border-left: 3px solid #C23B22; }
+.node-ok      { background: #EBF7F0; border-left: 3px solid #15803D; }
+.node-pending { background: #FFF8E6; border-left: 3px solid #B45309; }
+
+/* ── ARROW ── */
+.arrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: rgba(26,26,26,0.45);
+    padding: 2px 0;
+    margin: 0 4px;
+}
+
+.arrow-line {
+    flex: 1;
+    height: 1px;
+    background: #CCCCCA;
+    position: relative;
+}
+
+.arrow-label {
+    font-size: 10px;
+    font-family: 'SF Mono', 'Fira Mono', monospace;
+    color: rgba(26,26,26,0.45);
+    white-space: nowrap;
+}
+
+/* ── FLOW ROWS (horizontal steps) ── */
+.flow-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background: #fff;
+    border: 1px solid #DDDDD8;
+    border-radius: 8px;
+    margin-bottom: 28px;
+    overflow: hidden;
+}
+
+.flow-step {
+    flex: 1;
+    padding: 18px 16px;
+    border-right: 1px solid #EBEBEA;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+
+.flow-step:last-child { border-right: none; }
+
+.step-number {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.3);
+    margin-bottom: 2px;
+}
+
+.step-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1A1A1A;
+    line-height: 1.3;
+}
+
+.step-body {
+    font-size: 11px;
+    color: rgba(26,26,26,0.6);
+    line-height: 1.6;
+}
+
+.step-code {
+    font-family: 'SF Mono', 'Fira Mono', monospace;
+    font-size: 10px;
+    background: #F2F2F0;
+    padding: 6px 8px;
+    border-radius: 4px;
+    color: #1A1A1A;
+    line-height: 1.6;
+    margin-top: 4px;
+}
+
+.step-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-top: 6px;
+    align-self: flex-start;
+}
+
+.tag-frontend { background: #EEF0F8; color: #3A4DB7; }
+.tag-backend  { background: #FDF2E3; color: #C07A10; }
+.tag-supabase { background: #EBF5F0; color: #1A7A4A; }
+.tag-nave     { background: #F5EBFA; color: #7A30AA; }
+.tag-oca      { background: #FEF0EE; color: #C23B22; }
+
+/* Arrow between flow steps */
+.flow-step::after {
+    content: '›';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #CCCCCA;
+    z-index: 2;
+    background: #fff;
+    line-height: 1;
+}
+
+.flow-step:last-child::after { display: none; }
+
+/* ── DB SCHEMA TABLE ── */
+.schema-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.schema-table {
+    background: #fff;
+    border: 1px solid #DDDDD8;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.schema-table-header {
+    padding: 10px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.schema-table.t-ordenes   .schema-table-header { background: #EEF0F8; color: #3A4DB7; }
+.schema-table.t-clientes  .schema-table-header { background: #EBF5F0; color: #1A7A4A; }
+.schema-table.t-items     .schema-table-header { background: #FDF2E3; color: #C07A10; }
+.schema-table.t-dirs      .schema-table-header { background: #F5EBFA; color: #7A30AA; }
+.schema-table.t-prods     .schema-table-header { background: #FEF0EE; color: #C23B22; }
+.schema-table.t-vars      .schema-table-header { background: #F2F2F0; color: #555550; }
+
+.schema-table-body { padding: 10px 14px; }
+
+.schema-field {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid #F5F5F3;
+    font-size: 11px;
+}
+
+.schema-field:last-child { border-bottom: none; }
+
+.field-name {
+    font-family: 'SF Mono', 'Fira Mono', monospace;
+    font-size: 10.5px;
+    color: #1A1A1A;
+}
+
+.field-type {
+    font-size: 9.5px;
+    color: rgba(26,26,26,0.4);
+    white-space: nowrap;
+}
+
+.field-new {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #C07A10;
+    background: #FDF2E3;
+    padding: 1px 5px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.field-key {
+    font-size: 8px;
+    color: #3A4DB7;
+    background: #EEF0F8;
+    padding: 1px 5px;
+    border-radius: 2px;
+}
+
+/* ── GAPS TABLE ── */
+.gaps-table {
+    background: #fff;
+    border: 1px solid #DDDDD8;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 28px;
+}
+
+.gaps-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr 120px;
+    border-bottom: 1px solid #EBEBEA;
+    font-size: 11px;
+}
+
+.gaps-row:last-child { border-bottom: none; }
+
+.gaps-row.header {
+    background: #1A1A1A;
+    color: #FAFAFA;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.gaps-cell {
+    padding: 10px 16px;
+    border-right: 1px solid #EBEBEA;
+    line-height: 1.5;
+}
+
+.gaps-cell:last-child { border-right: none; }
+
+.status-ok      { color: #15803D; font-weight: 600; }
+.status-missing { color: #C23B22; font-weight: 600; }
+.status-partial { color: #B45309; font-weight: 600; }
+
+/* ── SECTION DIVIDER ── */
+.divider {
+    border: none;
+    border-top: 1px solid #DDDDD8;
+    margin: 40px 0;
+}
+
+</style>
+</head>
+<body>
+<div class="page">
+
+    <h1>GÜIDO CAPUZZI — Arquitectura de Pagos</h1>
+    <p class="subtitle">FLUJO COMPLETO · SUPABASE + NAVE + OCA · 2 DE MARZO 2026</p>
+
+    <!-- LEGEND -->
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#3A4DB7;"></div> Frontend (checkout-payment.js)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#C07A10;"></div> Backend API Route (Antigravity / Next.js)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1A7A4A;"></div> Supabase (PostgreSQL)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7A30AA;"></div> NAVE (Banco Galicia) — externo</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#C23B22;"></div> OCA ePak — externo</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#C07A10; border-radius:50%;"></div> Campo de BD pendiente de agregar</div>
+    </div>
+
+    <!-- ═══════════════════════════════ PARTE 1: CHECKOUT ═══════════════════════════════ -->
+    <div class="section-label">01 — Flujo del Checkout (Frontend → Supabase)</div>
+
+    <div class="flow-row">
+        <div class="flow-step">
+            <div class="step-number">Step 1</div>
+            <div class="step-title">Datos del cliente</div>
+            <div class="step-body">El usuario completa email, nombre, apellido, teléfono y dirección.</div>
+            <div class="step-code">checkout-logic.js<br>procesarCheckoutStep1(cart)</div>
+            <span class="step-tag tag-frontend">Frontend</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Supabase · directo</div>
+            <div class="step-title">UPSERT clientes</div>
+            <div class="step-body">Busca cliente por email. Si existe, actualiza. Si no, lo crea.</div>
+            <div class="step-code">clientes ← email, nombre,<br>apellido, tel, newsletter</div>
+            <span class="step-tag tag-supabase">Supabase</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Supabase · directo</div>
+            <div class="step-title">INSERT direccion_envio</div>
+            <div class="step-body">Guarda dirección completa. OCA necesita calle y número separados (ya migrados en 07_oca_envios.sql).</div>
+            <div class="step-code">calle, numero, ciudad,<br>provincia, codigo_postal</div>
+            <span class="step-tag tag-supabase">Supabase</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Supabase · directo</div>
+            <div class="step-title">INSERT ordenes</div>
+            <div class="step-body">Crea la orden con estado <code style="background:#F2F2F0;padding:1px 4px;border-radius:2px;">pendiente</code>. Guarda cliente_id + direccion_id.</div>
+            <div class="step-code">estado: 'pendiente'<br>subtotal, total_centavos<br>→ devuelve numero_orden</div>
+            <span class="step-tag tag-supabase">Supabase</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Supabase · directo</div>
+            <div class="step-title">INSERT items_orden</div>
+            <div class="step-body">Un registro por cada item del carrito. Snapshot de nombre, color, talle y precio al momento de la compra.</div>
+            <div class="step-code">nombre_producto, color,<br>talle, precio_unitario,<br>cantidad, subtotal</div>
+            <span class="step-tag tag-supabase">Supabase</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Resultado</div>
+            <div class="step-title">window._currentCheckoutOrdenId</div>
+            <div class="step-body">El UUID de la orden queda guardado en memoria para pasarlo a NAVE en el Step 3.</div>
+            <div class="step-code">resultado.numeroOrden<br>→ window._currentCheckoutOrdenId</div>
+            <span class="step-tag tag-frontend">Frontend</span>
+        </div>
+    </div>
+
+    <div class="flow-row">
+        <div class="flow-step">
+            <div class="step-number">Step 2</div>
+            <div class="step-title">Selección de envío (OCA)</div>
+            <div class="step-body">Muestra opciones OCA con precios reales. El frontend ya consulta OCA directamente (cotizar por CP).</div>
+            <div class="step-code">cargarOpcionesEnvioOCA(cp)<br>→ opciones domicilio / sucursal</div>
+            <span class="step-tag tag-frontend">Frontend</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Supabase · directo</div>
+            <div class="step-title">UPDATE ordenes</div>
+            <div class="step-body">Actualiza la orden con el método de envío elegido y el precio.</div>
+            <div class="step-code">estado: 'envio_calculado'<br>tipo_envio, precio_envio<br>id_sucursal_oca (si aplica)</div>
+            <span class="step-tag tag-supabase">Supabase</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Step 3</div>
+            <div class="step-title">mostrarCheckoutStep3()</div>
+            <div class="step-body">start.js pasa email, ubicación, método de envío, ordenId y totalARS a checkout-payment.js.</div>
+            <div class="step-code">window.mostrarCheckoutStep3({<br>  ordenId, totalARS,<br>  cartItems, email, ...<br>})</div>
+            <span class="step-tag tag-frontend">Frontend</span>
+        </div>
+        <div class="flow-step" style="flex:2;">
+            <div class="step-number">Pendiente</div>
+            <div class="step-title">⚠️ OCA no actualiza la orden aún</div>
+            <div class="step-body">El frontend consulta OCA para cotizar pero <strong>no llama al backend para actualizar la orden en Supabase</strong> con el método de envío confirmado. Este UPDATE debe ocurrir antes de pasar al Step 3.</div>
+            <div class="step-code">// Antigravity debe implementar:<br>// PATCH /api/ordenes/{id}<br>// → actualiza tipo_envio, precio_envio,<br>//   id_sucursal_oca, operativa_oca</div>
+            <span class="step-tag tag-backend">Pendiente Backend</span>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════ PARTE 2: NAVE ═══════════════════════════════ -->
+    <div class="section-label">02 — Flujo de Pago NAVE (Frontend → Backend → Galicia → Webhook)</div>
+
+    <div class="flow-row">
+        <div class="flow-step">
+            <div class="step-number">1. Frontend</div>
+            <div class="step-title">Click en PAGAR</div>
+            <div class="step-body">checkout-payment.js llama al backend con el ID de la orden, el total y los items.</div>
+            <div class="step-code">POST /api/nave/crear-pago<br>{<br>  external_payment_id: uuid,<br>  total_ars: 298000,<br>  cart_items: [...]<br>}</div>
+            <span class="step-tag tag-frontend">Frontend</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">2. Backend</div>
+            <div class="step-title">Autenticar con NAVE</div>
+            <div class="step-body">El backend autentica con las credenciales Sandbox. El token es válido 24 horas — cachear para no repetir por cada compra.</div>
+            <div class="step-code">POST homoservices.apinaranja.com<br>/security-ms/api/security/<br>auth0/b2b/m2msPrivate<br>→ access_token (86400s)</div>
+            <span class="step-tag tag-backend">Backend</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">3. Backend → NAVE</div>
+            <div class="step-title">Crear intención de pago</div>
+            <div class="step-body">Manda el monto, productos y callback URL. Recibe el ID de pago y el QR.</div>
+            <div class="step-code">POST api-sandbox.ranty.io/<br>api/payment_request/ecommerce<br>→ { id, qr_data, checkout_url }</div>
+            <span class="step-tag tag-nave">NAVE</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">4. Supabase</div>
+            <div class="step-title">UPDATE ordenes</div>
+            <div class="step-body">El backend actualiza el estado de la orden antes de devolver la respuesta al frontend.</div>
+            <div class="step-code">estado: 'pago_pendiente'<br>nave_payment_id: id<br>nave_status: 'PENDING'<br>⚠️ columnas a agregar</div>
+            <span class="step-tag tag-supabase">Supabase</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">5. Frontend</div>
+            <div class="step-title">SDK o QR</div>
+            <div class="step-body">Con el payment_request_id, el frontend monta el SDK de NAVE (tarjeta) o renderiza el QR con qrcode.js.</div>
+            <div class="step-code">RantySDK.mount('#container')<br>// ó<br>new QRCode(el, { text: qr_data })</div>
+            <span class="step-tag tag-frontend">Frontend</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">6. Usuario</div>
+            <div class="step-title">Completa el pago</div>
+            <div class="step-body">El usuario ingresa los datos de tarjeta en el formulario del SDK, o escanea el QR con su app bancaria.</div>
+            <div class="step-code">SDK Event:<br>PAYMENT_MODAL_RESPONSE<br>{ success, rejected,<br>  expiration }</div>
+            <span class="step-tag tag-nave">NAVE</span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════ WEBHOOK ═══════════════════════════════ -->
+    <div class="section-label">03 — Notificación Asíncrona (Webhook NAVE → Backend → Supabase)</div>
+
+    <div class="flow-row">
+        <div class="flow-step">
+            <div class="step-number">NAVE → Backend</div>
+            <div class="step-title">POST /api/webhooks/nave</div>
+            <div class="step-body">NAVE notifica el resultado al endpoint registrado. Puede llegar antes o después del evento del SDK.</div>
+            <div class="step-code">{<br>  payment_id,<br>  payment_check_url,<br>  external_payment_id<br>}</div>
+            <span class="step-tag tag-nave">NAVE</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Backend — CRÍTICO</div>
+            <div class="step-title">HTTP 200 INMEDIATO</div>
+            <div class="step-body">El backend debe responder 200 antes de hacer cualquier otra cosa. Si no, NAVE reintenta 5 veces (hasta 6.7 horas).</div>
+            <div class="step-code">return NextResponse.json(<br>  { received: true },<br>  { status: 200 }<br>);<br>// luego → lógica async</div>
+            <span class="step-tag tag-backend">Backend</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Backend async</div>
+            <div class="step-title">Verificar estado</div>
+            <div class="step-body">El backend consulta NAVE con la URL de verificación para obtener el estado definitivo del pago.</div>
+            <div class="step-code">GET payment_check_url<br>Authorization: Bearer token<br>→ { status: "APPROVED"<br>   | "REJECTED"<br>   | "CANCELLED" }</div>
+            <span class="step-tag tag-nave">NAVE</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Supabase</div>
+            <div class="step-title">UPDATE ordenes</div>
+            <div class="step-body">Actualiza la orden con el estado final. Si es APPROVED, también registra la fecha y hora del pago.</div>
+            <div class="step-code">// APPROVED:<br>estado: 'pagado'<br>nave_status: 'APPROVED'<br>pagado_at: now()<br><br>// REJECTED/CANCELLED:<br>estado: 'cancelado'<br>nave_status: 'REJECTED'</div>
+            <span class="step-tag tag-supabase">Supabase</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Frontend</div>
+            <div class="step-title">Overlay de confirmación</div>
+            <div class="step-body">El evento SDK dispara la animación de confirmación y el redirect independientemente del webhook.</div>
+            <div class="step-code">onPagoAprobado()<br>→ barra roja<br>→ overlay confirmación<br>→ redirect /checkout/<br>   confirmacion?orden=id</div>
+            <span class="step-tag tag-frontend">Frontend</span>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">Post-pago</div>
+            <div class="step-title">Crear envío OCA</div>
+            <div class="step-body">Solo después de confirmar el pago, el backend crea el envío en OCA ePak y guarda el número de tracking.</div>
+            <div class="step-code">POST /api/oca/crear-envio<br>→ nro_envio_oca (19 dígitos)<br>→ id_orden_retiro_oca<br>UPDATE ordenes<br>estado: 'preparando'</div>
+            <span class="step-tag tag-oca">OCA</span>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════ SCHEMA ═══════════════════════════════ -->
+    <div class="section-label">04 — Estructura de Tablas Supabase (estado actual + lo que falta agregar)</div>
+
+    <div class="schema-grid">
+
+        <!-- ordenes -->
+        <div class="schema-table t-ordenes">
+            <div class="schema-table-header">
+                ordenes
+                <span style="font-size:9px;opacity:.6;">tabla central</span>
+            </div>
+            <div class="schema-table-body">
+                <div class="schema-field"><span class="field-name">id</span><span class="field-type">UUID PK</span></div>
+                <div class="schema-field"><span class="field-name">numero_orden</span><span class="field-type">SERIAL</span></div>
+                <div class="schema-field"><span class="field-name">cliente_id</span><span class="field-key">FK</span></div>
+                <div class="schema-field"><span class="field-name">direccion_envio_id</span><span class="field-key">FK</span></div>
+                <div class="schema-field"><span class="field-name">estado</span><span class="field-type">VARCHAR(50)</span></div>
+                <div class="schema-field"><span class="field-name">subtotal_centavos</span><span class="field-type">INTEGER</span></div>
+                <div class="schema-field"><span class="field-name">costo_envio_centavos</span><span class="field-type">INTEGER</span></div>
+                <div class="schema-field"><span class="field-name">total_centavos</span><span class="field-type">INTEGER</span></div>
+                <div class="schema-field"><span class="field-name">tipo_envio</span><span class="field-type">TEXT ✓</span></div>
+                <div class="schema-field"><span class="field-name">precio_envio</span><span class="field-type">DECIMAL ✓</span></div>
+                <div class="schema-field"><span class="field-name">operativa_oca</span><span class="field-type">INTEGER ✓</span></div>
+                <div class="schema-field"><span class="field-name">id_sucursal_oca</span><span class="field-type">INTEGER ✓</span></div>
+                <div class="schema-field"><span class="field-name">id_orden_retiro_oca</span><span class="field-type">INTEGER ✓</span></div>
+                <div class="schema-field"><span class="field-name">nro_envio_oca</span><span class="field-type">TEXT ✓</span></div>
+                <div class="schema-field"><span class="field-name">pagado_at</span><span class="field-type">TIMESTAMPTZ</span></div>
+                <div class="schema-field"><span class="field-name">enviado_at</span><span class="field-type">TIMESTAMPTZ</span></div>
+                <!-- FALTA -->
+                <div class="schema-field"><span class="field-name">nave_payment_id</span><span class="field-new">AGREGAR</span></div>
+                <div class="schema-field"><span class="field-name">nave_status</span><span class="field-new">AGREGAR</span></div>
+                <div class="schema-field"><span class="field-name">nave_monto_ars</span><span class="field-new">AGREGAR</span></div>
+            </div>
+        </div>
+
+        <!-- clientes -->
+        <div class="schema-table t-clientes">
+            <div class="schema-table-header">
+                clientes
+                <span style="font-size:9px;opacity:.6;">upsert por email</span>
+            </div>
+            <div class="schema-table-body">
+                <div class="schema-field"><span class="field-name">id</span><span class="field-type">UUID PK</span></div>
+                <div class="schema-field"><span class="field-name">email</span><span class="field-type">UNIQUE</span></div>
+                <div class="schema-field"><span class="field-name">nombre</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">apellido</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">telefono</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">newsletter</span><span class="field-type">BOOLEAN</span></div>
+                <div class="schema-field"><span class="field-name">created_at</span><span class="field-type">TIMESTAMPTZ</span></div>
+            </div>
+        </div>
+
+        <!-- items_orden -->
+        <div class="schema-table t-items">
+            <div class="schema-table-header">
+                items_orden
+                <span style="font-size:9px;opacity:.6;">snapshot inmutable</span>
+            </div>
+            <div class="schema-table-body">
+                <div class="schema-field"><span class="field-name">id</span><span class="field-type">UUID PK</span></div>
+                <div class="schema-field"><span class="field-name">orden_id</span><span class="field-key">FK</span></div>
+                <div class="schema-field"><span class="field-name">variante_id</span><span class="field-key">FK</span></div>
+                <div class="schema-field"><span class="field-name">nombre_producto</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">color</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">talle</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">precio_unitario_centavos</span><span class="field-type">INTEGER</span></div>
+                <div class="schema-field"><span class="field-name">cantidad</span><span class="field-type">INTEGER</span></div>
+                <div class="schema-field"><span class="field-name">subtotal_centavos</span><span class="field-type">INTEGER</span></div>
+            </div>
+        </div>
+
+        <!-- direcciones_envio -->
+        <div class="schema-table t-dirs">
+            <div class="schema-table-header">
+                direcciones_envio
+                <span style="font-size:9px;opacity:.6;">OCA ready</span>
+            </div>
+            <div class="schema-table-body">
+                <div class="schema-field"><span class="field-name">id</span><span class="field-type">UUID PK</span></div>
+                <div class="schema-field"><span class="field-name">cliente_id</span><span class="field-key">FK</span></div>
+                <div class="schema-field"><span class="field-name">direccion</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">calle</span><span class="field-type">VARCHAR ✓</span></div>
+                <div class="schema-field"><span class="field-name">numero</span><span class="field-type">VARCHAR ✓</span></div>
+                <div class="schema-field"><span class="field-name">piso</span><span class="field-type">VARCHAR ✓</span></div>
+                <div class="schema-field"><span class="field-name">depto</span><span class="field-type">VARCHAR ✓</span></div>
+                <div class="schema-field"><span class="field-name">ciudad</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">provincia</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">codigo_postal</span><span class="field-type">VARCHAR</span></div>
+            </div>
+        </div>
+
+        <!-- productos -->
+        <div class="schema-table t-prods">
+            <div class="schema-table-header">
+                productos
+                <span style="font-size:9px;opacity:.6;">catálogo</span>
+            </div>
+            <div class="schema-table-body">
+                <div class="schema-field"><span class="field-name">id</span><span class="field-type">UUID PK</span></div>
+                <div class="schema-field"><span class="field-name">nombre</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">titulo</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">categoria</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">precio_centavos</span><span class="field-type">INTEGER</span></div>
+                <div class="schema-field"><span class="field-name">imagenes</span><span class="field-type">TEXT[]</span></div>
+                <div class="schema-field"><span class="field-name">activo</span><span class="field-type">BOOLEAN</span></div>
+            </div>
+        </div>
+
+        <!-- variantes_producto -->
+        <div class="schema-table t-vars">
+            <div class="schema-table-header">
+                variantes_producto
+                <span style="font-size:9px;opacity:.6;">stock + medidas OCA</span>
+            </div>
+            <div class="schema-table-body">
+                <div class="schema-field"><span class="field-name">id</span><span class="field-type">UUID PK</span></div>
+                <div class="schema-field"><span class="field-name">producto_id</span><span class="field-key">FK</span></div>
+                <div class="schema-field"><span class="field-name">sku</span><span class="field-type">UNIQUE</span></div>
+                <div class="schema-field"><span class="field-name">colorway</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">talle</span><span class="field-type">VARCHAR</span></div>
+                <div class="schema-field"><span class="field-name">stock</span><span class="field-type">INTEGER</span></div>
+                <div class="schema-field"><span class="field-name">one_of_one</span><span class="field-type">BOOLEAN</span></div>
+                <div class="schema-field"><span class="field-name">peso_kg</span><span class="field-type">DECIMAL ✓</span></div>
+                <div class="schema-field"><span class="field-name">alto_cm</span><span class="field-type">DECIMAL ✓</span></div>
+                <div class="schema-field"><span class="field-name">ancho_cm</span><span class="field-type">DECIMAL ✓</span></div>
+                <div class="schema-field"><span class="field-name">largo_cm</span><span class="field-type">DECIMAL ✓</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════ GAPS ═══════════════════════════════ -->
+    <div class="section-label">05 — Gaps: qué falta exactamente para cerrar el flujo de pagos</div>
+
+    <div class="gaps-table">
+        <div class="gaps-row header">
+            <div class="gaps-cell">Componente</div>
+            <div class="gaps-cell">Situación actual</div>
+            <div class="gaps-cell">Qué necesita Antigravity</div>
+            <div class="gaps-cell">Prioridad</div>
+        </div>
+
+        <div class="gaps-row">
+            <div class="gaps-cell"><strong>nave_payment_id, nave_status</strong><br>en tabla ordenes</div>
+            <div class="gaps-cell">No existen en el schema. La tabla ordenes no tiene ningún campo de NAVE.</div>
+            <div class="gaps-cell">Ejecutar SQL:<br><code style="font-size:10px;background:#F2F2F0;padding:2px 4px;border-radius:2px;">ALTER TABLE ordenes ADD COLUMN nave_payment_id TEXT; ADD COLUMN nave_status VARCHAR(30); ADD COLUMN nave_monto_ars DECIMAL(12,2);</code></div>
+            <div class="gaps-cell"><span class="status-missing">CRÍTICO</span><br>Sin esto, el webhook no puede actualizar la orden.</div>
+        </div>
+
+        <div class="gaps-row">
+            <div class="gaps-cell"><strong>POST /api/nave/crear-pago</strong></div>
+            <div class="gaps-cell">No existe. El frontend lo llama y queda colgado.</div>
+            <div class="gaps-cell">Autenticar con NAVE Sandbox → crear payment_request → UPDATE ordenes (estado: pago_pendiente, nave_payment_id) → devolver { payment_request_id, qr_data }.</div>
+            <div class="gaps-cell"><span class="status-missing">CRÍTICO</span><br>Bloquea todo el Step 3.</div>
+        </div>
+
+        <div class="gaps-row">
+            <div class="gaps-cell"><strong>POST /api/webhooks/nave</strong></div>
+            <div class="gaps-cell">No existe. NAVE no tiene dónde enviar la notificación.</div>
+            <div class="gaps-cell">Responder 200 inmediato → async: GET payment_check_url → UPDATE ordenes (estado, nave_status, pagado_at si APPROVED).</div>
+            <div class="gaps-cell"><span class="status-missing">CRÍTICO</span><br>Sin esto, el pago nunca se confirma en Supabase.</div>
+        </div>
+
+        <div class="gaps-row">
+            <div class="gaps-cell"><strong>UPDATE ordenes al confirmar envío</strong><br>(Step 2 → Step 3)</div>
+            <div class="gaps-cell">El frontend sabe qué envío eligió el usuario pero no actualiza la orden en Supabase con esos datos antes de pasar al Step 3.</div>
+            <div class="gaps-cell">Agregar llamada al backend en start.js al confirmar el envío: PATCH /api/ordenes/{id} con tipo_envio, precio_envio, id_sucursal_oca.</div>
+            <div class="gaps-cell"><span class="status-partial">IMPORTANTE</span><br>La orden queda incompleta si no se persiste.</div>
+        </div>
+
+        <div class="gaps-row">
+            <div class="gaps-cell"><strong>SUPABASE_SERVICE_ROLE_KEY</strong></div>
+            <div class="gaps-cell">El backend necesita esta key para hacer UPDATE en ordenes desde server-side (las políticas RLS actuales permiten UPDATE con anon key, pero en producción conviene service role).</div>
+            <div class="gaps-cell">Agregar en variables de entorno de Vercel. No exponer en frontend.</div>
+            <div class="gaps-cell"><span class="status-partial">IMPORTANTE</span></div>
+        </div>
+
+        <div class="gaps-row">
+            <div class="gaps-cell"><strong>Reducir stock al confirmar pago</strong></div>
+            <div class="gaps-cell">No existe ningún mecanismo para decrementar stock en variantes_producto cuando un pago se aprueba.</div>
+            <div class="gaps-cell">En el webhook APPROVED: para cada item_orden, UPDATE variantes_producto SET stock = stock - cantidad WHERE id = variante_id.</div>
+            <div class="gaps-cell"><span class="status-partial">IMPORTANTE</span><br>Sin esto el stock no refleja las ventas.</div>
+        </div>
+
+        <div class="gaps-row">
+            <div class="gaps-cell"><strong>POST /api/oca/crear-envio</strong></div>
+            <div class="gaps-cell">No existe. OCA ePak solo tiene el cotizador implementado hasta ahora.</div>
+            <div class="gaps-cell">Solo se dispara después de APPROVED. Toma los datos de la orden (calle, numero, ciudad, CP) y los manda a OCA para generar el envío y obtener el nro_envio_oca.</div>
+            <div class="gaps-cell"><span class="status-ok">FASE 2</span><br>No bloquea el pago.</div>
+        </div>
+
+        <div class="gaps-row">
+            <div class="gaps-cell"><strong>Carga de peso/medidas OCA</strong><br>en variantes_producto</div>
+            <div class="gaps-cell">Los campos peso_kg, alto_cm, ancho_cm, largo_cm ya existen (07_oca_envios.sql) pero están vacíos. OCA usa estimados hoy.</div>
+            <div class="gaps-cell">Completar manualmente o con un script los pesos y medidas de las prendas para cotizaciones más precisas.</div>
+            <div class="gaps-cell"><span class="status-ok">FASE 2</span></div>
+        </div>
+
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════ SQL ═══════════════════════════════ -->
+    <div class="section-label">06 — SQL listo para ejecutar: agregar columnas NAVE a la tabla ordenes</div>
+
+    <div style="background:#1A1A1A; border-radius:8px; padding:20px 24px; margin-bottom:28px;">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.1em;margin-bottom:14px;">08_agregar_nave.sql — Ejecutar en Supabase Dashboard › SQL Editor</div>
+        <pre style="font-family:'SF Mono','Fira Mono',monospace;font-size:12px;color:#E8E8E0;line-height:1.8;white-space:pre-wrap;">-- NAVE payment tracking columns
+ALTER TABLE ordenes ADD COLUMN IF NOT EXISTS nave_payment_id  TEXT;
+ALTER TABLE ordenes ADD COLUMN IF NOT EXISTS nave_status      VARCHAR(30);
+ALTER TABLE ordenes ADD COLUMN IF NOT EXISTS nave_monto_ars   DECIMAL(12,2);
+
+COMMENT ON COLUMN ordenes.nave_payment_id IS 'ID del pago en NAVE (payment_request_id de Ranty)';
+COMMENT ON COLUMN ordenes.nave_status     IS 'Estado NAVE: PENDING, APPROVED, REJECTED, CANCELLED';
+COMMENT ON COLUMN ordenes.nave_monto_ars  IS 'Monto cobrado por NAVE en ARS (para conciliación)';
+
+-- Índice para búsquedas por payment ID desde webhook
+CREATE INDEX IF NOT EXISTS idx_ordenes_nave_payment_id ON ordenes(nave_payment_id);
+
+-- Estados de orden actualizados con los nuevos valores NAVE
+COMMENT ON COLUMN ordenes.estado IS 'pendiente → envio_calculado → pago_pendiente → pagado → preparando → enviado → entregado | cancelado';</pre>
+    </div>
+
+</div>
+</body>
+</html>
