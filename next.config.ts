@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       { source: '/shop/:slug', destination: '/' },
       { source: '/cuenta', destination: '/' },
       { source: '/contacto', destination: '/' },
+      { source: '/checkout/confirmacion', destination: '/' },
     ];
   },
 };

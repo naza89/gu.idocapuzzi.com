@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const STATE_CONTACT = 'state-contact';
     const STATE_CHECKOUT = 'state-checkout';
     const STATE_LEGALES = 'state-legales';
+    const STATE_CONFIRMATION = 'state-confirmation';
 
     // History API — URLs por estado
     const URL_HOME = '/';
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const URL_ACCOUNT = '/cuenta';
     const URL_CONTACT = '/contacto';
     const URL_LEGALES = '/legales';
+    const URL_CONFIRMATION = '/checkout/confirmacion';
 
     // Animation Constants
     const LOGO_TRANSITION_START = 0;
@@ -816,6 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Expose functions globally for shop integration
     window.updateFiltersForCategory = updateFiltersForCategory;
     window.setShopCategory = setShopCategory;
+    window.enableConfirmationState = enableConfirmationState;
 
     // =========================================================================
     // A1 — SISTEMA DE TRANSICIÓN ENTRE ESTADOS (Plane Shift)
@@ -894,6 +897,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (body.classList.contains(STATE_CONTACT)) return document.getElementById('account-contact');
         if (body.classList.contains(STATE_LEGALES)) return document.getElementById('legales-container');
+        if (body.classList.contains(STATE_CONFIRMATION)) return document.getElementById('confirmation-container');
         return null;
     }
 
@@ -1061,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         transitionState(exitEl, productPage, 'block', () => {
-            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES);
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES, STATE_CHECKOUT, STATE_CONFIRMATION);
             body.classList.add(STATE_PDP);
             window.scrollTo(0, 0);
             [
@@ -1293,14 +1297,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateShopContent(category);
 
         transitionState(exitEl, shopSection, 'block', () => {
-            body.classList.remove(STATE_HOME, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES);
+            body.classList.remove(STATE_HOME, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES, STATE_CHECKOUT, STATE_CONFIRMATION);
             body.classList.add(STATE_SHOP);
             [
                 document.getElementById('account-login'),
                 document.getElementById('account-contact'),
                 document.getElementById('product-page'),
-                document.getElementById('home-container')
-            ].forEach(sec => { if (sec && sec !== exitEl) sec.style.display = 'none'; });
+                document.getElementById('home-container'),
+                document.getElementById('confirmation-container'),
+                document.getElementById('checkout')
+            ].forEach(sec => { if (sec && sec !== exitEl) { sec.style.display = 'none'; sec.style.opacity = '0'; } });
             if (shopSection) shopSection.style.pointerEvents = 'auto';
             header.style.backgroundColor = '';
             header.style.color = '';
@@ -1323,6 +1329,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof STATE_CONTACT !== 'undefined') body.classList.remove(STATE_CONTACT);
             if (typeof STATE_CHECKOUT !== 'undefined') body.classList.remove(STATE_CHECKOUT);
             if (typeof STATE_LEGALES !== 'undefined') body.classList.remove(STATE_LEGALES);
+            if (typeof STATE_CONFIRMATION !== 'undefined') body.classList.remove(STATE_CONFIRMATION);
 
             body.style.overflow = '';
             body.style.height = '';
@@ -1335,7 +1342,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('account-create'),
                 document.getElementById('account-contact'),
                 document.getElementById('checkout'),
-                document.getElementById('legales-container')
+                document.getElementById('legales-container'),
+                document.getElementById('confirmation-container')
             ].forEach(sec => {
                 if (sec && sec !== exitEl) {
                     sec.style.display = 'none';
@@ -1383,7 +1391,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const enterEl = accountLoginSection;
 
         transitionState(exitEl, enterEl, 'flex', () => {
-            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT, STATE_LEGALES);
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT, STATE_LEGALES, STATE_CHECKOUT, STATE_CONFIRMATION);
             body.classList.add(STATE_ACCOUNT);
             [
                 document.getElementById('shop'),
@@ -1463,7 +1471,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const enterEl = accountContactSection;
 
         transitionState(exitEl, enterEl, 'flex', () => {
-            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_LEGALES);
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_LEGALES, STATE_CHECKOUT, STATE_CONFIRMATION);
             body.classList.add(STATE_ACCOUNT);
             body.classList.add(STATE_CONTACT);
             [
@@ -1499,7 +1507,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const exitEl = getActiveSection();
 
         transitionState(exitEl, legalesContainer, 'flex', () => {
-            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_CHECKOUT);
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_CHECKOUT, STATE_CONFIRMATION);
             body.classList.add(STATE_LEGALES);
 
             [
@@ -1557,6 +1565,158 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- CONFIRMACIÓN DE PEDIDO ---
+    function enableConfirmationState(ordenId, skipHistory = false) {
+        if (!skipHistory) pushHistory({ state: 'confirmation', ordenId: ordenId });
+        document.title = 'Pedido confirmado — GÜIDO CAPUZZI';
+
+        const confirmContainer = document.getElementById('confirmation-container');
+        if (!confirmContainer) return;
+
+        const exitEl = getActiveSection();
+
+        transitionState(exitEl, confirmContainer, 'flex', () => {
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_CHECKOUT, STATE_LEGALES);
+            body.classList.add(STATE_CONFIRMATION);
+
+            [
+                document.getElementById('home-container'),
+                document.getElementById('shop'),
+                document.getElementById('product-page'),
+                document.getElementById('checkout'),
+                document.getElementById('legales-container')
+            ].forEach(sec => {
+                if (sec && sec !== exitEl) {
+                    sec.style.display = 'none';
+                    sec.style.opacity = '0';
+                }
+            });
+
+            window.scrollTo(0, 0);
+
+            // Populate confirmation data from cart + checkout state
+            populateConfirmation(ordenId);
+
+            // Run staggered animation
+            runConfirmationAnimation();
+        });
+    }
+
+    function populateConfirmation(ordenId) {
+        // Order number (first 8 chars of UUID)
+        const ordenEl = document.getElementById('confirmacion-orden');
+        if (ordenEl) {
+            const shortId = ordenId ? ordenId.substring(0, 8).toUpperCase() : '--------';
+            ordenEl.textContent = `Orden #${shortId}`;
+        }
+
+        // Products from cart
+        const productosContainer = document.getElementById('confirmacion-productos');
+        if (productosContainer) {
+            productosContainer.innerHTML = '';
+            cart.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'confirmacion-producto confirmacion-anim-row';
+
+                const imgSrc = item.image || '';
+                const imgHTML = imgSrc
+                    ? `<img class="producto-confirm-thumb" src="${imgSrc}" alt="${item.name}">`
+                    : `<div class="producto-confirm-thumb" style="display:flex;align-items:center;justify-content:center;font-family:'Univers 67 Condensed';font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(32,32,32,0.25);">IMG</div>`;
+
+                row.innerHTML = `
+                    <div class="producto-confirm-info">
+                        <div class="producto-confirm-thumb-wrapper">
+                            ${imgHTML}
+                            <span class="producto-confirm-qty-badge">${item.quantity}</span>
+                        </div>
+                        <div>
+                            <div class="producto-confirm-nombre">${item.name}</div>
+                            <div class="producto-confirm-detalle">${item.colorway || ''} &middot; ${item.size || ''}</div>
+                        </div>
+                    </div>
+                    <div class="producto-confirm-precio">$${(item.price * item.quantity).toLocaleString('es-AR')}</div>
+                `;
+                productosContainer.appendChild(row);
+            });
+        }
+
+        // Shipping info
+        const envioEl = document.getElementById('confirmacion-envio-value');
+        if (envioEl) {
+            const checkoutEnvio = document.querySelector('.checkout-envio-selected');
+            envioEl.textContent = checkoutEnvio ? checkoutEnvio.textContent : 'OCA';
+        }
+
+        // Address
+        const dirEl = document.getElementById('confirmacion-direccion-value');
+        if (dirEl) {
+            const calle = document.getElementById('checkout-calle');
+            const ciudad = document.getElementById('checkout-ciudad');
+            dirEl.textContent = (calle ? calle.value : '') + (ciudad ? ', ' + ciudad.value : '');
+        }
+
+        // Contact
+        const contactoEl = document.getElementById('confirmacion-contacto-value');
+        if (contactoEl) {
+            const emailEl = document.getElementById('checkout-email');
+            contactoEl.textContent = emailEl ? emailEl.value : '';
+        }
+
+        // Payment
+        const pagoEl = document.getElementById('confirmacion-pago-value');
+        if (pagoEl) {
+            pagoEl.textContent = 'Tarjeta';
+        }
+
+        // Total
+        const totalEl = document.getElementById('confirmacion-total-value');
+        if (totalEl) {
+            const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            totalEl.textContent = `$${cartTotal.toLocaleString('es-AR')}`;
+        }
+
+        // Note
+        const notaEl = document.getElementById('confirmacion-nota');
+        if (notaEl) {
+            const emailEl = document.getElementById('checkout-email');
+            const email = emailEl ? emailEl.value : 'tu email';
+            notaEl.textContent = `Te enviamos un email con los detalles de tu pedido a ${email}`;
+        }
+
+        // Volver al shop button
+        const btnVolver = document.getElementById('confirmacion-btn-volver');
+        if (btnVolver) {
+            btnVolver.addEventListener('click', () => {
+                cart.length = 0;
+                renderCart();
+                enableShopState(null, 'VER TODO');
+            });
+        }
+    }
+
+    function runConfirmationAnimation() {
+        const container = document.getElementById('confirmacion-inner');
+        const line = document.getElementById('confirmacion-line');
+        const ordenEl = document.getElementById('confirmacion-orden');
+        const rows = document.querySelectorAll('.confirmacion-anim-row');
+
+        if (!container) return;
+
+        // T=0: Container fades in
+        setTimeout(() => { container.classList.add('visible'); }, 200);
+
+        // T=500: Line expands
+        setTimeout(() => { if (line) line.classList.add('expand'); }, 500);
+
+        // T=900: Order number
+        setTimeout(() => { if (ordenEl) ordenEl.classList.add('visible'); }, 900);
+
+        // T=1080+: Staggered rows
+        rows.forEach((el, i) => {
+            setTimeout(() => { el.classList.add('visible'); }, 1080 + (i * 160));
+        });
+    }
+
     // --- CHECKOUT LOGIC ---
     function enableCheckoutState(e) {
         if (e) e.preventDefault();
@@ -1571,7 +1731,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeCart();
 
         // Update State Classes
-        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES);
+        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES, STATE_CONFIRMATION);
         body.classList.add(STATE_CHECKOUT);
 
         // Hide ALL other containers
@@ -2930,7 +3090,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
         allSections.forEach(s => { if (s) s.style.display = 'none'; });
 
-        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT, STATE_LEGALES);
+        body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT, STATE_LEGALES, STATE_CHECKOUT, STATE_CONFIRMATION);
         body.classList.add(STATE_ACCOUNT);
 
         if (accountNewPasswordSection) {
@@ -3044,6 +3204,52 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(handleAuthRedirect, 300);
 
     // =========================================================================
+    // COOKIE CONSENT
+    // Muestra banner al primer ingreso. Guarda preferencia en localStorage.
+    // Al aceptar → hook para activar analytics/Meta Pixel (futuro).
+    // Al rechazar → solo cookies esenciales.
+    // =========================================================================
+    (function initCookieConsent() {
+        const banner = document.getElementById('cookie-consent');
+        if (!banner) return;
+
+        const stored = localStorage.getItem('guido_cookie_consent');
+        if (stored) {
+            banner.classList.add('cookie-hidden');
+            // Si ya aceptó, activar tracking
+            if (stored === 'accepted') activateTracking();
+            return;
+        }
+
+        const acceptBtn = document.getElementById('cookie-accept');
+        const declineBtn = document.getElementById('cookie-decline');
+
+        if (acceptBtn) {
+            acceptBtn.addEventListener('click', () => {
+                banner.classList.add('cookie-accepted');
+                localStorage.setItem('guido_cookie_consent', 'accepted');
+                activateTracking();
+                setTimeout(() => banner.remove(), 500);
+            });
+        }
+
+        if (declineBtn) {
+            declineBtn.addEventListener('click', () => {
+                banner.classList.add('cookie-accepted');
+                localStorage.setItem('guido_cookie_consent', 'declined');
+                setTimeout(() => banner.remove(), 500);
+            });
+        }
+
+        function activateTracking() {
+            // TODO: Activar Meta Pixel, Google Analytics, etc.
+            // window.fbq && window.fbq('consent', 'grant');
+            // gtag('consent', 'update', { analytics_storage: 'granted' });
+            console.log('[Cookies] Tracking activado');
+        }
+    })();
+
+    // =========================================================================
     // SCROLLBAR COMPENSATION — fixed elements
     // Los elementos position:fixed ignoran el scrollbar del SO en algunos
     // navegadores y se extienden por debajo de él. Medimos el ancho real
@@ -3149,6 +3355,9 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'legales':
                 enableLegalesState(null, /* skipHistory */ true);
                 break;
+            case 'confirmation':
+                enableConfirmationState(stateObj.ordenId || '', /* skipHistory */ true);
+                break;
             default:
                 enableHomeState(null, true);
         }
@@ -3209,6 +3418,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (path.startsWith('/legales')) {
             enableLegalesState(null, /* skipHistory */ true);
             history.replaceState({ state: 'legales' }, '', window.location.href);
+            return;
+        }
+        if (path.startsWith('/checkout/confirmacion')) {
+            const ordenId = params.get('orden') || '';
+            enableConfirmationState(ordenId, /* skipHistory */ true);
+            history.replaceState({ state: 'confirmation', ordenId: ordenId }, '', window.location.href);
             return;
         }
 

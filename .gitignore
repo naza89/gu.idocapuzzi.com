@@ -29,6 +29,12 @@ yarn-error.log*
 # Vercel
 .vercel
 
+# Claude Code (worktrees y estado interno — no commitear)
+.claude/worktrees/
+
+# Snapshot de trabajo anterior (referencia local, no subir)
+.antigravity/
+
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts

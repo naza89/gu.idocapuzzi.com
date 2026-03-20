@@ -722,6 +722,58 @@ const siteHTML = `
 
 
         <!-- ═══════════════════════════════════════
+             STATE: CONFIRMACIÓN DE PEDIDO
+             ═══════════════════════════════════════ -->
+        <section id="confirmation-container" style="display:none;">
+            <div class="confirmacion-layout">
+                <div class="confirmacion-container" id="confirmacion-inner">
+
+                    <h1 class="confirmacion-titulo">Pedido confirmado</h1>
+                    <div class="confirmacion-line" id="confirmacion-line"></div>
+                    <div class="confirmacion-orden" id="confirmacion-orden"></div>
+
+                    <!-- Products injected by JS -->
+                    <div id="confirmacion-productos"></div>
+
+                    <!-- Detail rows -->
+                    <div class="confirmacion-row confirmacion-anim-row" id="confirmacion-envio">
+                        <span class="confirmacion-label">Envio</span>
+                        <span class="confirmacion-value" id="confirmacion-envio-value"></span>
+                    </div>
+
+                    <div class="confirmacion-row confirmacion-anim-row" id="confirmacion-direccion">
+                        <span class="confirmacion-label">Direccion</span>
+                        <span class="confirmacion-value" id="confirmacion-direccion-value"></span>
+                    </div>
+
+                    <div class="confirmacion-row confirmacion-anim-row" id="confirmacion-contacto">
+                        <span class="confirmacion-label">Contacto</span>
+                        <span class="confirmacion-value" id="confirmacion-contacto-value"></span>
+                    </div>
+
+                    <div class="confirmacion-row confirmacion-anim-row" id="confirmacion-pago">
+                        <span class="confirmacion-label">Pago</span>
+                        <span class="confirmacion-value" id="confirmacion-pago-value"></span>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="confirmacion-total confirmacion-anim-row" id="confirmacion-total">
+                        <span class="total-label">Total</span>
+                        <span class="total-value" id="confirmacion-total-value"></span>
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="confirmacion-cta confirmacion-anim-row" id="confirmacion-cta">
+                        <button class="btn-volver" id="confirmacion-btn-volver">Volver al shop</button>
+                        <p class="confirmacion-nota" id="confirmacion-nota"></p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ═══════════════════════════════════════
              STATE: LEGALES
              ═══════════════════════════════════════ -->
         <section id="legales-container" style="display:none;">
@@ -845,6 +897,23 @@ const siteHTML = `
         <!-- /legales-container -->
 
     </div><!-- END SITE WRAPPER -->
+
+    <!-- ═══════════════════════════════════════
+         COOKIE CONSENT BANNER
+         ═══════════════════════════════════════ -->
+    <div id="cookie-consent">
+        <div class="cookie-inner">
+            <p class="cookie-text">
+                Usamos cookies para mejorar tu experiencia de navegación y analizar el uso del sitio.
+                Al continuar navegando, aceptás nuestro uso de cookies.
+                <a href="#" class="trigger-legales" data-section="cookies">Política de Cookies</a>
+            </p>
+            <div class="cookie-actions">
+                <button class="cookie-btn-decline" id="cookie-decline">Rechazar</button>
+                <button class="cookie-btn-accept font-condensed" id="cookie-accept"><span>ACEPTAR</span></button>
+            </div>
+        </div>
+    </div>
 
     <!-- CINEMATIC UI ELEMENTS (SIBLINGS TO WRAPPER) -->
     <div id="ui-overlay"></div>
@@ -992,10 +1061,7 @@ const siteHTML = `
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/supabase-config.js"></script>
     <script src="/js/checkout-logic.js"></script>
-    <!-- qrcode.js para QR de MODO / billeteras virtuales -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Ranty SDK — checkout embebido NAVE (tarjeta de crédito/débito) -->
-    <script src="https://cdn.jsdelivr.net/npm/@ranty/ranty-sdk/dist/ranty-sdk.umd.min.js"></script>
     <!-- Módulo de pago NAVE — Step 3 -->
     <script src="/js/checkout-payment.js"></script>
     <script src="/js/start.js"></script>

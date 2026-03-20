@@ -53,6 +53,8 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        console.log('[crear-pago] Recibido body:', JSON.stringify(body, null, 2));
+
         // ── Create payment request in NAVE ───────────────
         const naveResponse = await createPaymentRequest({
             externalPaymentId: external_payment_id,
@@ -87,11 +89,14 @@ export async function POST(request: NextRequest) {
             qr_data: naveResponse.qr_data,
             checkout_url: naveResponse.checkout_url,
             environment: getEnvironment(),
+            public_key: process.env.NAVE_POS_ID || '',
         });
 
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Error desconocido';
-        console.error('[crear-pago] Error:', err);
+        console.error('==================================================');
+        console.error('[crear-pago] ERROR DETALLADO:', message, err);
+        console.error('==================================================');
         return NextResponse.json(
             { error: message },
             { status: 500 }

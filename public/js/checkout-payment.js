@@ -24,9 +24,11 @@
     let _paymentRequestId = null;   // id devuelto por NAVE
     let _qrData = null;   // qr_data para renderizar QR
     let _environment = 'sandbox';
-    let _sdkInstance = null;   // instancia activa del RantySDK
+    let _sdkInstance = null;   // <payfac-sdk> element in the DOM
+    let _publicKey = null;   // public key devuelta por el backend
     let _ordenId = null;   // external_payment_id (ID orden Supabase)
     let _metodoPagoActivo = 'tarjeta'; // 'tarjeta' | 'qr'
+    let _sdkModuleLoaded = false; // tracks if the SDK web component module has been imported
 
     // ─────────────────────────────────────────────
     // 1. MOSTRAR STEP 3
@@ -51,11 +53,11 @@
         const steps = document.querySelectorAll('.breadcrumb-step');
         steps.forEach((s, i) => s.classList.toggle('active', i === 2));
 
-        // Ocultar botón CONTINUAR, mostrar botón PAGAR
+        // Ocultar botones — el SDK de NAVE tiene su propio botón de pago
         const continueBtn = document.getElementById('checkout-continue-btn');
         const payBtn = document.getElementById('checkout-pay-btn');
         if (continueBtn) continueBtn.style.display = 'none';
-        if (payBtn) payBtn.style.display = '';
+        if (payBtn) payBtn.style.display = 'none';
 
         // Back link → "Volver a Envío"
         const backLink = document.getElementById('checkout-back-link');
@@ -64,8 +66,9 @@
             backLink.style.display = '';
         }
 
-        // Activar tab Tarjeta por defecto
-        _activarTab('tarjeta');
+        // Ocultar nuestros tabs — el SDK maneja la selección QR/Tarjeta internamente
+        var tabsContainer = document.querySelector('.pago-tabs');
+        if (tabsContainer) tabsContainer.style.display = 'none';
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -128,6 +131,7 @@
             _paymentRequestId = data.payment_request_id;
             _qrData = data.qr_data;
             _environment = data.environment || 'sandbox';
+            _publicKey = data.public_key || '';
 
             console.log('[NAVE] ✅ Intención de pago creada:', _paymentRequestId);
 
@@ -152,38 +156,136 @@
         if (!_paymentRequestId) return;
 
         try {
-            // Desmontar instancia anterior si existe
-            if (_sdkInstance && typeof _sdkInstance.unmount === 'function') {
-                _sdkInstance.unmount();
+            // Remove previous SDK element if exists
+            if (_sdkInstance) {
+                _sdkInstance.remove();
                 _sdkInstance = null;
             }
 
             _mostrarLoadingSDK(true);
 
-            // Usar el SDK cargado vía CDN (global window.RantySDK)
-            var RantySDK = window.RantySDK;
-            if (!RantySDK) {
-                console.warn('[NAVE SDK] RantySDK no disponible en window — CDN no cargó');
+            // Load the SDK module once (registers <payfac-sdk> web component)
+            if (!_sdkModuleLoaded) {
+                try {
+                    await import('https://cdn.jsdelivr.net/npm/@ranty/ranty-sdk/+esm');
+                    _sdkModuleLoaded = true;
+                    console.log('[NAVE SDK] Módulo cargado, web component registrado');
+                } catch (importErr) {
+                    console.warn('[NAVE SDK] Falló el import dinámico del CDN:', importErr);
+                    _mostrarLoadingSDK(false);
+                    _mostrarError('Error al descargar el componente de pago. Verificá tu conexión a internet.');
+                    return;
+                }
+            }
+
+            // Create <payfac-sdk> web component
+            const container = document.getElementById('nave-payment-container');
+            if (!container) {
+                console.error('[NAVE SDK] #nave-payment-container no encontrado');
                 _mostrarLoadingSDK(false);
-                _mostrarError('Error al cargar el SDK de pago. Recargá la página.');
                 return;
             }
 
-            _sdkInstance = new RantySDK({
-                paymentRequestId: _paymentRequestId,
-                environment: _environment   // 'sandbox' | 'production'
-            });
+            container.innerHTML = '';
 
-            _sdkInstance.mount('#nave-payment-container');
+            const sdkEl = document.createElement('payfac-sdk');
+            sdkEl.setAttribute('paymentRequestId', _paymentRequestId);
+            if (_publicKey) {
+                sdkEl.setAttribute('publicKey', _publicKey);
+            }
+            sdkEl.setAttribute('env', _environment);
+
+            // Hide redundant SDK UI (we show our own title/order detail)
+            sdkEl.setAttribute('settings', JSON.stringify({
+                customerProperties: {
+                    show_title: false,
+                    show_subtitle: false,
+                    show_order_detail: false,
+                    enable_auto_redirect: false
+                }
+            }));
+
+            container.appendChild(sdkEl);
+            _sdkInstance = sdkEl;
             _mostrarLoadingSDK(false);
 
-            console.log('[NAVE SDK] ✅ Montado en #nave-payment-container');
+            // Inject GÜIDO brand styles into SDK Shadow DOM
+            _personalizarSDK(sdkEl);
+
+            console.log('[NAVE SDK] ✅ <payfac-sdk> montado en #nave-payment-container');
 
         } catch (err) {
             console.error('[NAVE SDK] ❌ Error al montar SDK:', err);
             _mostrarLoadingSDK(false);
             _mostrarError('Error al cargar el formulario de pago. Recargá la página e intentá nuevamente.');
         }
+    }
+
+    // ─────────────────────────────────────────────
+    // 4b. PERSONALIZAR SDK — Inyecta estilos GÜIDO recursivamente en todos los Shadow DOMs
+    // ─────────────────────────────────────────────
+    var _guidoCSS =
+        '*, *::before, *::after {' +
+        "  font-family: 'Univers', 'Univers 67 Condensed', Inter, Arial, sans-serif !important;" +
+        '}' +
+        ':host {' +
+        '  background: #FAFAFA !important;' +
+        '  --alert-border: #AD1C1C;' +
+        '  --card-form-title-color: #202020;' +
+        '  --card-form-subtitle-color: #442517;' +
+        '}' +
+        '.btn, button {' +
+        '  border-radius: 0 !important;' +
+        '  text-transform: uppercase !important;' +
+        '  letter-spacing: 0.08em !important;' +
+        '}' +
+        '.container, .panel-container, .card, .card_list {' +
+        '  border-radius: 4px !important;' +
+        '}' +
+        'input, select {' +
+        '  border-radius: 0 !important;' +
+        '}';
+
+    function _injectIntoShadowRoot(sr) {
+        if (!sr || sr.querySelector('.guido-sdk-override')) return;
+        var style = document.createElement('style');
+        style.className = 'guido-sdk-override';
+        style.textContent = _guidoCSS;
+        sr.appendChild(style);
+    }
+
+    function _walkAndInject(root) {
+        // Inject into this element's shadow root if it has one
+        if (root.shadowRoot) {
+            _injectIntoShadowRoot(root.shadowRoot);
+            // Walk children inside the shadow root too
+            root.shadowRoot.querySelectorAll('*').forEach(function (child) {
+                if (child.shadowRoot) _walkAndInject(child);
+            });
+        }
+    }
+
+    function _personalizarSDK(sdkEl) {
+        // Recursive injection with periodic re-scan for dynamically added components
+        var scanCount = 0;
+        var maxScans = 20;
+
+        function scan() {
+            _walkAndInject(sdkEl);
+            // Also scan inside shadow root for new nested components
+            if (sdkEl.shadowRoot) {
+                sdkEl.shadowRoot.querySelectorAll('*').forEach(function (el) {
+                    if (el.shadowRoot) _walkAndInject(el);
+                });
+            }
+            scanCount++;
+            if (scanCount < maxScans) {
+                setTimeout(scan, 500);
+            }
+        }
+
+        // Start scanning after a brief delay to let SDK initialize
+        setTimeout(scan, 300);
     }
 
     // ─────────────────────────────────────────────
@@ -223,21 +325,35 @@
     }
 
     // ─────────────────────────────────────────────
-    // 6. EVENTOS DEL SDK (PAYMENT_MODAL_RESPONSE)
+    // 6. EVENTOS DEL SDK (postMessage)
+    //    Tipos: SUCCESS_PROCESSED, FAILURE_PROCESSED, BLOCKED,
+    //    AUTH_ERROR, PAYMENT_REQUEST_ERROR, DIRECT_PAYMENT_ERROR
     // ─────────────────────────────────────────────
     window.addEventListener('message', function (event) {
-        if (!event.data || event.data.type !== 'PAYMENT_MODAL_RESPONSE') return;
+        if (!event.data || !event.data.type) return;
 
-        const { success, closeModal, rejected, expiration } = event.data.data || {};
+        var type = event.data.type;
 
-        console.log('[NAVE SDK Event]', event.data.data);
+        // Ignore internal/noisy events
+        if (['webpack', 'webpackHotUpdate', 'webpackOk'].some(function (w) { return type.indexOf(w) !== -1; })) return;
 
-        if (success && closeModal) {
-            _onPagoAprobado();
-        } else if (rejected) {
-            _onPagoRechazado();
-        } else if (expiration) {
-            _onPagoExpirado();
+        console.log('[NAVE SDK Event]', type, event.data);
+
+        switch (type) {
+            case 'SUCCESS_PROCESSED':
+                _onPagoAprobado();
+                break;
+            case 'FAILURE_PROCESSED':
+            case 'DIRECT_PAYMENT_ERROR':
+            case 'BLOCKED':
+                _onPagoRechazado();
+                break;
+            // Legacy event format (fallback)
+            case 'PAYMENT_MODAL_RESPONSE':
+                var d = event.data.data || {};
+                if (d.success && d.closeModal) _onPagoAprobado();
+                else if (d.rejected) _onPagoRechazado();
+                break;
         }
     });
 
@@ -246,40 +362,23 @@
     // ─────────────────────────────────────────────
     function _onPagoAprobado() {
         console.log('[NAVE] ✅ Pago aprobado');
-        const btn = document.getElementById('checkout-pay-btn');
 
-        // Barra roja → retrocede → redirigir
-        if (btn) {
-            btn.classList.remove('loading');
-            btn.classList.add('done');
-        }
-
-        setTimeout(() => {
-            const url = `/checkout/confirmacion?orden=${encodeURIComponent(_ordenId)}`;
-            window.location.href = url;
+        setTimeout(function () {
+            if (typeof window.enableConfirmationState === 'function') {
+                window.enableConfirmationState(_ordenId);
+            } else {
+                window.location.href = '/checkout/confirmacion?orden=' + encodeURIComponent(_ordenId);
+            }
         }, 300);
     }
 
     function _onPagoRechazado() {
         console.log('[NAVE] ❌ Pago rechazado');
-        const btn = document.getElementById('checkout-pay-btn');
-        if (btn) {
-            btn.classList.remove('loading', 'done');
-            btn.textContent = 'PAGAR';
-        }
-        _ocultarError();
-        setTimeout(() => {
-            _mostrarError('Tu pago fue rechazado. Verificá los datos de la tarjeta o probá con otro método de pago.');
-        }, 100);
+        _mostrarError('Tu pago fue rechazado. Verificá los datos de la tarjeta o probá con otro método de pago.');
     }
 
     async function _onPagoExpirado() {
         console.log('[NAVE] ⏰ Intención expirada — renovando...');
-        const btn = document.getElementById('checkout-pay-btn');
-        if (btn) {
-            btn.classList.remove('loading', 'done');
-            btn.textContent = 'PAGAR';
-        }
         _ocultarError();
         _paymentRequestId = null;
         _qrData = null;
@@ -358,6 +457,10 @@
         if (continueBtn) { continueBtn.style.display = ''; continueBtn.textContent = 'CONTINUAR AL PAGO'; }
         if (payBtn) payBtn.style.display = 'none';
         if (backLink) backLink.textContent = '‹ Volver a Información';
+
+        // Restore tabs visibility if we go back
+        var tabsContainer = document.querySelector('.pago-tabs');
+        if (tabsContainer) tabsContainer.style.display = '';
 
         const steps = document.querySelectorAll('.breadcrumb-step');
         steps.forEach((s, i) => s.classList.toggle('active', i === 1));

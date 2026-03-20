@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Consent Preview — GÜIDO CAPUZZI</title>
+    <style>
+        /* ─── FONTS ─── */
+        @font-face {
+            font-family: 'Univers 67 Condensed';
+            src: url('/assets/fonts/UniversCnBold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Univers';
+            src: url('/assets/fonts/UniversRegular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* ─── VARIABLES ─── */
+        :root {
+            --color-white: #FAFAFA;
+            --color-red: #AD1C1C;
+            --color-brown: #442517;
+            --color-black: #202020;
+        }
+
+        /* ─── RESET ─── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Univers', sans-serif;
+            color: var(--color-white);
+            background-color: var(--color-black);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        a { text-decoration: none; color: inherit; cursor: pointer; }
+        .font-condensed {
+            font-family: 'Univers 67 Condensed', sans-serif;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        /* ─── SIMULATED HOME ─── */
+        .sim-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 100;
+            color: var(--color-white);
+        }
+        .sim-header a {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+        .sim-header img {
+            height: 18px;
+            filter: brightness(0) invert(1);
+        }
+        .sim-hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-black);
+            position: relative;
+        }
+        .sim-hero img {
+            width: min(60vw, 400px);
+            filter: brightness(0) invert(1);
+            opacity: 0.9;
+        }
+
+        /* ─── ANNOUNCEMENT BAR (simulated) ─── */
+        .sim-announcement {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 32px;
+            background: transparent;
+            color: var(--color-white);
+            z-index: 110;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .sim-announcement span {
+            font-family: 'Univers 67 Condensed', sans-serif;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            -webkit-text-stroke: 0.4px currentColor;
+        }
+
+        /* ═══════════════════════════════════════════
+           COOKIE CONSENT BANNER
+           ═══════════════════════════════════════════ */
+        #cookie-consent {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            /* Slide up from below */
+            transform: translateY(100%);
+            opacity: 0;
+            /* Delayed entrance: appears 1.5s after page load */
+            animation: cookie-slide-in 600ms cubic-bezier(0.16, 1, 0.3, 1) 1.5s forwards;
+        }
+
+        @keyframes cookie-slide-in {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Exit animation class */
+        #cookie-consent.cookie-accepted {
+            animation: cookie-slide-out 400ms cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+        @keyframes cookie-slide-out {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        .cookie-inner {
+            background: var(--color-white);
+            color: var(--color-black);
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            /* Sutil linea superior */
+            border-top: 1px solid rgba(32, 32, 32, 0.08);
+        }
+
+        .cookie-text {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            letter-spacing: 0.01em;
+            color: var(--color-black);
+            flex: 1;
+            max-width: 720px;
+        }
+
+        .cookie-text a {
+            color: var(--color-black);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: opacity 0.15s;
+        }
+        .cookie-text a:hover {
+            opacity: 0.6;
+        }
+
+        .cookie-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .cookie-btn-accept {
+            font-family: 'Univers 67 Condensed', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 10px 28px;
+            background: var(--color-black);
+            color: var(--color-white);
+            border: 1px solid var(--color-black);
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Fill horizontal izq→der (misma animación que btn-rect del home) */
+        .cookie-btn-accept::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background-color: var(--color-white);
+            transition: width 320ms cubic-bezier(0.25, 0, 0, 1);
+            z-index: 0;
+        }
+        .cookie-btn-accept:hover::before {
+            width: 100%;
+        }
+        .cookie-btn-accept span {
+            position: relative;
+            z-index: 1;
+            display: block;
+            color: var(--color-white);
+            transition: color 320ms cubic-bezier(0.25, 0, 0, 1);
+        }
+        .cookie-btn-accept:hover span {
+            color: var(--color-black);
+        }
+
+        .cookie-btn-decline {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+            color: var(--color-black);
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+        .cookie-btn-decline:hover {
+            opacity: 1;
+            color: var(--color-red);
+        }
+
+        /* ─── MOBILE ─── */
+        @media (max-width: 768px) {
+            .cookie-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px 24px;
+                gap: 16px;
+            }
+            .cookie-text {
+                font-size: 0.78rem;
+            }
+            .cookie-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .cookie-btn-accept {
+                flex: 1;
+                text-align: center;
+            }
+        }
+
+        /* ─── DEMO CONTROLS ─── */
+        .demo-controls {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .demo-btn {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.7rem;
+            padding: 8px 14px;
+            background: rgba(250,250,250,0.1);
+            color: var(--color-white);
+            border: 1px solid rgba(250,250,250,0.2);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: background 0.2s;
+            letter-spacing: 0.04em;
+        }
+        .demo-btn:hover {
+            background: rgba(250,250,250,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIMULATED ANNOUNCEMENT -->
+    <div class="sim-announcement">
+        <span>ENVIO GRATIS EN COMPRAS SUPERIORES A $120.000 &nbsp;&nbsp;&nbsp;&nbsp; ENVIO GRATIS EN COMPRAS SUPERIORES A $120.000</span>
+    </div>
+
+    <!-- SIMULATED HEADER -->
+    <div class="sim-header">
+        <div><a href="#">Shop</a></div>
+        <div><img src="/assets/brand/logo-guido-blanco.svg" alt="GUIDO CAPUZZI"></div>
+        <div style="display:flex;gap:24px;">
+            <a href="#">Buscar</a>
+            <a href="#">Cuenta</a>
+            <a href="#">Carrito (0)</a>
+        </div>
+    </div>
+
+    <!-- SIMULATED HERO -->
+    <div class="sim-hero">
+        <img src="/assets/brand/logo-guido-blanco.svg" alt="GUIDO CAPUZZI">
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         COOKIE CONSENT BANNER
+         ═══════════════════════════════════════════════ -->
+    <div id="cookie-consent">
+        <div class="cookie-inner">
+            <p class="cookie-text">
+                Usamos cookies para mejorar tu experiencia de navegación y analizar el uso del sitio.
+                Al continuar navegando, aceptás nuestro uso de cookies.
+                <a href="/legales" data-section="cookies">Política de Cookies</a>
+            </p>
+            <div class="cookie-actions">
+                <button class="cookie-btn-decline" id="cookie-decline">Rechazar</button>
+                <button class="cookie-btn-accept font-condensed" id="cookie-accept"><span>ACEPTAR</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEMO CONTROLS (no van en producción) -->
+    <div class="demo-controls">
+        <button class="demo-btn" onclick="resetBanner()">Reset banner</button>
+        <button class="demo-btn" onclick="document.getElementById('cookie-consent').classList.toggle('cookie-accepted')">Toggle accept</button>
+    </div>
+
+    <script>
+        // Cookie consent logic
+        const consent = document.getElementById('cookie-consent');
+        const acceptBtn = document.getElementById('cookie-accept');
+        const declineBtn = document.getElementById('cookie-decline');
+
+        acceptBtn.addEventListener('click', () => {
+            consent.classList.add('cookie-accepted');
+            // En producción: guardar preferencia y activar analytics
+            localStorage.setItem('guido_cookie_consent', 'accepted');
+            console.log('[Cookies] Aceptadas — activar analytics, Meta Pixel, etc.');
+
+            // Remover del DOM después de la animación
+            setTimeout(() => consent.remove(), 500);
+        });
+
+        declineBtn.addEventListener('click', () => {
+            consent.classList.add('cookie-accepted');
+            localStorage.setItem('guido_cookie_consent', 'declined');
+            console.log('[Cookies] Rechazadas — solo cookies esenciales.');
+
+            setTimeout(() => consent.remove(), 500);
+        });
+
+        // Reset para demo
+        function resetBanner() {
+            localStorage.removeItem('guido_cookie_consent');
+            location.reload();
+        }
+
+        // No mostrar si ya aceptó/rechazó
+        if (localStorage.getItem('guido_cookie_consent')) {
+            consent.style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>

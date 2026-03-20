@@ -155,6 +155,24 @@ export async function createPaymentRequest(
         },
     }));
 
+    // Calculate sum of products
+    const productsTotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const difference = totalArs - productsTotal;
+
+    // If there's a difference (likely shipping cost), add it as a product 
+    // because NAVE rejects payments where the sum of products doesn't strictly match the total amount.
+    if (difference > 0.01 || difference < -0.01) {
+        products.push({
+            name: 'Costo de envío / Otros',
+            description: 'Envío y cargos adicionales',
+            quantity: 1,
+            unit_price: {
+                currency: 'ARS',
+                value: difference.toFixed(2),
+            },
+        });
+    }
+
     const body: Record<string, unknown> = {
         external_payment_id: externalPaymentId.substring(0, 36),
         seller: { pos_id: posId },
