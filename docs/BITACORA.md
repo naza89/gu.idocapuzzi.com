@@ -4,6 +4,42 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-03-27
+
+### Decisión NAVE vs MercadoPago — resuelta definitivamente
+- NAVE gana: banco argentino regulado, comisiones menores en cuotas (~2.82% menos vs MP)
+- Estrategia: checkout hosted de NAVE (redirección a URL externa) — descartado SDK embebido
+- **Archivo modificado:** `public/js/checkout-payment.js` — reescrito para redirect approach
+
+### Checkout — eliminación del Step 3 intermedio
+- **Problema encontrado:** Step 3 (página de pago propia) era innecesario con redirect approach
+- **Solución adoptada:** Botón "CONTINUAR AL PAGO" en Step 2 redirige directamente a NAVE — POST a `/api/nave/crear-pago` → `window.location.href = checkout_url`
+- Botón muestra "REDIRIGIENDO..." durante el proceso
+- **Archivos modificados:** `public/js/start.js`, `public/js/checkout-payment.js`
+
+### Test e2e NAVE sandbox
+- Flujo completo probado y aprobado: carrito → Steps 1-2 → NAVE → tarjeta prueba → confirmacion ✅
+- Delays en sandbox (~10s + ~13s) son normales, no bugs nuestros
+
+### Confirmación post-pago — fixes
+- **Problema:** Imagen del producto no se mostraba
+- **Solución:** JOIN en Supabase: `items_orden → variantes_producto → productos(imagenes)`
+- **Archivo modificado:** `src/app/api/ordenes/[id]/route.ts`
+- **Problema:** Costo de envío aparecía como fila de producto (incorrecto visualmente)
+- **Solución:** Envío mostrado junto al tipo: `OCA — Domicilio — $8.000`
+- **Archivo modificado:** `public/js/start.js`
+
+### Fix marquee speed
+- **Problema:** Al volver al home desde confirmación, velocidad del marquee se alteraba
+- **Solución:** `resetHomeAnimations()` fuerza restart de animación CSS + llama `initMarquee()`
+- **Archivo modificado:** `public/js/start.js`
+
+### Git
+- Push a `origin/main` — Vercel deploy en curso
+- CLAUDE.md actualizado: política de push → pedir autorización a Naza, luego ejecutar
+
+---
+
 ## 2026-03-16
 
 ### Onboarding Claude Code
