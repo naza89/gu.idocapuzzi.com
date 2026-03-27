@@ -26,12 +26,13 @@ interface CrearPagoBody {
     external_payment_id: string;
     total_ars: number;
     cart_items: CartItem[];
+    success_url?: string;
 }
 
 export async function POST(request: NextRequest) {
     try {
         const body: CrearPagoBody = await request.json();
-        const { external_payment_id, total_ars, cart_items } = body;
+        const { external_payment_id, total_ars, cart_items, success_url } = body;
 
         // ── Validate inputs ──────────────────────────────
         if (!external_payment_id || typeof external_payment_id !== 'string') {
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
             externalPaymentId: external_payment_id,
             totalArs: total_ars,
             cartItems: cart_items,
-            callbackUrl: process.env.NAVE_CALLBACK_URL || undefined,
+            callbackUrl: success_url || process.env.NAVE_CALLBACK_URL || undefined,
             durationTime: 600, // 10 minutes
         });
 
