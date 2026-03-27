@@ -1910,6 +1910,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 notaEl.textContent = `Te enviamos un email con los detalles de tu pedido a ${email}`;
             }
 
+            // Meta Pixel — Purchase (dedup con localStorage para evitar doble-fire en reload)
+            const pixelKey = `pixel_purchase_${ordenId}`;
+            if (window.fbq && !localStorage.getItem(pixelKey)) {
+                const pixelItems = Array.isArray(orden.items_orden) ? orden.items_orden : [];
+                window.fbq('track', 'Purchase', {
+                    value: (orden.total_centavos || 0) / 100,
+                    currency: 'ARS',
+                    content_ids: pixelItems.map(function(i) { return i.variante_id || i.nombre_producto || ''; }),
+                    content_type: 'product',
+                    num_items: pixelItems.reduce(function(sum, i) { return sum + (i.cantidad || 0); }, 0),
+                });
+                localStorage.setItem(pixelKey, '1');
+            }
+
         } catch (err) {
             console.error('[Confirmación] Error al cargar datos de la orden:', err);
         }

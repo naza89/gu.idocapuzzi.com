@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GÜIDO CAPUZZI — Confirmación de pedido (Preview)</title>
+    <style>
+        /* ── FONTS ── */
+        @font-face {
+            font-family: 'Univers 67 Condensed';
+            src: url('./public/assets/fonts/UniversCnBold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Univers';
+            src: url('./public/assets/fonts/UniversRegular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* ── RESET & BASE ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --color-white: #FAFAFA;
+            --color-red: #AD1C1C;
+            --color-brown: #442517;
+            --color-black: #1A1A1A;
+            --font-condensed: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+            --font-regular: 'Univers', 'Helvetica Neue', sans-serif;
+            --ease-expose: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+            --ease-cut: cubic-bezier(0.4, 0, 1, 1);
+        }
+
+        body {
+            background-color: var(--color-white);
+            color: var(--color-black);
+            font-family: var(--font-regular);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* ── CONTAINER ── */
+        .confirmacion-container {
+            max-width: 520px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(28px);
+        }
+
+        .confirmacion-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 400ms var(--ease-enter), transform 400ms var(--ease-enter);
+        }
+
+        /* ── HEADER ── */
+        .confirmacion-titulo {
+            font-family: var(--font-condensed);
+            font-size: 2.4rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-black);
+            margin-bottom: 16px;
+        }
+
+        /* ── LINE ── */
+        .confirmacion-line {
+            height: 3px;
+            background-color: var(--color-black);
+            width: 0%;
+            margin-bottom: 40px;
+        }
+
+        .confirmacion-line.expand {
+            width: 100%;
+            transition: width 620ms var(--ease-expose);
+        }
+
+        /* ── ORDER NUMBER ── */
+        .confirmacion-orden {
+            font-family: var(--font-condensed);
+            font-size: 1rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--color-black);
+            margin-bottom: 32px;
+        }
+
+        /* ── DETAIL ROWS ── */
+        .confirmacion-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(32, 32, 32, 0.08);
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        .confirmacion-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 320ms var(--ease-enter), transform 320ms var(--ease-enter);
+        }
+
+        .confirmacion-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .confirmacion-label {
+            font-family: var(--font-regular);
+            font-size: 0.78rem;
+            font-weight: 200;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-black);
+            opacity: 0.55;
+        }
+
+        .confirmacion-value {
+            font-family: var(--font-regular);
+            font-size: 0.95rem;
+            color: var(--color-black);
+            text-align: right;
+        }
+
+        /* ── PRODUCT ROW ── */
+        .confirmacion-producto {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(32, 32, 32, 0.08);
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        .confirmacion-producto.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 320ms var(--ease-enter), transform 320ms var(--ease-enter);
+        }
+
+        .producto-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .producto-thumb-wrapper {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+        }
+
+        .producto-thumb {
+            width: 56px;
+            height: 56px;
+            background-color: rgba(32, 32, 32, 0.04);
+            border: 1px solid rgba(32, 32, 32, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-condensed);
+            font-size: 0.55rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(32, 32, 32, 0.25);
+        }
+
+        .producto-qty-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--color-black);
+            color: var(--color-white);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-condensed);
+            font-size: 0.6rem;
+            letter-spacing: 0;
+            line-height: 1;
+        }
+
+        .producto-nombre {
+            font-family: var(--font-condensed);
+            font-size: 0.92rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-black);
+        }
+
+        .producto-detalle {
+            font-family: var(--font-regular);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            color: var(--color-black);
+            opacity: 0.5;
+            margin-top: 3px;
+        }
+
+        .producto-precio {
+            font-family: var(--font-condensed);
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            color: var(--color-black);
+        }
+
+        /* ── TOTAL ── */
+        .confirmacion-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 20px 0 0;
+            margin-top: 8px;
+            border-top: 2px solid var(--color-black);
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        .confirmacion-total.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 320ms var(--ease-enter), transform 320ms var(--ease-enter);
+        }
+
+        .total-label {
+            font-family: var(--font-condensed);
+            font-size: 0.85rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--color-black);
+        }
+
+        .total-value {
+            font-family: var(--font-condensed);
+            font-size: 1.3rem;
+            letter-spacing: 0.04em;
+            color: var(--color-black);
+        }
+
+        /* ── CTA BUTTON ── */
+        .confirmacion-cta {
+            margin-top: 48px;
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        .confirmacion-cta.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 320ms var(--ease-enter), transform 320ms var(--ease-enter);
+        }
+
+        .btn-volver {
+            display: block;
+            width: 100%;
+            padding: 18px 42px;
+            background-color: var(--color-black);
+            color: var(--color-white);
+            font-family: var(--font-condensed);
+            font-size: 0.95rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn-volver:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-volver:active {
+            transform: translateY(0);
+        }
+
+        /* Red bar on hover */
+        .btn-volver::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background-color: var(--color-red);
+            pointer-events: none;
+            transition: width 320ms var(--ease-expose);
+        }
+
+        .btn-volver:hover::after {
+            width: 100%;
+        }
+
+        .confirmacion-nota {
+            margin-top: 20px;
+            font-family: var(--font-regular);
+            font-size: 0.75rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-black);
+            opacity: 0.4;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* ── REPLAY BUTTON (only for preview) ── */
+        .preview-replay {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: var(--color-red);
+            color: var(--color-white);
+            font-family: var(--font-condensed);
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .preview-replay:hover { opacity: 1; }
+
+        .preview-label {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            font-family: var(--font-condensed);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-red);
+            opacity: 0.6;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            body { padding: 32px 16px; }
+            .confirmacion-titulo { font-size: 1.8rem; }
+            .producto-thumb-wrapper { width: 48px; height: 48px; }
+            .producto-thumb { width: 48px; height: 48px; }
+        }
+    </style>
+</head>
+<body>
+
+    <span class="preview-label">Preview — no es parte del sitio</span>
+
+    <div class="confirmacion-container" id="container">
+
+        <h1 class="confirmacion-titulo">Pedido confirmado</h1>
+
+        <div class="confirmacion-line" id="red-line"></div>
+
+        <div class="confirmacion-orden" id="orden-num">Orden #C1B116E4</div>
+
+        <!-- Producto 1 -->
+        <div class="confirmacion-producto anim-row">
+            <div class="producto-info">
+                <div class="producto-thumb-wrapper">
+                    <div class="producto-thumb">IMG</div>
+                    <span class="producto-qty-badge">1</span>
+                </div>
+                <div>
+                    <div class="producto-nombre">Remera Güido Oversized</div>
+                    <div class="producto-detalle">Negro &middot; M</div>
+                </div>
+            </div>
+            <div class="producto-precio">$50.000</div>
+        </div>
+
+        <!-- Producto 2 -->
+        <div class="confirmacion-producto anim-row">
+            <div class="producto-info">
+                <div class="producto-thumb-wrapper">
+                    <div class="producto-thumb">IMG</div>
+                    <span class="producto-qty-badge">2</span>
+                </div>
+                <div>
+                    <div class="producto-nombre">Jean Intervenido Suela Roja</div>
+                    <div class="producto-detalle">Indigo &middot; 32</div>
+                </div>
+            </div>
+            <div class="producto-precio">$120.000</div>
+        </div>
+
+        <!-- Producto 3 -->
+        <div class="confirmacion-producto anim-row">
+            <div class="producto-info">
+                <div class="producto-thumb-wrapper">
+                    <div class="producto-thumb">IMG</div>
+                    <span class="producto-qty-badge">1</span>
+                </div>
+                <div>
+                    <div class="producto-nombre">Remera Termal</div>
+                    <div class="producto-detalle">Blanco &middot; L</div>
+                </div>
+            </div>
+            <div class="producto-precio">$45.000</div>
+        </div>
+
+        <!-- Rows de detalle -->
+        <div class="confirmacion-row anim-row">
+            <span class="confirmacion-label">Envio</span>
+            <span class="confirmacion-value">OCA Sucursal &middot; $8.000</span>
+        </div>
+
+        <div class="confirmacion-row anim-row">
+            <span class="confirmacion-label">Direccion</span>
+            <span class="confirmacion-value">Av. Corrientes 1234, CABA</span>
+        </div>
+
+        <div class="confirmacion-row anim-row">
+            <span class="confirmacion-label">Contacto</span>
+            <span class="confirmacion-value">test@test.com</span>
+        </div>
+
+        <div class="confirmacion-row anim-row">
+            <span class="confirmacion-label">Pago</span>
+            <span class="confirmacion-value">Tarjeta &middot; Visa ****0139</span>
+        </div>
+
+        <!-- Total -->
+        <div class="confirmacion-total anim-row">
+            <span class="total-label">Total</span>
+            <span class="total-value">$223.000</span>
+        </div>
+
+        <!-- CTA -->
+        <div class="confirmacion-cta anim-row">
+            <button class="btn-volver" onclick="window.location.reload()">Volver al shop</button>
+            <p class="confirmacion-nota">Te enviamos un email con los detalles de tu pedido a test@test.com</p>
+        </div>
+
+    </div>
+
+    <button class="preview-replay" onclick="replay()">Replay</button>
+
+    <script>
+        function runAnimation() {
+            const container = document.getElementById('container');
+            const line = document.getElementById('red-line');
+            const rows = document.querySelectorAll('.anim-row');
+
+            // Reset everything
+            container.classList.remove('visible');
+            line.classList.remove('expand');
+            rows.forEach(el => el.classList.remove('visible'));
+
+            // Force reflow
+            void container.offsetWidth;
+
+            // T=0: Container enters (fade in + slide up)
+            setTimeout(() => {
+                container.classList.add('visible');
+            }, 200);
+
+            // T=500: Line expands
+            setTimeout(() => {
+                line.classList.add('expand');
+            }, 500);
+
+            // T=900: Order number
+            setTimeout(() => {
+                document.getElementById('orden-num').classList.add('visible');
+            }, 900);
+
+            // T=1080+: Staggered rows (all products + details + total + cta)
+            rows.forEach((el, i) => {
+                setTimeout(() => {
+                    el.classList.add('visible');
+                }, 1080 + (i * 160));
+            });
+        }
+
+        function replay() {
+            runAnimation();
+        }
+
+        // Initial run
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runAnimation, 300);
+        });
+    </script>
+
+</body>
+</html>

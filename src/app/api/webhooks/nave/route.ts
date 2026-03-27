@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { verifyPaymentStatus } from '@/lib/nave/client';
+import { sendOrderConfirmationEmail } from '@/lib/email';
 
 interface NaveWebhookPayload {
     payment_id: string;
@@ -132,19 +133,43 @@ async function processWebhook(
             console.log('[webhook/nave] ✅ Orden actualizada:', externalPaymentId, '→', status);
         }
 
-        // STEP 4: Post-payment actions (Fase 2 — no implementados aún)
-        // if (status === 'APPROVED') {
-        //     // Descontar stock:
-        //     // SELECT items_orden WHERE orden_id = externalPaymentId
-        //     // UPDATE variantes_producto SET stock = stock - cantidad
-        //
-        //     // Crear envío OCA:
-        //     // POST /api/oca/crear-envio → nro_envio_oca
-        //     // UPDATE ordenes SET estado='preparando', nro_envio_oca=...
-        //
-        //     // Email de confirmación:
-        //     // sendConfirmationEmail(externalPaymentId)
-        // }
+        // STEP 4: Post-payment actions
+        if (status === 'APPROVED') {
+            // 4a. Decrementar stock (atómico via RPC)
+            try {
+                const { data: items, error: itemsError } = await supabase
+                    .from('items_orden')
+                    .select('variante_id, cantidad')
+                    .eq('orden_id', externalPaymentId);
+
+                if (itemsError) {
+                    console.error('[webhook/nave] Error al obtener items_orden:', itemsError);
+                } else if (items && items.length > 0) {
+                    await Promise.all(
+                        items
+                            .filter(item => item.variante_id != null)
+                            .map(item =>
+                                supabase.rpc('decrement_stock', {
+                                    p_variante_id: item.variante_id,
+                                    p_cantidad: item.cantidad,
+                                })
+                            )
+                    );
+                    console.log('[webhook/nave] ✅ Stock decrementado — orden:', externalPaymentId);
+                }
+            } catch (stockErr) {
+                // No relanzar: el pago ya está registrado, el stock es recuperable manualmente
+                console.error('[webhook/nave] Error al decrementar stock:', stockErr);
+            }
+
+            // 4b. Email de confirmación
+            try {
+                await sendOrderConfirmationEmail(externalPaymentId);
+            } catch (emailErr) {
+                // No relanzar: el pago ya está registrado
+                console.error('[webhook/nave] Error al enviar email:', emailErr);
+            }
+        }
 
     } catch (err) {
         console.error('[webhook/nave] Error en processWebhook:', err);

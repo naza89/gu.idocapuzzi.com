@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta — GÜIDO CAPUZZI (Preview)</title>
+    <style>
+        /* ── Variables (copiadas de globals.css) ── */
+        :root {
+            --color-white: #FAFAFA;
+            --color-red: #AD1C1C;
+            --color-brown: #442517;
+            --color-black: #1A1A1A;
+            --header-height: 80px;
+            --padding-sides: 40px;
+        }
+
+        /* ── Font faces ── */
+        @font-face {
+            font-family: 'Univers 67 Condensed';
+            src: url('/assets/fonts/UniversCnBold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Univers';
+            src: url('/assets/fonts/UniversRegular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .font-condensed {
+            font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+        }
+
+        /* ── Reset ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--color-white);
+            color: var(--color-black);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ── Simulated header spacer ── */
+        .header-spacer {
+            height: var(--header-height);
+            background: var(--color-black);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--padding-sides);
+        }
+        .header-spacer span {
+            font-family: 'Univers 67 Condensed', sans-serif;
+            color: var(--color-white);
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           CUENTA LAYOUT — replica legales pattern
+           ========================================= */
+
+        .cuenta-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            column-gap: 240px;
+            padding: 0 var(--padding-sides) 0;
+            align-items: start;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* ── SIDEBAR ── */
+        .cuenta-sidebar {
+            position: sticky;
+            top: calc(var(--header-height) + 80px);
+            align-self: start;
+            max-height: calc(100vh - var(--header-height) - 80px);
+        }
+
+        .cuenta-title {
+            font-family: 'Univers 67 Condensed', sans-serif;
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: bold;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: var(--color-black);
+            line-height: 0.9;
+            margin-bottom: 52px;
+        }
+
+        /* ── NAV ── */
+        .cuenta-nav {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 48px;
+        }
+
+        .cuenta-nav-link {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(26, 26, 26, 0.35);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 9px 0;
+            text-align: left;
+            position: relative;
+            display: inline-block;
+            width: fit-content;
+            transition: color 200ms ease;
+        }
+
+        .cuenta-nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 0;
+            width: 0%;
+            height: 1px;
+            background-color: var(--color-black);
+            transition: width 240ms cubic-bezier(0.25, 0, 0, 1);
+        }
+
+        .cuenta-nav-link:hover { color: var(--color-black); }
+        .cuenta-nav-link:hover::after { width: 100%; }
+
+        .cuenta-nav-link.active {
+            color: var(--color-black);
+            font-weight: bold;
+        }
+        .cuenta-nav-link.active::after { width: 100%; }
+
+        /* ── LOGOUT BUTTON — btn-rect black style ── */
+        .btn-cuenta-logout {
+            display: inline-block;
+            padding: 18px 36px;
+            background-color: var(--color-black);
+            color: var(--color-white);
+            font-family: 'Univers 67 Condensed', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .btn-cuenta-logout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background-color: var(--color-red);
+            transition: width 320ms cubic-bezier(0.25, 0, 0, 1);
+            z-index: 0;
+        }
+
+        .btn-cuenta-logout:hover::before {
+            width: 100%;
+        }
+
+        .btn-cuenta-logout span {
+            position: relative;
+            z-index: 1;
+            display: block;
+            color: var(--color-white);
+            transition: color 320ms cubic-bezier(0.25, 0, 0, 1);
+        }
+
+        /* ── CONTENT ── */
+        .cuenta-content {
+            padding: 0;
+            min-width: 0;
+        }
+
+        /* ── SECTIONS show/hide ── */
+        .cuenta-section { display: none; }
+        .cuenta-section.active { display: block; }
+
+        /* ── SECTION TITLE ── */
+        .cuenta-section-title {
+            font-family: 'Univers 67 Condensed', sans-serif;
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: var(--color-black);
+            margin-bottom: 48px;
+            line-height: 0.95;
+        }
+
+        /* ── GREETING (subtle, above section) ── */
+        .cuenta-greeting {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(26, 26, 26, 0.35);
+            margin-bottom: 48px;
+            display: block;
+        }
+
+        /* ── MIS DATOS — field rows ── */
+        .cuenta-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+        }
+        .cuenta-field:first-of-type {
+            padding-top: 0;
+        }
+        .cuenta-field:last-of-type {
+            border-bottom: none;
+        }
+
+        .cuenta-field-label {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(26, 26, 26, 0.45);
+            flex-shrink: 0;
+            min-width: 120px;
+        }
+
+        .cuenta-field-value {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            color: var(--color-black);
+            text-align: right;
+        }
+
+        /* ── MIS PEDIDOS — order rows ── */
+        .cuenta-pedidos-empty {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.78rem;
+            line-height: 1.75;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(26, 26, 26, 0.45);
+        }
+
+        .cuenta-pedidos-empty a {
+            color: var(--color-black);
+            text-decoration: none;
+            border-bottom: 1px solid var(--color-black);
+            transition: opacity 200ms ease;
+        }
+        .cuenta-pedidos-empty a:hover { opacity: 0.4; }
+
+        .cuenta-order {
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+        }
+        .cuenta-order:first-of-type {
+            padding-top: 0;
+        }
+        .cuenta-order:last-of-type {
+            border-bottom: none;
+        }
+
+        .cuenta-order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .cuenta-order-id {
+            font-family: 'Univers 67 Condensed', sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-black);
+        }
+
+        .cuenta-order-date {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(26, 26, 26, 0.4);
+        }
+
+        .cuenta-order-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .cuenta-order-items {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.04em;
+            color: rgba(26, 26, 26, 0.6);
+            text-transform: uppercase;
+        }
+
+        .cuenta-order-total {
+            font-family: 'Univers', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+            color: var(--color-black);
+        }
+
+        /* ── ORDER STATUS BADGE ── */
+        .cuenta-order-status {
+            display: inline-block;
+            font-family: 'Univers 67 Condensed', sans-serif;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            margin-top: 10px;
+        }
+
+        .cuenta-order-status.status-pendiente {
+            background: rgba(26, 26, 26, 0.06);
+            color: rgba(26, 26, 26, 0.5);
+        }
+        .cuenta-order-status.status-pagado {
+            background: rgba(26, 26, 26, 0.08);
+            color: var(--color-black);
+        }
+        .cuenta-order-status.status-preparando {
+            background: rgba(68, 37, 23, 0.08);
+            color: var(--color-brown);
+        }
+        .cuenta-order-status.status-enviado {
+            background: rgba(173, 28, 28, 0.06);
+            color: var(--color-red);
+        }
+        .cuenta-order-status.status-entregado {
+            background: rgba(26, 26, 26, 0.04);
+            color: rgba(26, 26, 26, 0.45);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .cuenta-layout {
+                grid-template-columns: 1fr;
+                column-gap: 0;
+                padding: 48px var(--padding-sides) 80px;
+            }
+            .cuenta-sidebar {
+                position: static;
+                margin-bottom: 40px;
+            }
+            .cuenta-title {
+                font-size: 2.8rem;
+                margin-bottom: 32px;
+            }
+            .cuenta-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Simulated header -->
+    <div class="header-spacer">
+        <span>GÜIDO CAPUZZI</span>
+    </div>
+
+    <section id="cuenta-container" style="padding-top: calc(80px + 60px); padding-bottom: 140px; min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start;">
+        <div class="cuenta-layout">
+
+            <!-- SIDEBAR -->
+            <aside class="cuenta-sidebar">
+                <h1 class="cuenta-title">CUENTA</h1>
+                <nav class="cuenta-nav" aria-label="Secciones de cuenta">
+                    <button class="cuenta-nav-link active" data-section="pedidos">Mis Pedidos</button>
+                    <button class="cuenta-nav-link" data-section="datos">Mis Datos</button>
+                </nav>
+                <button class="btn-cuenta-logout" id="btn-logout">
+                    <span>CERRAR SESIÓN</span>
+                </button>
+            </aside>
+
+            <!-- CONTENT -->
+            <div class="cuenta-content">
+
+                <span class="cuenta-greeting" id="cuenta-greeting">BIENVENIDO, NAZARENO.</span>
+
+                <!-- SECCIÓN: MIS PEDIDOS -->
+                <section class="cuenta-section active" id="cuenta-pedidos">
+                    <h2 class="cuenta-section-title">Mis Pedidos</h2>
+
+                    <!-- Example: with orders -->
+                    <div class="cuenta-order">
+                        <div class="cuenta-order-header">
+                            <span class="cuenta-order-id">Orden #4a8f</span>
+                            <span class="cuenta-order-date">20 Mar 2026</span>
+                        </div>
+                        <div class="cuenta-order-details">
+                            <span class="cuenta-order-items">2 productos</span>
+                            <span class="cuenta-order-total">$45.000</span>
+                        </div>
+                        <span class="cuenta-order-status status-enviado">Enviado</span>
+                    </div>
+
+                    <div class="cuenta-order">
+                        <div class="cuenta-order-header">
+                            <span class="cuenta-order-id">Orden #c3e1</span>
+                            <span class="cuenta-order-date">15 Mar 2026</span>
+                        </div>
+                        <div class="cuenta-order-details">
+                            <span class="cuenta-order-items">1 producto</span>
+                            <span class="cuenta-order-total">$22.500</span>
+                        </div>
+                        <span class="cuenta-order-status status-entregado">Entregado</span>
+                    </div>
+
+                    <div class="cuenta-order">
+                        <div class="cuenta-order-header">
+                            <span class="cuenta-order-id">Orden #f9b2</span>
+                            <span class="cuenta-order-date">12 Mar 2026</span>
+                        </div>
+                        <div class="cuenta-order-details">
+                            <span class="cuenta-order-items">3 productos</span>
+                            <span class="cuenta-order-total">$67.500</span>
+                        </div>
+                        <span class="cuenta-order-status status-preparando">Preparando</span>
+                    </div>
+
+                    <!-- Example: empty state (uncomment to test)
+                    <p class="cuenta-pedidos-empty">
+                        Todavía no tenés pedidos.<br>
+                        <a href="/shop">Explorá la tienda</a> para hacer tu primera compra.
+                    </p>
+                    -->
+                </section>
+
+                <!-- SECCIÓN: MIS DATOS -->
+                <section class="cuenta-section" id="cuenta-datos">
+                    <h2 class="cuenta-section-title">Mis Datos</h2>
+
+                    <div class="cuenta-field">
+                        <span class="cuenta-field-label">Nombre</span>
+                        <span class="cuenta-field-value" id="dash-nombre">Nazareno</span>
+                    </div>
+                    <div class="cuenta-field">
+                        <span class="cuenta-field-label">Apellido</span>
+                        <span class="cuenta-field-value" id="dash-apellido">Capuzzi</span>
+                    </div>
+                    <div class="cuenta-field">
+                        <span class="cuenta-field-label">Email</span>
+                        <span class="cuenta-field-value" id="dash-email">ncgc@guidocapuzzi.com</span>
+                    </div>
+                </section>
+
+            </div>
+            <!-- /cuenta-content -->
+
+        </div>
+        <!-- /cuenta-layout -->
+    </section>
+
+    <script>
+        // Nav switching logic (same pattern as legales)
+        const navLinks = document.querySelectorAll('.cuenta-nav-link');
+        const sections = document.querySelectorAll('.cuenta-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const target = link.dataset.section;
+
+                // Update nav
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Update sections
+                sections.forEach(s => s.classList.remove('active'));
+                const targetSection = document.getElementById('cuenta-' + target);
+                if (targetSection) targetSection.classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+</html>

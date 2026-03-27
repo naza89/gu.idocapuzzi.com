@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Templates Preview — GÜIDO CAPUZZI</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      background: #CCC;
+      font-family: Arial, sans-serif;
+    }
+    .preview-label {
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .preview-note {
+      text-align: center;
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 32px;
+    }
+    .preview-block {
+      margin-bottom: 64px;
+    }
+    .change-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 2px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .change-tag.fix { background: #AD1C1C; color: white; }
+    .change-tag.new { background: #1A1A1A; color: white; }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       NOTAS DE REVISIÓN
+       ============================================================ -->
+  <div style="max-width:600px;margin:0 auto 48px;background:#1A1A1A;padding:24px 32px;color:#FAFAFA;font-size:12px;line-height:1.8;font-family:Arial,sans-serif;">
+    <p style="margin:0 0 12px;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#999;">Revisión de templates</p>
+    <p style="margin:0 0 8px;font-weight:700;font-size:14px;">Cambios aplicados vs. templates actuales</p>
+    <ul style="margin:0 0 0 16px;padding:0;color:#CCC;">
+      <li><span style="color:#AD1C1C;font-weight:700;">#202020 → #1A1A1A</span> — heading y botón CTA (corrección de paleta, sesión 2026-03-19)</li>
+      <li><span style="color:#AD1C1C;font-weight:700;">Accent bar #0f0f0f → #AD1C1C</span> — la barra inferior ahora usa el rojo Güido (acento principal)</li>
+      <li><span style="color:#AD1C1C;font-weight:700;">Logo width="500"</span> — atributo HTML alineado con CSS (Outlook usaba el atributo y lo mostraba a 200px)</li>
+      <li><span style="color:#FAFAFA;font-weight:700;">Email de compra (nuevo)</span> — rediseñado para seguir el mismo sistema que los auth templates</li>
+    </ul>
+  </div>
+
+  <!-- ============================================================
+       TEMPLATE 1 — ACTIVACIÓN DE CUENTA (CORREGIDO)
+       ============================================================ -->
+  <div class="preview-block">
+    <p class="preview-label">
+      1. Activación de cuenta
+      <span class="change-tag fix">3 fixes</span>
+    </p>
+    <p class="preview-note">Supabase Auth → Authentication → Email Templates → Confirm signup</p>
+
+    <div style="max-width:600px;margin:0 auto;">
+      <style>
+        @font-face {
+          font-family: 'UniversCn';
+          src: url('https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversCnBold.ttf') format('truetype');
+          font-weight: 700;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: 'Univers';
+          src: url('https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversRegular.ttf') format('truetype');
+          font-weight: 400;
+          font-style: normal;
+        }
+      </style>
+
+      <div style="max-width:600px;background:#fafafa;">
+
+        <div style="padding:48px 48px 36px;border-bottom:1px solid #e0e0e0;">
+          <img
+            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png"
+            alt="Güido Capuzzi"
+            width="500"
+            style="display:block;width:500px;max-width:100%;height:auto;"
+          />
+        </div>
+
+        <div style="padding:48px 48px 40px;">
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
+            Activación de cuenta
+          </p>
+
+          <h1 style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 24px;text-transform:uppercase;">
+            Activá tu<br>cuenta.
+          </h1>
+
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:400px;">
+            Se creó una nueva cuenta asociada a este correo electrónico.<br>
+            Hacé clic en el botón para verificarla y activarla.<br>
+            Si no fuiste vos, podés ignorar este mensaje sin problema.
+          </p>
+
+          <div style="margin-bottom:40px;">
+            <a href="#"
+               style="display:inline-block;background-color:#1a1a1a;color:#fafafa;text-decoration:none;font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 40px;">
+              Activá tu cuenta
+            </a>
+          </div>
+
+          <hr style="border:none;border-top:1px solid #e0e0e0;margin:0 0 28px;" />
+        </div>
+
+        <div style="padding:0 48px 48px;">
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
+            Este enlace vence en 24 horas y solo puede usarse una vez.<br>
+            Si no solicitaste esta acción, no es necesario hacer nada.
+          </p>
+          <p style="margin-top:14px;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;color:#ccc;word-break:break-all;line-height:1.6;">
+            Si el botón no funciona, copiá y pegá este enlace en tu navegador:<br>
+            https://güidocapuzzi.com/auth/confirm?token=xxxxxxxx
+          </p>
+        </div>
+
+        <!-- FIX: accent-bar #0f0f0f → #AD1C1C -->
+        <div style="height:4px;background-color:#AD1C1C;"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TEMPLATE 2 — RECUPERAR CONTRASEÑA (CORREGIDO)
+       ============================================================ -->
+  <div class="preview-block">
+    <p class="preview-label">
+      2. Recuperar contraseña
+      <span class="change-tag fix">3 fixes</span>
+    </p>
+    <p class="preview-note">Supabase Auth → Authentication → Email Templates → Reset password</p>
+
+    <div style="max-width:600px;margin:0 auto;">
+
+      <div style="max-width:600px;background:#fafafa;">
+
+        <div style="padding:48px 48px 36px;border-bottom:1px solid #e0e0e0;">
+          <img
+            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png"
+            alt="Güido Capuzzi"
+            width="500"
+            style="display:block;width:500px;max-width:100%;height:auto;"
+          />
+        </div>
+
+        <div style="padding:48px 48px 40px;">
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
+            Restablecé tu contraseña
+          </p>
+
+          <h1 style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 24px;text-transform:uppercase;">
+            Modificá tu<br>contraseña.
+          </h1>
+
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:400px;">
+            Se inició un cambio de contraseña asociado a este correo electrónico.<br>
+            Hacé clic en el botón para modificarla y guardarla.<br>
+            Si no fuiste vos, podés ignorar este mensaje sin problema.
+          </p>
+
+          <div style="margin-bottom:40px;">
+            <a href="#"
+               style="display:inline-block;background-color:#1a1a1a;color:#fafafa;text-decoration:none;font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 40px;">
+              Cambiá tu contraseña
+            </a>
+          </div>
+
+          <hr style="border:none;border-top:1px solid #e0e0e0;margin:0 0 28px;" />
+        </div>
+
+        <div style="padding:0 48px 48px;">
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
+            Este enlace vence en 24 horas y solo puede usarse una vez.<br>
+            Si no solicitaste esta acción, no es necesario hacer nada.
+          </p>
+          <p style="margin-top:14px;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;color:#ccc;word-break:break-all;line-height:1.6;">
+            Si el botón no funciona, copiá y pegá este enlace en tu navegador:<br>
+            https://güidocapuzzi.com/auth/reset?token=xxxxxxxx
+          </p>
+        </div>
+
+        <!-- FIX: accent-bar #0f0f0f → #AD1C1C -->
+        <div style="height:4px;background-color:#AD1C1C;"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TEMPLATE 3 — CONFIRMACIÓN DE COMPRA (NUEVO — via Resend)
+       ============================================================ -->
+  <div class="preview-block">
+    <p class="preview-label">
+      3. Confirmación de compra
+      <span class="change-tag new">Nuevo — Resend</span>
+    </p>
+    <p class="preview-note">Enviado via Resend desde src/lib/email.ts — trigger: webhook NAVE APPROVED</p>
+
+    <div style="max-width:600px;margin:0 auto;">
+
+      <div style="max-width:600px;background:#fafafa;">
+
+        <div style="padding:48px 48px 36px;border-bottom:1px solid #e0e0e0;">
+          <img
+            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png"
+            alt="Güido Capuzzi"
+            width="500"
+            style="display:block;width:500px;max-width:100%;height:auto;"
+          />
+        </div>
+
+        <div style="padding:48px 48px 40px;">
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
+            Confirmación de compra
+          </p>
+
+          <h1 style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 6px;text-transform:uppercase;">
+            Orden #1042<br>confirmada.
+          </h1>
+
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:440px;">
+            Hola Nazareno, tu pedido fue recibido y el pago fue confirmado.<br>
+            En breve nos ponemos en contacto para coordinar el envío.
+          </p>
+
+          <!-- Items -->
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+            <thead>
+              <tr>
+                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:left;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Producto</th>
+                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:center;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Cant.</th>
+                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:right;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Precio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;">
+                  <p style="margin:0;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;line-height:1.4;">Remera Logo</p>
+                  <p style="margin:2px 0 0;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">Natural · S</p>
+                </td>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:center;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;">1</td>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:right;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;white-space:nowrap;">$55.000</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;">
+                  <p style="margin:0;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;line-height:1.4;">Campera Selvedge</p>
+                  <p style="margin:2px 0 0;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">Indigo · M</p>
+                </td>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:center;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;">1</td>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:right;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;white-space:nowrap;">$220.000</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Totales -->
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;">
+            <tr>
+              <td style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#999;padding:5px 0;">Subtotal</td>
+              <td style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#1A1A1A;text-align:right;padding:5px 0;">$275.000</td>
+            </tr>
+            <tr>
+              <td style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#999;padding:5px 0;">OCA — Envío a domicilio</td>
+              <td style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#1A1A1A;text-align:right;padding:5px 0;">$8.500</td>
+            </tr>
+            <tr>
+              <td style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-size:18px;font-weight:700;color:#1A1A1A;padding:14px 0 0;border-top:1px solid #E0E0E0;letter-spacing:0.04em;text-transform:uppercase;">Total</td>
+              <td style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-size:18px;font-weight:700;color:#AD1C1C;text-align:right;padding:14px 0 0;border-top:1px solid #E0E0E0;white-space:nowrap;">$283.500</td>
+            </tr>
+          </table>
+
+          <hr style="border:none;border-top:1px solid #e0e0e0;margin:36px 0 0;" />
+        </div>
+
+        <div style="padding:0 48px 48px;">
+          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
+            Ante cualquier consulta respondé este email a
+            <a href="mailto:ventas@guidocapuzzi.com" style="color:#1A1A1A;text-decoration:none;">ventas@guidocapuzzi.com</a>
+          </p>
+          <p style="margin-top:6px;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#ccc;">
+            GÜIDO CAPUZZI — güidocapuzzi.com
+          </p>
+        </div>
+
+        <div style="height:4px;background-color:#AD1C1C;"></div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
