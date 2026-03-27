@@ -4,6 +4,42 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-03-27 (tarde)
+
+### Email templates — revisión, fixes y rediseño
+
+**Auth templates (Supabase) — 3 fixes aplicados:**
+- `#202020` → `#1A1A1A` en heading y CTA (corrección de paleta)
+- Accent bar `#0f0f0f` → `#AD1C1C` (rojo Güido, faltaba en brand)
+- `width="200"` → `width="500"` en atributo HTML del logo (Outlook usa el atributo, no el CSS)
+- Preview en `email-preview.html` — pendiente de aplicar en Supabase Dashboard manualmente
+
+**`src/lib/email.ts` — rediseñado con sistema visual de marca:**
+- Header logo (500px), eyebrow Univers 10px, heading UniversCn Bold 56px, accent-bar `#AD1C1C`
+- Total en `#AD1C1C`, CSS en función `emailBaseStyles()` reutilizable
+- Dominio display: `güidocapuzzi.com`, href técnico: `guidocapuzzi.com`
+- **Archivo nuevo:** `src/lib/email.ts`
+
+**`public/js/start.js` — Purchase Pixel:**
+- `fbq('track', 'Purchase', {...})` en `_populateConfirmationFromAPI()`
+- Deduplicación via `localStorage` con clave `pixel_purchase_${ordenId}`
+
+### Webhook NAVE — confirmado completo ✅
+- Revisión de `src/app/api/webhooks/nave/route.ts` — implementación 100%
+- Estado orden, decremento stock (RPC `decrement_stock`), email confirmación, Purchase pixel
+- Migración `11_decrement_stock_fn.sql` ejecutada en Supabase ✅
+- Pendiente: testear en producción con pago real
+
+### Configuración ventas@ — pendiente
+- `ventas@guidocapuzzi.com` es grupo de distribución, no user account
+- Pendiente: Google Workspace Admin → habilitar senders externos en el grupo
+
+### Git
+- Commit `9c4edb7` — 10 archivos, 1767 líneas
+- Push exitoso a `origin/main` ✅
+
+---
+
 ## 2026-03-27
 
 ### Decisión NAVE vs MercadoPago — resuelta definitivamente
