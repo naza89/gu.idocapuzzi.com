@@ -17,6 +17,22 @@
  */
 
 const siteHTML = `
+    <!-- Pre-routing: ocultar home si la URL es de confirmación (evita flash de fondo rojo) -->
+    <script>
+    (function(){
+        var p = window.location.pathname;
+        if (p.indexOf('/checkout/confirmacion') === 0) {
+            document.documentElement.classList.add('route-confirmation');
+        }
+    })();
+    </script>
+    <style>
+        html.route-confirmation #home-container,
+        html.route-confirmation #announcement-bar { display: none !important; }
+        html.route-confirmation #confirmation-container { display: flex !important; }
+        html.route-confirmation body { background: #FAFAFA !important; }
+    </style>
+
     <!-- ANNOUNCEMENT BAR (MARQUEE) -->
     <div id="announcement-bar">
         <div class="announcement-track" id="announcement-track"><span class="announcement-text" id="announcement-content"></span></div>

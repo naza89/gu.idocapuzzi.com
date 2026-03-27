@@ -498,11 +498,22 @@ document.addEventListener('DOMContentLoaded', () => {
             headerLogo.classList.remove('visible');
         }
 
-        // Show announcement bar
+        // Show announcement bar and re-sync marquee animation
         if (announcementBar) {
             announcementBar.classList.remove('hidden');
+            // Force restart CSS animation to reset speed after display:none toggle
+            const track = document.getElementById('announcement-track');
+            if (track) {
+                track.style.animation = 'none';
+                // eslint-disable-next-line no-unused-expressions
+                track.offsetHeight; // force reflow
+                track.style.animation = '';
+            }
         }
         body.classList.remove('announcement-hidden');
+
+        // Re-init marquee content (recalculates repetitions after returning from hidden state)
+        initMarquee();
 
         // Reset selvedge block parallax to initial position
         if (selvedgeBlock) {
@@ -1594,15 +1605,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.scrollTo(0, 0);
 
-            // Populate confirmation data from cart + checkout state
-            populateConfirmation(ordenId);
-
-            // Run staggered animation
-            runConfirmationAnimation();
+            // Populate confirmation data (async when cart is empty — redirect from NAVE)
+            populateConfirmation(ordenId).then(runConfirmationAnimation);
         });
     }
 
-    function populateConfirmation(ordenId) {
+    async function populateConfirmation(ordenId) {
         // Order number (first 8 chars of UUID)
         const ordenEl = document.getElementById('confirmacion-orden');
         if (ordenEl) {
@@ -1610,7 +1618,27 @@ document.addEventListener('DOMContentLoaded', () => {
             ordenEl.textContent = `Orden #${shortId}`;
         }
 
-        // Products from cart
+        if (cart.length > 0) {
+            // ── Carrito en memoria (flujo normal sin redirección) ──
+            _populateConfirmationFromCart();
+        } else {
+            // ── Carrito vacío: venimos de redirección NAVE, cargar desde API ──
+            await _populateConfirmationFromAPI(ordenId);
+        }
+
+        // Volver al shop button
+        const btnVolver = document.getElementById('confirmacion-btn-volver');
+        if (btnVolver) {
+            btnVolver.addEventListener('click', () => {
+                cart.length = 0;
+                renderCart();
+                enableShopState(null, 'VER TODO');
+            });
+        }
+    }
+
+    function _populateConfirmationFromCart() {
+        // Products
         const productosContainer = document.getElementById('confirmacion-productos');
         if (productosContainer) {
             productosContainer.innerHTML = '';
@@ -1627,20 +1655,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="producto-confirm-info">
                         <div class="producto-confirm-thumb-wrapper">
                             ${imgHTML}
-                            <span class="producto-confirm-qty-badge">${item.quantity}</span>
+                            <span class="producto-confirm-qty-badge">${item.qty}</span>
                         </div>
                         <div>
                             <div class="producto-confirm-nombre">${item.name}</div>
-                            <div class="producto-confirm-detalle">${item.colorway || ''} &middot; ${item.size || ''}</div>
+                            <div class="producto-confirm-detalle">${item.color || ''} &middot; ${item.size || ''}</div>
                         </div>
                     </div>
-                    <div class="producto-confirm-precio">$${(item.price * item.quantity).toLocaleString('es-AR')}</div>
+                    <div class="producto-confirm-precio">$${(item.priceValue * item.qty).toLocaleString('es-AR')}</div>
                 `;
                 productosContainer.appendChild(row);
             });
         }
 
-        // Shipping info
+        // Shipping
         const envioEl = document.getElementById('confirmacion-envio-value');
         if (envioEl) {
             const checkoutEnvio = document.querySelector('.checkout-envio-selected');
@@ -1664,14 +1692,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Payment
         const pagoEl = document.getElementById('confirmacion-pago-value');
-        if (pagoEl) {
-            pagoEl.textContent = 'Tarjeta';
-        }
+        if (pagoEl) pagoEl.textContent = 'Tarjeta';
 
         // Total
         const totalEl = document.getElementById('confirmacion-total-value');
         if (totalEl) {
-            const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const cartTotal = cart.reduce((sum, item) => sum + (item.priceValue * item.qty), 0);
             totalEl.textContent = `$${cartTotal.toLocaleString('es-AR')}`;
         }
 
@@ -1682,15 +1708,97 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = emailEl ? emailEl.value : 'tu email';
             notaEl.textContent = `Te enviamos un email con los detalles de tu pedido a ${email}`;
         }
+    }
 
-        // Volver al shop button
-        const btnVolver = document.getElementById('confirmacion-btn-volver');
-        if (btnVolver) {
-            btnVolver.addEventListener('click', () => {
-                cart.length = 0;
-                renderCart();
-                enableShopState(null, 'VER TODO');
-            });
+    async function _populateConfirmationFromAPI(ordenId) {
+        if (!ordenId) return;
+
+        try {
+            const res = await fetch(`/api/ordenes/${encodeURIComponent(ordenId)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const { orden } = await res.json();
+
+            // Products from items_orden
+            const productosContainer = document.getElementById('confirmacion-productos');
+            if (productosContainer && Array.isArray(orden.items_orden)) {
+                productosContainer.innerHTML = '';
+                orden.items_orden.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'confirmacion-producto confirmacion-anim-row';
+                    const precioItem = Math.round(item.precio_unitario_centavos / 100);
+                    const precioTotal = precioItem * item.cantidad;
+
+                    // Intentar obtener imagen del producto vía join
+                    const imagenes = item.variantes_producto?.productos?.imagenes;
+                    const imgSrc = (Array.isArray(imagenes) && imagenes.length > 0) ? imagenes[0] : '';
+                    const imgHTML = imgSrc
+                        ? `<img class="producto-confirm-thumb" src="${imgSrc}" alt="${item.nombre_producto}">`
+                        : `<div class="producto-confirm-thumb" style="display:flex;align-items:center;justify-content:center;font-family:'Univers 67 Condensed';font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(32,32,32,0.25);">GÜIDO</div>`;
+
+                    row.innerHTML = `
+                        <div class="producto-confirm-info">
+                            <div class="producto-confirm-thumb-wrapper">
+                                ${imgHTML}
+                                <span class="producto-confirm-qty-badge">${item.cantidad}</span>
+                            </div>
+                            <div>
+                                <div class="producto-confirm-nombre">${item.nombre_producto}</div>
+                                <div class="producto-confirm-detalle">${item.color || ''} &middot; ${item.talle || ''}</div>
+                            </div>
+                        </div>
+                        <div class="producto-confirm-precio">$${precioTotal.toLocaleString('es-AR')}</div>
+                    `;
+                    productosContainer.appendChild(row);
+                });
+
+            }
+
+            // Shipping — tipo + precio en la misma línea
+            const envioEl = document.getElementById('confirmacion-envio-value');
+            if (envioEl) {
+                const tipoEnvio = orden.tipo_envio === 'sucursal' ? 'OCA — Sucursal' : 'OCA — Domicilio';
+                const enviocentavos = orden.costo_envio_centavos || 0;
+                if (enviocentavos > 0) {
+                    const envioPesos = Math.round(enviocentavos / 100);
+                    envioEl.textContent = `${tipoEnvio} — $${envioPesos.toLocaleString('es-AR')}`;
+                } else {
+                    envioEl.textContent = tipoEnvio;
+                }
+            }
+
+            // Address
+            const dirEl = document.getElementById('confirmacion-direccion-value');
+            if (dirEl && orden.direcciones_envio) {
+                const d = orden.direcciones_envio;
+                dirEl.textContent = [d.calle, d.ciudad, d.provincia, d.codigo_postal].filter(Boolean).join(', ');
+            }
+
+            // Contact
+            const contactoEl = document.getElementById('confirmacion-contacto-value');
+            if (contactoEl && orden.clientes) {
+                contactoEl.textContent = orden.clientes.email || '';
+            }
+
+            // Payment
+            const pagoEl = document.getElementById('confirmacion-pago-value');
+            if (pagoEl) pagoEl.textContent = 'Tarjeta';
+
+            // Total
+            const totalEl = document.getElementById('confirmacion-total-value');
+            if (totalEl && orden.total_centavos) {
+                const total = Math.round(orden.total_centavos / 100);
+                totalEl.textContent = `$${total.toLocaleString('es-AR')}`;
+            }
+
+            // Note
+            const notaEl = document.getElementById('confirmacion-nota');
+            if (notaEl) {
+                const email = orden.clientes?.email || 'tu email';
+                notaEl.textContent = `Te enviamos un email con los detalles de tu pedido a ${email}`;
+            }
+
+        } catch (err) {
+            console.error('[Confirmación] Error al cargar datos de la orden:', err);
         }
     }
 
@@ -2170,19 +2278,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cpVal = document.getElementById('checkout-cp')?.value || '';
                 const ubicacion = [direccionVal, ciudadVal, provinciaVal, cpVal].filter(Boolean).join(', ');
 
-                // Guardar en globals para onPagoExpirado() en checkout-payment.js
-                window._checkoutTotalARS = totalARS;
-                window._checkoutCartItems = cart;
-
                 console.log('[Checkout] ✅ Envío seleccionado:', selectedEnvio.value, '→ persistiendo en Supabase');
 
-                // ── PATCH /api/ordenes/{id} — Persistir envío en Supabase antes del Step 3 ──
+                // Activar estado de carga en el botón
+                const _btnContinuar = document.getElementById('checkout-continue-btn');
+                if (_btnContinuar) {
+                    _btnContinuar.dataset.originalText = _btnContinuar.textContent;
+                    _btnContinuar.textContent = 'REDIRIGIENDO...';
+                    _btnContinuar.disabled = true;
+                    _btnContinuar.style.opacity = '0.6';
+                    _btnContinuar.style.cursor = 'wait';
+                }
+
                 const ordenId = window._currentCheckoutOrdenId;
+
+                // ── PATCH /api/ordenes/{id} — Persistir envío en Supabase ──
                 if (ordenId) {
                     try {
-                        if (window.setBotonCargando) setBotonCargando(true);
-
-                        // Gather OCA-specific data from the selected option
                         const operativaOca = envioOpcionEl?.dataset?.operativa
                             ? parseInt(envioOpcionEl.dataset.operativa) : null;
                         let idSucursalOca = null;
@@ -2206,31 +2318,46 @@ document.addEventListener('DOMContentLoaded', () => {
                             const errData = await patchRes.json().catch(() => ({}));
                             console.error('[Checkout] Error PATCH ordenes:', errData);
                             alert('Error al guardar el envío. Intentá nuevamente.');
-                            if (window.setBotonCargando) setBotonCargando(false);
+                            if (_btnContinuar) {
+                                _btnContinuar.textContent = _btnContinuar.dataset.originalText || 'CONTINUAR AL PAGO';
+                                _btnContinuar.disabled = false;
+                                _btnContinuar.style.opacity = '1';
+                                _btnContinuar.style.cursor = 'pointer';
+                            }
                             return;
                         }
 
-                        console.log('[Checkout] ✅ Envío persistido en Supabase → pasando a Step 3');
+                        console.log('[Checkout] ✅ Envío persistido en Supabase → redirigiendo a NAVE');
                     } catch (patchErr) {
                         console.error('[Checkout] Error de red PATCH ordenes:', patchErr);
                         alert('Error de conexión. Intentá nuevamente.');
-                        if (window.setBotonCargando) setBotonCargando(false);
+                        if (_btnContinuar) {
+                            _btnContinuar.textContent = _btnContinuar.dataset.originalText || 'CONTINUAR AL PAGO';
+                            _btnContinuar.disabled = false;
+                            _btnContinuar.style.opacity = '1';
+                            _btnContinuar.style.cursor = 'pointer';
+                        }
                         return;
-                    } finally {
-                        if (window.setBotonCargando) setBotonCargando(false);
                     }
                 }
 
-                // Invocar el módulo de pago (checkout-payment.js)
-                if (typeof window.mostrarCheckoutStep3 === 'function') {
-                    window.mostrarCheckoutStep3({
-                        email: emailVal,
-                        ubicacion: ubicacion,
-                        metodoEnvio: metodoEnvioTexto,
-                        ordenId: ordenId || `orden-${Date.now()}`,
-                        totalARS: totalARS,
-                        cartItems: cart
-                    });
+                // ── Redirigir a NAVE (sin mostrar Step 3) ──
+                if (typeof window.redirigirPagoNave === 'function') {
+                    try {
+                        await window.redirigirPagoNave({
+                            ordenId: ordenId || `orden-${Date.now()}`,
+                            totalARS: totalARS,
+                            cartItems: cart
+                        });
+                    } catch (naveErr) {
+                        alert('No se pudo inicializar el proceso de pago. Intentá nuevamente.');
+                        if (_btnContinuar) {
+                            _btnContinuar.textContent = _btnContinuar.dataset.originalText || 'CONTINUAR AL PAGO';
+                            _btnContinuar.disabled = false;
+                            _btnContinuar.style.opacity = '1';
+                            _btnContinuar.style.cursor = 'pointer';
+                        }
+                    }
                 } else {
                     console.error('[Checkout] checkout-payment.js no está cargado. Verificar orden de scripts.');
                     alert('Error al cargar el módulo de pago. Por favor recargá la página.');
@@ -3421,6 +3548,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (path.startsWith('/checkout/confirmacion')) {
+            // Limpiar clase de pre-routing (usada para evitar flash de home)
+            document.documentElement.classList.remove('route-confirmation');
             const ordenId = params.get('orden') || '';
             enableConfirmationState(ordenId, /* skipHistory */ true);
             history.replaceState({ state: 'confirmation', ordenId: ordenId }, '', window.location.href);

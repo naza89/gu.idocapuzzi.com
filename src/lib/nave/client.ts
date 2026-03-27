@@ -210,7 +210,7 @@ export async function createPaymentRequest(
     }
 
     const data: NavePaymentRequestResponse = await res.json();
-    console.log('[NAVE] ✅ Intención de pago creada:', data.id);
+    console.log('[NAVE] ✅ Respuesta completa de intención de pago:', JSON.stringify(data, null, 2));
     return data;
 }
 
