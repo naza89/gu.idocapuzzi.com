@@ -348,3 +348,171 @@ Se creó nota `Tech/Mobile Responsiveness.md` en vault Obsidian documentando:
 - `Tech/Mobile Responsiveness.md` — nueva nota completa
 - `Ejecución/Plan Activo.md` — cookie consent + OCA credenciales + mobile como tarea bloqueada
 - `_Index.md` — agregada Mobile Responsiveness en sección TECH
+
+### Backend health check — limpieza Supabase
+- Se eliminaron 28 órdenes de test (estados pendiente, envio_calculado, pago_pendiente) + clientes, items, direcciones huérfanas
+- Se eliminaron 2 cuentas de test de `auth.users` (quedó solo la cuenta real de Naza)
+- Se eliminó 1 webhook_log de prueba de Galicia
+- Se verificó que migración `09_webhook_logs.sql` estaba ejecutada
+- Base de datos limpia: 0 órdenes, 0 clientes, 0 items, 0 direcciones (ready para producción)
+
+### Migración 10 — RLS para dashboard de usuario
+- Creada y aplicada `10_dashboard_rls.sql`: políticas SELECT en `ordenes` e `items_orden` para que usuarios autenticados lean sus propias órdenes (matchea por `auth.email()` contra `clientes.email`)
+- Archivo guardado en `backend/sql/10_dashboard_rls.sql`
+
+### Auth UX — mejoras post-login/signup
+- **Post-login:** Saludo personalizado `¡BIENVENIDO/A, NOMBRE!` (interpolado desde `user_metadata`). Eliminado `location.reload()` — ahora navega directo al dashboard sin recarga
+- **Post-signup:** Texto de instrucciones agregado: "REVISÁ TU BANDEJA Y HACÉ CLICK EN EL LINK DE CONFIRMACIÓN." + fade automático al login después de 4 segundos
+- **Post-email-confirm:** Ahora rutea directo al dashboard si la sesión está activa (antes mostraba login con mensaje)
+
+### Dashboard de usuario (/cuenta) — infraestructura
+- Sección `#account-dashboard` agregada en `page.tsx`: saludo personalizado, datos del usuario (nombre, apellido, email), botón "CERRAR SESIÓN"
+- `enableAccountState()` refactorizada: ahora hace `getSession()` y brancha entre `_showAccountLogin()` (sin sesión) y `_showAccountDashboard()` (con sesión)
+- Logout funcional: `supabaseClient.auth.signOut()` → muestra login
+- El diseño final del dashboard se trabajará como HTML separado (iterativo con Naza)
+
+**Archivos modificados:** `src/app/page.tsx`, `public/js/start.js`
+**Archivos creados:** `backend/sql/10_dashboard_rls.sql`
+
+### Plan estratégico documentado
+- Se generó plan comprehensivo en `.claude/plans/` cubriendo 6 temas: backend health, automatizaciones (n8n), Google Workspace, Meta Ads, dashboard usuario, auth UX
+- Roadmap organizado por desbloqueadores (ahora / Workspace / gateway / contenido)
+- Estructura de cuentas Workspace propuesta: `ncgc@`, `fmgc@`, `pedidos@`, `hola@`, `no-reply@` en `güidocapuzzi.com`
+- Nota sobre dominio IDN: Google Workspace soporta `güidocapuzzi.com` (Punycode: `xn--gidocapuzzi-thb.com`), pero algunos servicios de terceros pueden rechazar la ü
+
+### Google Workspace — registro de dominio y setup de emails
+
+**Problema encontrado:** Google Workspace no permite usar `@güidocapuzzi.com` (con ü) en el campo de email de contacto del formulario de pago. Hubo confusión inicial: el campo de "Contacto principal" pide un email de recuperación preexistente (no el email de Workspace), pero en ese punto se decidió reconsiderar el dominio.
+
+**Decisión adoptada:** Registrar `guidocapuzzi.com` (ASCII, sin ü) en Hostinger como dominio operativo. Costo: ~$10-15 USD/año. Motivo: Workspace, Resend, Meta Business y otros servicios van a usar esta dirección — tener la ü en el dominio operativo era un riesgo real (formularios que la rechazan, servicios que no la soportan correctamente).
+
+**Arquitectura resultante:**
+- `güidocapuzzi.com` — URL del sitio web (dominio de marca, ya registrado)
+- `guidocapuzzi.com` — dominio operativo: emails, APIs, servicios. Redirige a `güidocapuzzi.com`
+
+**Google Workspace configurado** con `guidocapuzzi.com` como dominio primario. Cuentas creadas:
+
+| Email | Uso |
+|-------|-----|
+| `ncgc@guidocapuzzi.com` | Admin principal — Naza |
+| `fmgc@guidocapuzzi.com` | Socio (Fede) |
+| `ventas@guidocapuzzi.com` | Sender para emails transaccionales (Resend) |
+| `info@guidocapuzzi.com` | Email público en el sitio + Instagram bio |
+| `no-reply@guidocapuzzi.com` | Sender de Supabase Auth (confirm/recovery) |
+
+**Desbloqueado por Workspace:**
+- Configurar SMTP custom en Supabase Auth (elimina delay 5-10min, mejora sender)
+- Verificar dominio en Resend (habilita `ventas@guidocapuzzi.com` para emails de compra)
+- Instalar Meta Pixel con consent mode (siguiente paso: crear cuenta Meta Business)
+
+**Skill `/como-sigo` creado** — devuelve top 5 pasos priorizados leyendo plan + handoff + bitácora, sin argumentos necesarios.
+
+---
+
+## 2026-03-21
+
+### Migración de cuentas — Supabase y Resend
+- Supabase migrado a `ncgc@guidocapuzzi.com` (cuenta del dominio operativo)
+- Resend migrado a `ncgc@guidocapuzzi.com`
+- Stack operativo centralizado bajo el dominio del negocio
+
+### Supabase Auth SMTP configurado
+- Host: `smtp.gmail.com`, Puerto: 587 (STARTTLS)
+- App Password de Google Workspace configurado en Supabase Auth settings
+- Sender: `no-reply@guidocapuzzi.com` (alias de `ncgc@guidocapuzzi.com`)
+- Elimina el delay de 5-10min del SMTP de Supabase por defecto
+
+### Meta Business Suite — setup completo desde cero
+- Meta Business Suite creada con `ncgc@guidocapuzzi.com`
+- Ad Account creada: **GÜIDO ADS** (ID: `1303341605016642`)
+- Pixel creado: **GÜIDO Pixel** (ID: `1882249755738633`)
+- Instagram @gu.idocapuzzi conectada al portfolio
+- Dominios verificados en Meta:
+  - `guidocapuzzi.com` (ID: 1017941284742082)
+  - `xn--gidocapuzzi-thb.com` — Punycode de `güidocapuzzi.com` (ID: 4346137195666577)
+- Bug encontrado y resuelto: el Pixel no se podía crear hasta tener una Ad Account activa primero
+
+### Meta Pixel — instalación con Consent Mode v2
+
+**`src/app/layout.tsx`:**
+- fbq stub con `noscript` fallback
+- `consent('default', { ad_storage: 'denied', analytics_storage: 'denied' })` por defecto
+- `fbq('init', PIXEL_ID)` — inicialización sin disparar PageView hasta consentimiento
+
+**`public/js/start.js`:**
+- `activateTracking()`: `consent('update', { ad_storage: 'granted', analytics_storage: 'granted' })` + `fbq('track', 'PageView')`. Llamada desde `initCookieConsent()` al aceptar.
+- `ViewContent` disparado en `enablePDPState()` con `content_name`, `content_ids`, `value`, `currency`
+- `AddToCart` disparado en `addToCart()` con `content_name`, `content_ids`, `value`, `currency`, `num_items`
+- `InitiateCheckout` disparado en `enableCheckoutState()` con `num_items`, `value`, `currency`
+- Purchase event pendiente (requiere gateway funcional)
+
+**Flujo Consent Mode v2:**
+1. Usuario carga el sitio → Pixel inicializado, tracking bloqueado (denied)
+2. Cookie banner aparece (1.5s delay)
+3. Usuario acepta → `activateTracking()` → grant + PageView
+4. Eventos de comportamiento (ViewContent, AddToCart, InitiateCheckout) solo si aceptó
+
+**Build:** `npm run build` sin errores
+
+### Pixel ID corregido y timing fix
+- **Pixel ID corregido:** `1303341605016642` era el Ad Account ID, no el Pixel ID. Pixel real: `1882249755738633`. Corregido en `layout.tsx`
+- **Timing fix:** `<Script strategy="afterInteractive">` → `<script dangerouslySetInnerHTML>` sincrónico en `<head>` (fbq no estaba disponible para usuarios con cookies ya aceptadas)
+- **Pixel verificado:** 200 OK a `facebook.com/tr` en Chrome Network tab
+
+### Resend — dominio verificado
+- Dominio: `guidocapuzzi.com` (reemplazó `xn--gidocapuzzi-thb.com`, plan free = 1 dominio)
+- Habilita `ventas@guidocapuzzi.com` para emails transaccionales
+
+### Migración de cuentas — Vercel y GitHub
+- Vercel: `ncgc@guidocapuzzi.com` (usuario: `nccapuzzigc`)
+- GitHub: `ncgc@guidocapuzzi.com` como primario
+- Stack completo centralizado bajo dominio del negocio
+
+### Deploys a producción
+- 3 deploys a `gc.com` (Vercel). Proyecto duplicado "guidocapuzzi" pendiente de eliminar
+
+### Cambio de paleta — Negro profundo
+- `#202020` → `#1A1A1A` en 12 archivos (9 repo + 3 vault)
+
+### Skills y documentación
+- Skill `/sync` creado — renombre de `/wrap-up`, comando unificado de cierre de sesión
+- `/sync-bitacora` eliminado (redundante)
+- `CLAUDE.md` actualizado con skills vigentes
+- Nota `Tech/Meta.md` creada en vault: guía completa del pixel + log de cambios
+
+---
+
+## 2026-03-23
+
+### Dashboard de cuenta `/cuenta` — diseño final e implementación
+- Diseño iterado con Naza via preview HTML (`public/cuenta-preview.html`) antes de integrar
+- Layout dos columnas estilo legales: sidebar sticky (izquierda) + contenido principal (derecha)
+- Sidebar: título "CUENTA" (clamp 3rem–4.5rem), nav links (Mis Pedidos / Mis Datos), botón CERRAR SESIÓN
+- Botón logout: rectángulo negro, hover fill izq→der en rojo GÜIDO, Univers 67 Condensed uppercase — matchea CTAs del home
+- Nav links: opacity 0.35 → negrito+underline al activar, hover underline animado
+- Sección "Mis Datos": filas label/value con separadores, pobladas desde `user.user_metadata` de Supabase auth
+- Sección "Mis Pedidos": placeholder con link a /shop. CSS preparado para órdenes reales con status badges
+- Greeting sutil: "BIENVENIDO, NOMBRE." en Univers Regular, opacity 0.35
+- Responsive: <900px colapsa a columna única, sidebar estática, nav horizontal
+- **Archivo modificado:** `src/app/page.tsx` — sección `#account-dashboard` reescrita
+- **Archivo modificado:** `src/app/globals.css` — ~200 líneas CSS de cuenta dashboard
+- **Archivo modificado:** `public/js/start.js` — `_showAccountDashboard()` + `_initCuentaNav()` nueva
+
+### Bug: dashboard aparecía y desaparecía (flash)
+- **Problema encontrado:** Después del login, el dashboard hacía un flash (aparecía y desaparecía). La página quedaba en blanco.
+- **Causa raíz:** CSS tenía `#account-dashboard { opacity: 0; }`. La función `transitionState()` anima el enter (sets inline `opacity: 1`), pero al completar (420ms) limpia todos los inline styles (`enterEl.style.opacity = ''`). Al limpiar el inline, el CSS `opacity: 0` tomaba control → dashboard invisible.
+- **Solución adoptada:** Eliminar `display: none; opacity: 0; transition` del CSS de `#account-dashboard`. La visibilidad la controla `transitionState()` exclusivamente via inline styles del HTML.
+- **Lección:** Nunca poner `opacity: 0` en CSS para secciones manejadas por `transitionState()` — esa función espera que al limpiar inline styles, el elemento quede visible.
+
+### Kapso — exploración como capa WhatsApp de WIDO
+- Kapso (kapso.ai) es plataforma completa: SDK TypeScript, MCP server alpha, 3 agent skills, claude-code-whatsapp, inbox, broadcasts
+- Cuenta creada, API key obtenida. Free tier: 2K msgs/mes
+- **Bloqueado:** Flujo de "Digital phone numbers" requería conectar número personal a WhatsApp Business API — no deseado
+- **Decisión:** Abortar por ahora. Comprar SIM dedicada para la marca en el futuro y reconectar
+
+### obsidian-git — vault sincronizada a GitHub
+- Repo privado `naza89/gu.ido-vault` creado en GitHub
+- Git inicializado en vault, `.gitignore` excluye archivos sensibles
+- Commit inicial: 74 archivos. Push exitoso
+- Plugin obsidian-git instalado: auto-backup cada 10 min
+- **Propósito:** Bridge vault→cloud para integraciones futuras (Kapso, WIDO, servicios cloud)

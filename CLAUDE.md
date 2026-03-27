@@ -97,7 +97,7 @@ docs/
 
 - No modificar CSS/estilos — ver @docs/BRAND_GUIDELINES.md
 - No reestructurar `start.js` ni `page.tsx` sin discutirlo
-- No hacer `git push` — Naza pushea manualmente
+- Para `git push`: pedir autorización explícita a Naza antes de pushear, luego ejecutarlo
 - No instalar dependencias nuevas sin confirmar
 - No tocar `.env.local`
 
@@ -135,13 +135,14 @@ El agente **NO** escribe en `Diario/Notas.md` — eso es personal de Naza.
 
 ### Skills de sesión
 - `/resume` — Inicio de sesión: lee handoff notes + plan activo + bitácora + git log
-- `/wrap-up` — Cierre de sesión: actualiza handoff notes + plan + bitácora + **memoria**
+- `/sync` — Sincronización completa: actualiza handoff notes + plan + bitácora (repo y vault) + memoria
+- `/como-sigo` — Top 5 pasos priorizados para continuar el proyecto
 - `/status-guido` — Dashboard del negocio: catálogo, stock, órdenes, progreso
-- `/sync-bitacora` — Sincroniza bitácora entre repo y vault
+- `/wrap-up` o `/sync-bitacora` — Aliases deprecados de `/sync`
 
 ## Documentación detallada
 
-- `docs/BRAND_GUIDELINES.md` — Paleta (#FAFAFA, #AD1C1C, #442517, #202020), tipografía, tono
+- `docs/BRAND_GUIDELINES.md` — Paleta (#FAFAFA, #AD1C1C, #442517, #1A1A1A), tipografía, tono
 - `docs/ARCHITECTURE.md` — Arquitectura técnica completa
 - `docs/GAPS_AND_TODOS.md` — Estado real y tareas pendientes
 - `docs/NAVE_CHECKOUT_API_DOCS.md` — API reference NAVE completa

@@ -287,7 +287,7 @@ Para máxima seguridad PCI, `mp.fields` renderiza inputs en iframes aislados:
 ```javascript
 const cardNumberField = mp.fields.create("cardNumber", {
   placeholder: "Número de tarjeta",
-  style: { fontFamily: "Univers", fontSize: "16px", color: "#202020" }
+  style: { fontFamily: "Univers", fontSize: "16px", color: "#1A1A1A" }
 });
 
 const securityCodeField = mp.fields.create("securityCode", { placeholder: "CVV" });

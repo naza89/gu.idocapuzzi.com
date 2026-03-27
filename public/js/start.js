@@ -576,6 +576,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateCartCounts();
         // openCart() se llama externamente (PDP: después de la barra de carga)
+
+        // Meta Pixel — AddToCart
+        if (window.fbq) {
+            window.fbq('track', 'AddToCart', {
+                content_name: `${product.name} ${product.color}`,
+                content_ids: [product.slug || String(productIndex)],
+                content_type: 'product',
+                value: parseInt((product.price || '0').replace(/[^0-9]/g, '')) || 0,
+                currency: 'ARS'
+            });
+        }
     }
 
     /**
@@ -971,6 +982,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set page title per product
             document.title = `${product.name} ${product.color} — GÜIDO CAPUZZI`;
             const isArchive = product.category === 'ARCHIVO';
+
+            // Meta Pixel — ViewContent
+            if (window.fbq) {
+                window.fbq('track', 'ViewContent', {
+                    content_name: `${product.name} ${product.color}`,
+                    content_category: product.category || 'ROPA',
+                    content_ids: [product.slug || String(productIndex)],
+                    content_type: 'product',
+                    value: parseInt((product.price || '0').replace(/[^0-9]/g, '')) || 0,
+                    currency: 'ARS'
+                });
+            }
             const sizeOtherStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
             const qtyContainerStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
 
@@ -1398,6 +1421,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!skipHistory) pushHistory({ state: 'account' });
         document.title = 'Cuenta — GÜIDO CAPUZZI';
 
+        // Verificar si hay sesión activa y routear al dashboard o al login
+        if (window.supabaseClient) {
+            window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    _showAccountDashboard(session.user);
+                } else {
+                    _showAccountLogin();
+                }
+            }).catch(() => {
+                _showAccountLogin();
+            });
+        } else {
+            _showAccountLogin();
+        }
+    }
+
+    function _showAccountLogin() {
         const exitEl = getActiveSection();
         const enterEl = accountLoginSection;
 
@@ -1408,7 +1448,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('shop'),
                 document.getElementById('product-page'),
                 document.getElementById('home-container'),
-                document.getElementById('account-contact')
+                document.getElementById('account-contact'),
+                document.getElementById('account-dashboard')
             ].forEach(sec => { if (sec && sec !== exitEl) sec.style.display = 'none'; });
             if (accountLoginSection) accountLoginSection.style.pointerEvents = 'auto';
             if (accountCreateSection) accountCreateSection.style.display = 'none';
@@ -1416,6 +1457,78 @@ document.addEventListener('DOMContentLoaded', () => {
             header.style.color = '';
             window.scrollTo(0, 0);
             injectFooterInAccount();
+        });
+    }
+
+    function _showAccountDashboard(user) {
+        const nombre = user?.user_metadata?.nombre || '';
+        const apellido = user?.user_metadata?.apellido || '';
+        const email = user?.email || '';
+
+        // Poblar datos del dashboard
+        const cuentaGreeting = document.getElementById('cuenta-greeting');
+        const dashNombre = document.getElementById('dash-nombre');
+        const dashApellido = document.getElementById('dash-apellido');
+        const dashEmail = document.getElementById('dash-email');
+        const accountDashboard = document.getElementById('account-dashboard');
+
+        if (cuentaGreeting) cuentaGreeting.textContent = nombre ? `BIENVENIDO, ${nombre.toUpperCase()}.` : 'MI CUENTA';
+        if (dashNombre) dashNombre.textContent = nombre || '—';
+        if (dashApellido) dashApellido.textContent = apellido || '—';
+        if (dashEmail) dashEmail.textContent = email || '—';
+
+        const exitEl = getActiveSection();
+
+        transitionState(exitEl, accountDashboard, 'flex', () => {
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_CONTACT, STATE_LEGALES, STATE_CHECKOUT, STATE_CONFIRMATION);
+            body.classList.add(STATE_ACCOUNT);
+            [
+                document.getElementById('shop'),
+                document.getElementById('product-page'),
+                document.getElementById('home-container'),
+                document.getElementById('account-login'),
+                document.getElementById('account-create'),
+                document.getElementById('account-contact')
+            ].forEach(sec => { if (sec && sec !== exitEl) sec.style.display = 'none'; });
+            if (accountDashboard) accountDashboard.style.pointerEvents = 'auto';
+            header.style.backgroundColor = '';
+            header.style.color = '';
+            window.scrollTo(0, 0);
+            injectFooterInAccount();
+            _initCuentaNav();
+        });
+    }
+
+    // Cuenta dashboard nav switching (same pattern as legales)
+    let _cuentaNavInitialized = false;
+    function _initCuentaNav() {
+        if (_cuentaNavInitialized) return;
+        _cuentaNavInitialized = true;
+
+        const navLinks = document.querySelectorAll('.cuenta-nav-link');
+        const sections = document.querySelectorAll('.cuenta-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const target = link.dataset.section;
+
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                sections.forEach(s => s.classList.remove('active'));
+                const targetSection = document.getElementById('cuenta-' + target);
+                if (targetSection) targetSection.classList.add('active');
+            });
+        });
+    }
+
+    // Logout
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', async () => {
+            await window.supabaseClient.auth.signOut();
+            console.log('[Auth] Sesión cerrada');
+            _showAccountLogin();
         });
     }
 
@@ -1837,6 +1950,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Close cart drawer first
         closeCart();
+
+        // Meta Pixel — InitiateCheckout
+        if (window.fbq) {
+            const cartValue = cart.reduce((sum, item) => sum + (item.priceValue * item.qty), 0);
+            window.fbq('track', 'InitiateCheckout', {
+                num_items: cart.reduce((sum, item) => sum + item.qty, 0),
+                value: cartValue,
+                currency: 'ARS'
+            });
+        }
 
         // Update State Classes
         body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES, STATE_CONFIRMATION);
@@ -2830,7 +2953,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('[Contact] ✅ Consulta enviada con éxito');
 
                 const fields = document.querySelector('#account-contact .login-fields');
-                const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">Tu consulta fue enviada. Nos comunicamos a la brevedad.</span>`;
+                const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">Tu consulta fue enviada. Nos comunicamos a la brevedad.</span>`;
 
                 // Keep the button text as ENVIADO during success phase
                 await animateButtonAndForm(btnContactSubmit, fields, 'ENVIAR', 'ENVIADO', successHtml);
@@ -3010,16 +3133,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnLoginSubmit.querySelector('.button-text').style.opacity = '1';
                     showFormError(container, 'EMAIL O CONTRASEÑA INCORRECTOS');
                 } else {
-                    const nombre = data.user?.user_metadata?.nombre || 'Usuario';
-                    console.log(`[Login] ✅ Bienvenido, ${nombre}`);
+                    const nombre = data.user?.user_metadata?.nombre || '';
+                    const nombreUpper = nombre ? nombre.toUpperCase() : '';
+                    const saludoText = nombreUpper ? `¡BIENVENIDO/A, ${nombreUpper}!` : '¡BIENVENIDO/A!';
+                    console.log(`[Login] ✅ Bienvenido, ${nombre || data.user.email}`);
 
                     const fields = document.querySelector('#account-login .login-fields');
-                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">SESIÓN INICIADA CORRECTAMENTE.</span>`;
+                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">SESIÓN INICIADA CORRECTAMENTE.</span>`;
 
-                    await animateButtonAndForm(btnLoginSubmit, fields, 'ENTRAR', '¡BIENVENIDO/A!', successHtml);
+                    await animateButtonAndForm(btnLoginSubmit, fields, 'ENTRAR', saludoText, successHtml);
 
-                    // Proceed to login state after animation...
-                    setTimeout(() => { location.reload(); }, 1500);
+                    // Navegar al dashboard sin recargar la página
+                    setTimeout(() => { _showAccountDashboard(data.user); }, 600);
                 }
             } catch (err) {
                 console.error('[Login] Error de conexión:', err);
@@ -3091,9 +3216,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     console.log('[Create Account] ✅ Cuenta creada. Verificar email.');
                     const fields = document.querySelector('#account-create .login-fields');
-                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">TE ENVIAMOS UN EMAIL PARA VERIFICAR TU CUENTA.</span>`;
+                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.6;">TE ENVIAMOS UN EMAIL PARA VERIFICAR TU CUENTA.<br>REVISÁ TU BANDEJA Y HACÉ CLICK EN EL LINK DE CONFIRMACIÓN.</span>`;
 
                     await animateButtonAndForm(btnFinalCreate, fields, 'CREAR UNA CUENTA', 'MAIL ENVIADO', successHtml);
+
+                    // Después de un momento, volver al login para que el usuario sepa el siguiente paso
+                    setTimeout(() => { switchToLogin(); }, 4000);
                 }
             } catch (err) {
                 console.error('[Create Account] Error de conexión:', err);
@@ -3140,7 +3268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     console.log('[Recover Password] ✅ Email de recuperación enviado');
                     const fields = document.querySelector('#account-recover .login-fields');
-                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">TE ENVIAMOS UN EMAIL CON LAS INSTRUCCIONES.</span>`;
+                    const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">TE ENVIAMOS UN EMAIL CON LAS INSTRUCCIONES.</span>`;
 
                     await animateButtonAndForm(btnRecoverSubmit, fields, 'ENVIAR LINK', 'LINK ENVIADO', successHtml);
                 }
@@ -3190,13 +3318,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.history.replaceState(null, '', window.location.pathname);
                     showNewPasswordSection();
                 } else if (type === 'signup') {
-                    // Account verified — go to login with confirmation
+                    // Cuenta verificada — enableAccountState detecta la sesión y muestra el dashboard
                     window.history.replaceState(null, '', window.location.pathname);
                     enableAccountState(null);
-                    setTimeout(() => {
-                        const container = document.querySelector('#account-login .login-container');
-                        if (container) showFormSuccess(container, '¡TU CUENTA FUE ACTIVADA! YA PODÉS INICIAR SESIÓN.');
-                    }, 300);
                 }
             }).catch(err => {
                 console.error('[Auth Redirect] Error setting session:', err);
@@ -3301,7 +3425,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (error) throw new Error(error.message);
 
                 const fields = document.querySelector('#account-new-password .login-fields');
-                const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#202020;line-height:1.5;">¡CONTRASEÑA ACTUALIZADA! YA PODÉS INICIAR SESIÓN.</span>`;
+                const successHtml = `<span style="font-family:'Univers',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">¡CONTRASEÑA ACTUALIZADA! YA PODÉS INICIAR SESIÓN.</span>`;
                 await animateButtonAndForm(btnNewPwdSubmit, fields, 'GUARDAR CONTRASEÑA', 'CONTRASEÑA GUARDADA', successHtml);
 
                 // After success, redirect to login after a moment
@@ -3369,9 +3493,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function activateTracking() {
-            // TODO: Activar Meta Pixel, Google Analytics, etc.
-            // window.fbq && window.fbq('consent', 'grant');
-            // gtag('consent', 'update', { analytics_storage: 'granted' });
+            // Meta Pixel — Consent Mode v2
+            // El pixel ya está inicializado en layout.tsx con consent revocado.
+            // Al aceptar cookies: grant consent + disparar primer PageView.
+            if (window.fbq) {
+                window.fbq('consent', 'grant');
+                window.fbq('track', 'PageView');
+            }
             console.log('[Cookies] Tracking activado');
         }
     })();

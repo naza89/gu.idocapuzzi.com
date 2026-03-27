@@ -393,6 +393,48 @@ const siteHTML = `
             </div>
         </section>
 
+        <!-- STATE: ACCOUNT DASHBOARD (usuario logueado) -->
+        <section id="account-dashboard" style="display: none; opacity: 0;">
+            <div class="cuenta-layout">
+                <aside class="cuenta-sidebar">
+                    <h1 class="cuenta-title">CUENTA</h1>
+                    <nav class="cuenta-nav" aria-label="Secciones de cuenta">
+                        <button class="cuenta-nav-link active" data-section="pedidos">Mis Pedidos</button>
+                        <button class="cuenta-nav-link" data-section="datos">Mis Datos</button>
+                    </nav>
+                    <button class="btn-cuenta-logout" id="btn-logout">
+                        <span>CERRAR SESIÓN</span>
+                    </button>
+                </aside>
+                <div class="cuenta-content">
+                    <span class="cuenta-greeting" id="cuenta-greeting">MI CUENTA</span>
+                    <section class="cuenta-section active" id="cuenta-pedidos">
+                        <h2 class="cuenta-section-title">Mis Pedidos</h2>
+                        <div id="cuenta-pedidos-list">
+                            <p class="cuenta-pedidos-empty">
+                                TODAVÍA NO TENÉS PEDIDOS. <a href="/shop">EXPLORÁ LA TIENDA</a> PARA HACER TU PRIMERA COMPRA.
+                            </p>
+                        </div>
+                    </section>
+                    <section class="cuenta-section" id="cuenta-datos">
+                        <h2 class="cuenta-section-title">Mis Datos</h2>
+                        <div class="cuenta-field">
+                            <span class="cuenta-field-label">Nombre</span>
+                            <span class="cuenta-field-value" id="dash-nombre">—</span>
+                        </div>
+                        <div class="cuenta-field">
+                            <span class="cuenta-field-label">Apellido</span>
+                            <span class="cuenta-field-value" id="dash-apellido">—</span>
+                        </div>
+                        <div class="cuenta-field">
+                            <span class="cuenta-field-label">Email</span>
+                            <span class="cuenta-field-value" id="dash-email">—</span>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+
         <!-- STATE: CONTACT -->
         <section id="account-contact" style="display: none;">
             <div class="login-container contact-container">

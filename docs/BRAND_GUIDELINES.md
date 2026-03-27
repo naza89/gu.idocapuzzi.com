@@ -7,7 +7,7 @@
 | Blanco hueso | `#FAFAFA` | Fondo principal, textos sobre oscuro |
 | Rojo Güido | `#AD1C1C` | Acento principal, CTAs, campaña |
 | Marrón selvedge | `#442517` | Sección denim, detalles cálidos |
-| Negro profundo | `#202020` | Fondo header/footer, textos principales |
+| Negro profundo | `#1A1A1A` | Fondo header/footer, textos principales |
 
 ## Tipografía
 
