@@ -4,6 +4,88 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-04-01
+
+### Test e2e completo + 5 fixes críticos
+
+**Contexto:** Sesión de testing integral del flujo compra → pago → stock → envío. Se encontraron y resolvieron 5 bugs.
+
+**Fixes aplicados:**
+
+1. **Colorway MUSCULOSA** — `start.js` tenía `NEGRA`/`BLANCA` (femenino), Supabase tenía `NEGRO`/`BLANCO`. Causaba `variante_id = null`. Fix: cambiar a masculino. Archivo: `start.js`
+2. **Sucursales OCA sin límite** — API devolvía todas las sucursales. Fix: `.slice(0, 5)` en `cargarSucursalesOCA()`. Archivo: `start.js`
+3. **Race condition stock** — Webhook NAVE y GET fallback podían decrementar stock 2 veces. Fix: migración 12 con flags `stock_decremented` + `email_sent`, checks en ambos handlers. Archivos: `12_stock_idempotency.sql`, `webhooks/nave/route.ts`, `ordenes/[id]/route.ts`
+4. **`operativa_oca` = 0** — `cotizar/route.ts` no incluía `operativa` en response → frontend guardaba 0. Fix: agregar campo al map. Archivo: `cotizar/route.ts`
+5. **Parser crear-envio** — Buscaba `<int>NUMBER</int>` pero OCA devuelve DataSet XML. Reescrito con 3 formatos de fallback. Archivo: `xml-parser.ts`
+
+**Test OCA e2e exitoso:**
+- Crear envío con orden #45 → `idOrdenRetiro: 213902116` ✅
+- Anular envío → OK ✅
+- Orden restaurada post-test
+
+**NAVE sandbox PENDING:** Tras pago exitoso, API devuelve PENDING en vez de APPROVED. Se simuló APPROVED manualmente (stock 50→49). Pendiente contactar soporte NAVE.
+
+---
+
+## 2026-03-31 (tarde)
+
+### Testing real + 8 fixes del checkout flow
+
+**Contexto:** Naza testeó el flujo completo de checkout con envío OCA por primera vez. 5 issues reportados + 3 adicionales descubiertos durante debugging.
+
+**Fixes aplicados:**
+
+1. **Botón "CONTINUAR AL PAGO" (race condition)** — `setBotonCargando(false)` en `finally` pisaba el texto de Step 2. Fix: flag `step1Success`. Archivo: `start.js`
+2. **Parser sucursales OCA** — Buscaba `NewDataSet > Table` con `Entrega === 'True'`, real es `CentrosDeImposicion > Centro` con `IdTipoServicio === 2`. Reescrito. Archivo: `xml-parser.ts`
+3. **Parser cotización OCA** — Consolidado: soporta `DataSet > diffgr:diffgram > NewDataSet > Table` (producción) + fallback. Archivo: `xml-parser.ts`
+4. **Imagen confirmación** — Path sin `/` causaba 404 por History API. Fix: prefijo `/`. Archivo: `start.js`
+5. **CSS confirmación** — `total-label` 0.85rem → 1.3rem, `confirmacion-value` 0.95rem → 0.88rem. Archivo: `globals.css`
+6. **Marquee rota** — `enableShopState()` no reinicializaba animación. Fix: force reflow + `initMarquee()`. Archivo: `start.js`
+7. **variante_id lookup** — Cambiado de `color` (ambiguo) a `colorway` (único). Archivo: `checkout-logic.js`
+8. **Colorway mismatch** — 3 remeras GÜIDO corregidas: `'NEGRO'`→`'NEGRO LOGO BLANCO'`, etc. Campo `colorway` agregado a cart items. Archivo: `start.js`
+9. **Dynamic imports** — `ordenes/[id]/route.ts` crasheaba sin `RESEND_API_KEY`. Fix: imports dinámicos.
+
+**NAVE notification_url:** Soporte NAVE confirmó corrección del webhook URL del sandbox.
+
+**Verificación parcial:** Imagen ✅, fuentes ✅, marquee ✅. Cotización/sucursales pendientes en browser.
+
+**Pendiente:** Test e2e completo en main, verificar colorways Termal/Baby Tee.
+
+---
+
+## 2026-03-31
+
+### Diagnóstico completo — revisión sin código nuevo
+
+**Contexto:** Naza reportó que los cambios de la sesión 2026-03-30 "no se veían". Se hizo diagnóstico exhaustivo.
+
+**Causa identificada:** Turbopack cacheó agresivamente archivos de `public/js/`. Los cambios estaban escritos en disco pero el dev server servía la versión anterior. Solución: borrar `.next/` completo antes de cada sesión de testing.
+
+**9 cambios confirmados en archivos (sesión 2026-03-30, no verificados en browser):**
+
+1. `src/lib/oca/xml-parser.ts` — path OCA corregido: `DataSet["diffgr:diffgram"].NewDataSet.Table`. Usa `Total` en vez de `Precio`.
+2. `public/js/start.js:2582` — `item.price` → `item.priceValue` (causa raíz de `ValorDeclarado=NaN` → OCA no cotizaba).
+3. `public/js/checkout-logic.js:292-313` — variante_id lookup real por precio+color+talle. Antes siempre null.
+4. `src/app/api/ordenes/[id]/route.ts` — `numero` en SELECT, total recalculado en PATCH, fallback NAVE verify en GET.
+5. `src/app/api/nave/crear-pago/route.ts` — callback_url usa success_url (URL confirmación), no webhook URL.
+6. `src/app/api/oca/cotizar/route.ts` — sanitización NaN en valorDeclarado.
+7. `src/app/layout.tsx` — suppressHydrationWarning en body.
+8. `src/app/globals.css` — container 600px, nota font condensed 0.65rem, white-space: nowrap.
+9. `public/js/start.js:1822,1910` — texto nota: `DETALLES ENVIADOS A ${EMAIL}`.
+
+**Problema estructural — NAVE notification_url:**
+- URL configurada en NAVE: `https://gccom.vercel.app/api/webhooks/galicia`
+- Incorrecto: dominio (gccom vs güidocapuzzi.com) y path (/galicia vs /nave)
+- Pendiente: contactar NAVE support para corregir
+- Fallback implementado: GET /api/ordenes/[id] verifica pago directo con NAVE API
+
+**Pendiente:**
+- Borrar `.next/` y verificar OCA en browser
+- Contactar NAVE support
+- Test e2e completo post-fixes
+
+---
+
 ## 2026-03-27 (tarde)
 
 ### Email templates — revisión, fixes y rediseño

@@ -13,7 +13,8 @@ import { validarCP, validarCotizacion } from '@/lib/oca/validations';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { cpDestino, pesoKg, volumenM3, cantidadPaquetes = 1, valorDeclarado = 0 } = body;
+        const { cpDestino, pesoKg, volumenM3, cantidadPaquetes = 1, valorDeclarado: rawValor = 0 } = body;
+        const valorDeclarado = Math.round(Number(rawValor) || 0);
 
         // Validar inputs
         const cpError = validarCP(cpDestino);
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
                     });
 
                     const cotizaciones = parsearCotizacion(xml);
-                    return cotizaciones.map(c => ({ ...c, nombre }));
+                    return cotizaciones.map(c => ({ ...c, nombre, operativa }));
                 })
         );
 

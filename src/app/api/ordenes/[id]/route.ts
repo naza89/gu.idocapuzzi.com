@@ -54,12 +54,15 @@ export async function GET(
                 costo_envio_centavos,
                 tipo_envio,
                 precio_envio,
+                nave_payment_id,
+                nave_payment_request_id,
                 items_orden (
                     nombre_producto,
                     color,
                     talle,
                     precio_unitario_centavos,
                     cantidad,
+                    variante_id,
                     variantes_producto:variante_id (
                         producto_id,
                         productos:producto_id (
@@ -74,6 +77,7 @@ export async function GET(
                 ),
                 direcciones_envio (
                     calle,
+                    numero,
                     ciudad,
                     provincia,
                     codigo_postal
@@ -89,6 +93,90 @@ export async function GET(
         // Only expose orders that have progressed past the initial 'pendiente' state
         if (data.estado === 'pendiente') {
             return NextResponse.json({ error: 'Orden no encontrada' }, { status: 404 });
+        }
+
+        // ── Verify payment with NAVE if order is still pago_pendiente ──
+        // nave_payment_id (real payment ID) is set by the webhook.
+        // nave_payment_request_id (from crear-pago) does NOT work for status verification.
+        // Only verify if the webhook has already set the real payment_id.
+        if (data.estado === 'pago_pendiente' && data.nave_payment_id) {
+            try {
+                const { verifyPaymentStatus } = await import('@/lib/nave/client');
+                const paymentData = await verifyPaymentStatus(data.nave_payment_id);
+                const status = paymentData?.status?.name ?? 'UNKNOWN';
+
+                if (status === 'APPROVED') {
+                    console.log('[GET ordenes] Pago verificado APPROVED, procesando...');
+
+                    // Update order to pagado
+                    await supabase
+                        .from('ordenes')
+                        .update({
+                            estado: 'pagado',
+                            pagado_at: new Date().toISOString(),
+                            nave_status: status,
+                            nave_monto_ars: paymentData.available_balance?.value
+                                ? parseFloat(paymentData.available_balance.value)
+                                : null,
+                        })
+                        .eq('id', id);
+
+                    data.estado = 'pagado';
+
+                    // Check idempotency flags
+                    const { data: flags } = await supabase
+                        .from('ordenes')
+                        .select('stock_decremented, email_sent')
+                        .eq('id', id)
+                        .single();
+
+                    // Decrement stock — solo si no se hizo antes
+                    if (!flags?.stock_decremented) {
+                        try {
+                            const items = data.items_orden || [];
+                            await Promise.all(
+                                items
+                                    .filter((item: { variante_id: string | null }) => item.variante_id != null)
+                                    .map((item: { variante_id: string; cantidad: number }) =>
+                                        supabase.rpc('decrement_stock', {
+                                            p_variante_id: item.variante_id,
+                                            p_cantidad: item.cantidad,
+                                        })
+                                    )
+                            );
+                            await supabase
+                                .from('ordenes')
+                                .update({ stock_decremented: true })
+                                .eq('id', id);
+                            console.log('[GET ordenes] ✅ Stock decrementado');
+                        } catch (stockErr) {
+                            console.error('[GET ordenes] Error stock:', stockErr);
+                        }
+                    } else {
+                        console.log('[GET ordenes] ⏭️ Stock ya decrementado');
+                    }
+
+                    // Send confirmation email — solo si no se envió antes
+                    if (!flags?.email_sent) {
+                        import('@/lib/email').then(({ sendOrderConfirmationEmail }) =>
+                            sendOrderConfirmationEmail(id)
+                                .then(() =>
+                                    supabase
+                                        .from('ordenes')
+                                        .update({ email_sent: true })
+                                        .eq('id', id)
+                                )
+                                .catch((emailErr) =>
+                                    console.error('[GET ordenes] Error email:', emailErr)
+                                )
+                        ).catch(() => console.warn('[GET ordenes] Email module not available'));
+                    } else {
+                        console.log('[GET ordenes] ⏭️ Email ya enviado');
+                    }
+                }
+            } catch (verifyErr) {
+                console.error('[GET ordenes] Error verificando pago NAVE:', verifyErr);
+            }
         }
 
         return NextResponse.json({ orden: data });
@@ -141,8 +229,20 @@ export async function PATCH(
             updateData.operativa_oca = operativa_oca;
         }
 
-        // Update costo_envio_centavos for sidebar totals
-        updateData.costo_envio_centavos = Math.round(precio_envio * 100);
+        // Update costo_envio_centavos and recalculate total
+        const costoEnvioCentavos = Math.round(precio_envio * 100);
+        updateData.costo_envio_centavos = costoEnvioCentavos;
+
+        // Fetch current subtotal to recalculate total with shipping
+        const { data: currentOrder } = await supabase
+            .from('ordenes')
+            .select('subtotal_centavos')
+            .eq('id', id)
+            .single();
+
+        if (currentOrder) {
+            updateData.total_centavos = currentOrder.subtotal_centavos + costoEnvioCentavos;
+        }
 
         const { data, error } = await supabase
             .from('ordenes')

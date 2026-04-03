@@ -15,7 +15,7 @@ export interface NaveAuthResponse {
 }
 
 export interface NavePaymentRequestResponse {
-    id: string;
+    id: string; // payment_REQUEST_id — NO es el payment_id real. No sirve para verificar estado.
     external_payment_id: string;
     checkout_url: string;
     qr_data: string;
@@ -217,8 +217,9 @@ export async function createPaymentRequest(
 // ─── Verify Payment Status ───────────────────────────────
 
 /**
- * Verify a payment status by its ID.
- * Used by the webhook handler to confirm the actual state from NAVE.
+ * Verify a payment status by its real payment_id (NOT payment_request_id).
+ * The payment_id comes from the webhook payload, not from crear-pago response.
+ * Using payment_request_id here will always return PENDING.
  */
 export async function verifyPaymentStatus(
     paymentId: string

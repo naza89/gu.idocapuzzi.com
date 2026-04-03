@@ -114,16 +114,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Products Data Source
     const products = [
         // REMERAS (12: 3 Güido + 3 Afligida + 3 Baby Tee + 2 Termal + 1 extra)
-        { slug: 'remera-guido-negro', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-negra-front.png', 'assets/images/products/remera-güido-negra-back.png'] },
-        { slug: 'remera-guido-rojo', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO<br>OVERSIZED', color: 'Rojo en Negro', colorway: 'ROJO EN NEGRO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-rojo-front.png', 'assets/images/products/remera-güido-rojo-back.png'] },
-        { slug: 'remera-guido-blanco', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-güido-blanca-front.png', 'assets/images/products/remera-güido-blanca-back.png'] },
+        { slug: 'remera-guido-negro', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Negro', colorway: 'NEGRO LOGO BLANCO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-negra-front.png', 'assets/images/products/remera-güido-negra-back.png'] },
+        { slug: 'remera-guido-rojo', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO<br>OVERSIZED', color: 'Rojo en Negro', colorway: 'NEGRO LOGO ROJO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-rojo-front.png', 'assets/images/products/remera-güido-rojo-back.png'] },
+        { slug: 'remera-guido-blanco', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Blanco', colorway: 'BLANCO LOGO NEGRO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-güido-blanca-front.png', 'assets/images/products/remera-güido-blanca-back.png'] },
         { slug: 'remera-afligida-negro', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Negro', colorway: 'NEGRO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-negra-front.png', 'assets/images/products/remera-afligida-negra-back.png'] },
         { slug: 'remera-afligida-navy', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Navy', colorway: 'NAVY', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-navy-front.png', 'assets/images/products/remera-afligida-navy-back.png'] },
         { slug: 'remera-afligida-blanco', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanca-front.png', 'assets/images/products/remera-afligida-blanca-back.png'] },
 
         // MUSCULOSAS (2)
-        { slug: 'musculosa-negra', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Negra', colorway: 'NEGRA', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
-        { slug: 'musculosa-blanca', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Blanca', colorway: 'BLANCA', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
+        { slug: 'musculosa-negra', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Negra', colorway: 'NEGRO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
+        { slug: 'musculosa-blanca', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Blanca', colorway: 'BLANCO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
 
         // JEANS (4)
         { slug: 'jean-selvedge-suelto-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE SUELTO.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
@@ -571,7 +571,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 image: (() => { const raw = product.images && product.images.length > 0 ? product.images[0] : ''; return raw && !raw.startsWith('/') ? '/' + raw : raw; })(),
                 size: size,
                 qty: qty,
-                color: product.color
+                color: product.color,
+                colorway: product.colorway || ''
             });
         }
         updateCartCounts();
@@ -1344,6 +1345,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (shopSection) shopSection.style.pointerEvents = 'auto';
             header.style.backgroundColor = '';
             header.style.color = '';
+
+            // Re-sync marquee animation (may have been left in stale state after display:none)
+            const track = document.getElementById('announcement-track');
+            if (track) {
+                track.style.animation = 'none';
+                // eslint-disable-next-line no-unused-expressions
+                track.offsetHeight; // force reflow
+                track.style.animation = '';
+            }
+            initMarquee();
         });
     }
 
@@ -1819,7 +1830,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (notaEl) {
             const emailEl = document.getElementById('checkout-email');
             const email = emailEl ? emailEl.value : 'tu email';
-            notaEl.textContent = `Te enviamos un email con los detalles de tu pedido a ${email}`;
+            notaEl.textContent = `DETALLES ENVIADOS A ${email.toUpperCase()}`;
         }
     }
 
@@ -1827,9 +1838,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ordenId) return;
 
         try {
-            const res = await fetch(`/api/ordenes/${encodeURIComponent(ordenId)}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const { orden } = await res.json();
+            // Polling: el webhook de NAVE puede tardar unos segundos en setear el payment_id real.
+            // Reintentamos hasta 5 veces (cada 3s) si la orden sigue en pago_pendiente.
+            var orden = null;
+            var maxRetries = 5;
+            for (var attempt = 0; attempt <= maxRetries; attempt++) {
+                var res = await fetch(`/api/ordenes/${encodeURIComponent(ordenId)}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                var jsonData = await res.json();
+                orden = jsonData.orden;
+
+                if (orden.estado !== 'pago_pendiente' || attempt === maxRetries) break;
+                console.log('[confirmacion] Orden aún pago_pendiente, reintentando en 3s... (' + (attempt + 1) + '/' + maxRetries + ')');
+                await new Promise(function(r) { setTimeout(r, 3000); });
+            }
+
+            if (orden.estado === 'pago_pendiente') {
+                console.log('[confirmacion] Orden sigue en pago_pendiente tras ' + maxRetries + ' reintentos');
+                // Mostrar mensaje de procesamiento en vez de datos vacíos
+                var pendingNotaEl = document.getElementById('confirmacion-nota');
+                if (pendingNotaEl) pendingNotaEl.textContent = 'TU PAGO ESTÁ SIENDO PROCESADO. RECIBIRÁS UN EMAIL DE CONFIRMACIÓN EN BREVE.';
+            }
 
             // Products from items_orden
             const productosContainer = document.getElementById('confirmacion-productos');
@@ -1843,7 +1872,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Intentar obtener imagen del producto vía join
                     const imagenes = item.variantes_producto?.productos?.imagenes;
-                    const imgSrc = (Array.isArray(imagenes) && imagenes.length > 0) ? imagenes[0] : '';
+                    const rawSrc = (Array.isArray(imagenes) && imagenes.length > 0) ? imagenes[0] : '';
+                    const imgSrc = rawSrc ? (rawSrc.startsWith('/') ? rawSrc : '/' + rawSrc) : '';
                     const imgHTML = imgSrc
                         ? `<img class="producto-confirm-thumb" src="${imgSrc}" alt="${item.nombre_producto}">`
                         : `<div class="producto-confirm-thumb" style="display:flex;align-items:center;justify-content:center;font-family:'Univers 67 Condensed';font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(32,32,32,0.25);">GÜIDO</div>`;
@@ -1883,7 +1913,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const dirEl = document.getElementById('confirmacion-direccion-value');
             if (dirEl && orden.direcciones_envio) {
                 const d = orden.direcciones_envio;
-                dirEl.textContent = [d.calle, d.ciudad, d.provincia, d.codigo_postal].filter(Boolean).join(', ');
+                dirEl.textContent = [d.calle + (d.numero ? ' ' + d.numero : ''), d.ciudad, d.provincia, d.codigo_postal].filter(Boolean).join(', ');
             }
 
             // Contact
@@ -1907,7 +1937,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const notaEl = document.getElementById('confirmacion-nota');
             if (notaEl) {
                 const email = orden.clientes?.email || 'tu email';
-                notaEl.textContent = `Te enviamos un email con los detalles de tu pedido a ${email}`;
+                notaEl.textContent = `DETALLES ENVIADOS A ${email.toUpperCase()}`;
             }
 
             // Meta Pixel — Purchase (dedup con localStorage para evitar doble-fire en reload)
@@ -2356,6 +2386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (window.limpiarErroresCheckout) limpiarErroresCheckout();
                 if (window.setBotonCargando) setBotonCargando(true);
 
+                let step1Success = false;
                 try {
                     const resultado = await window.procesarCheckoutStep1(cart);
 
@@ -2365,6 +2396,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         // NAVE external_payment_id acepta máx 36 chars — un UUID tiene exactamente 36
                         window._currentCheckoutOrdenId = resultado.ordenId;
                         window._currentCheckoutNumeroOrden = resultado.numeroOrden;
+                        step1Success = true;
+                        if (window.setBotonCargando) setBotonCargando(false);
                         mostrarCheckoutStep2();
                     } else {
                         if (window.mostrarErroresCheckout) {
@@ -2377,7 +2410,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         mostrarErroresCheckout(['Error de conexión. Intentá nuevamente.']);
                     }
                 } finally {
-                    if (window.setBotonCargando) setBotonCargando(false);
+                    if (!step1Success && window.setBotonCargando) setBotonCargando(false);
                 }
 
             } else if (checkoutCurrentStep === 2) {
@@ -2579,7 +2612,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ancho = 30;
         const largo = 35;
         const volumenM3 = (alto / 100) * (ancho / 100) * (largo / 100);
-        const subtotalPesos = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+        const subtotalPesos = cart.reduce((acc, item) => acc + (item.priceValue * item.qty), 0);
 
         // Show loading state in shipping section
         const headerEl = metodoEnvioSection.querySelector('.checkout-section-header');
@@ -2704,7 +2737,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            container.innerHTML = data.sucursales.map((suc, i) => `
+            // Limitar a 5 sucursales (las más cercanas al CP)
+            const sucursales = data.sucursales.slice(0, 5);
+
+            container.innerHTML = sucursales.map((suc, i) => `
                 <div class="envio-sucursal-item${i === 0 ? ' active' : ''}">
                     <input type="radio" name="sucursal" id="sucursal-${suc.id}" value="${suc.id}"
                         ${i === 0 ? 'checked' : ''}
@@ -2713,7 +2749,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
 
-            console.log('[OCA] ✅ Sucursales cargadas:', data.sucursales.length);
+            console.log('[OCA] ✅ Sucursales cargadas:', sucursales.length, 'de', data.sucursales.length, 'disponibles');
 
         } catch (err) {
             console.error('[OCA] Error cargando sucursales:', err);

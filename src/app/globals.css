@@ -4027,7 +4027,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .confirmacion-container {
-    max-width: 520px;
+    max-width: 600px;
     width: 100%;
     opacity: 0;
     transform: translateY(28px);
@@ -4189,7 +4189,7 @@ body.state-confirmation #confirmation-container {
 
 .confirmacion-value {
     font-family: 'Univers', 'Helvetica Neue', sans-serif;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     color: #1A1A1A;
     text-align: right;
 }
@@ -4214,7 +4214,7 @@ body.state-confirmation #confirmation-container {
 
 .total-label {
     font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
-    font-size: 0.85rem;
+    font-size: 1.3rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #1A1A1A;
@@ -4286,14 +4286,15 @@ body.state-confirmation #confirmation-container {
 
 .confirmacion-nota {
     margin-top: 20px;
-    font-family: 'Univers', 'Helvetica Neue', sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
+    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #1A1A1A;
     opacity: 0.4;
     text-align: center;
-    line-height: 1.6;
+    line-height: 1.4;
+    white-space: nowrap;
 }
 
 /* ── Responsive ── */

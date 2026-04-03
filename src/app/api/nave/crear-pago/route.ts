@@ -11,7 +11,8 @@
  * 
  * Side effect:
  *   Updates the order in Supabase with estado='pago_pendiente'
- *   and the nave_payment_id returned by NAVE.
+ *   and the nave_payment_request_id returned by NAVE.
+ *   Note: nave_payment_id (the real payment ID) arrives later via webhook.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
             externalPaymentId: external_payment_id,
             totalArs: total_ars,
             cartItems: cart_items,
-            callbackUrl: success_url || process.env.NAVE_CALLBACK_URL || undefined,
+            callbackUrl: success_url || undefined,
             durationTime: 600, // 10 minutes
         });
 
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
             .from('ordenes')
             .update({
                 estado: 'pago_pendiente',
-                nave_payment_id: naveResponse.id,
+                nave_payment_request_id: naveResponse.id,
                 nave_status: 'PENDING',
                 nave_monto_ars: total_ars,
             })

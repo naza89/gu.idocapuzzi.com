@@ -34,7 +34,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: pixelScript }} />
       </head>
-      <body className="state-home">
+      <body className="state-home" suppressHydrationWarning>
         {children}
         <noscript>
           <img

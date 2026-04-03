@@ -288,18 +288,39 @@ async function crearOrdenPendiente(clienteId, direccionId, cartItems) {
 
     console.log('[Checkout] Orden creada:', orden.id, '| Nº:', orden.numero_orden);
 
-    // Insertar items de la orden (snapshot del producto)
-    const itemsParaInsertar = cartItems.map(item => ({
-        orden_id: orden.id,
-        // variante_id se buscaría si tenemos el mapeo, por ahora null
-        variante_id: null,
-        nombre_producto: item.name,
-        color: item.color || '',
-        talle: item.size || '',
-        precio_unitario_centavos: item.priceValue * 100,
-        cantidad: item.qty,
-        subtotal_centavos: item.priceValue * 100 * item.qty
-    }));
+    // Insertar items de la orden (snapshot del producto + variante_id real)
+    const itemsParaInsertar = [];
+    for (const item of cartItems) {
+        // Buscar variante_id real en Supabase por colorway + talle (colorway es único por producto)
+        let varianteId = null;
+        try {
+            const { data: variantes } = await window.supabaseClient
+                .from('variantes_producto')
+                .select('id')
+                .eq('colorway', item.colorway || '')
+                .eq('talle', item.size || '')
+                .limit(1);
+            if (variantes && variantes.length > 0) {
+                varianteId = variantes[0].id;
+                console.log('[Checkout] ✅ Variante encontrada:', varianteId, 'para', item.name, item.colorway, item.size);
+            } else {
+                console.warn('[Checkout] Variante no encontrada para:', item.name, item.colorway, item.size);
+            }
+        } catch (lookupErr) {
+            console.warn('[Checkout] Error buscando variante_id:', lookupErr);
+        }
+
+        itemsParaInsertar.push({
+            orden_id: orden.id,
+            variante_id: varianteId,
+            nombre_producto: item.name,
+            color: item.color || '',
+            talle: item.size || '',
+            precio_unitario_centavos: item.priceValue * 100,
+            cantidad: item.qty,
+            subtotal_centavos: item.priceValue * 100 * item.qty
+        });
+    }
 
     const { error: errItems } = await window.supabaseClient
         .from('items_orden')

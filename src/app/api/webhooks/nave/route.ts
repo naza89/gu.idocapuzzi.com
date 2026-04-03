@@ -133,41 +133,63 @@ async function processWebhook(
             console.log('[webhook/nave] ✅ Orden actualizada:', externalPaymentId, '→', status);
         }
 
-        // STEP 4: Post-payment actions
+        // STEP 4: Post-payment actions (con idempotencia)
         if (status === 'APPROVED') {
-            // 4a. Decrementar stock (atómico via RPC)
-            try {
-                const { data: items, error: itemsError } = await supabase
-                    .from('items_orden')
-                    .select('variante_id, cantidad')
-                    .eq('orden_id', externalPaymentId);
+            // Leer flags de idempotencia
+            const { data: orden } = await supabase
+                .from('ordenes')
+                .select('stock_decremented, email_sent')
+                .eq('id', externalPaymentId)
+                .single();
 
-                if (itemsError) {
-                    console.error('[webhook/nave] Error al obtener items_orden:', itemsError);
-                } else if (items && items.length > 0) {
-                    await Promise.all(
-                        items
-                            .filter(item => item.variante_id != null)
-                            .map(item =>
-                                supabase.rpc('decrement_stock', {
-                                    p_variante_id: item.variante_id,
-                                    p_cantidad: item.cantidad,
-                                })
-                            )
-                    );
-                    console.log('[webhook/nave] ✅ Stock decrementado — orden:', externalPaymentId);
+            // 4a. Decrementar stock (atómico via RPC) — solo si no se hizo antes
+            if (!orden?.stock_decremented) {
+                try {
+                    const { data: items, error: itemsError } = await supabase
+                        .from('items_orden')
+                        .select('variante_id, cantidad')
+                        .eq('orden_id', externalPaymentId);
+
+                    if (itemsError) {
+                        console.error('[webhook/nave] Error al obtener items_orden:', itemsError);
+                    } else if (items && items.length > 0) {
+                        await Promise.all(
+                            items
+                                .filter(item => item.variante_id != null)
+                                .map(item =>
+                                    supabase.rpc('decrement_stock', {
+                                        p_variante_id: item.variante_id,
+                                        p_cantidad: item.cantidad,
+                                    })
+                                )
+                        );
+                        // Marcar como decrementado
+                        await supabase
+                            .from('ordenes')
+                            .update({ stock_decremented: true })
+                            .eq('id', externalPaymentId);
+                        console.log('[webhook/nave] ✅ Stock decrementado — orden:', externalPaymentId);
+                    }
+                } catch (stockErr) {
+                    console.error('[webhook/nave] Error al decrementar stock:', stockErr);
                 }
-            } catch (stockErr) {
-                // No relanzar: el pago ya está registrado, el stock es recuperable manualmente
-                console.error('[webhook/nave] Error al decrementar stock:', stockErr);
+            } else {
+                console.log('[webhook/nave] ⏭️ Stock ya decrementado — orden:', externalPaymentId);
             }
 
-            // 4b. Email de confirmación
-            try {
-                await sendOrderConfirmationEmail(externalPaymentId);
-            } catch (emailErr) {
-                // No relanzar: el pago ya está registrado
-                console.error('[webhook/nave] Error al enviar email:', emailErr);
+            // 4b. Email de confirmación — solo si no se envió antes
+            if (!orden?.email_sent) {
+                try {
+                    await sendOrderConfirmationEmail(externalPaymentId);
+                    await supabase
+                        .from('ordenes')
+                        .update({ email_sent: true })
+                        .eq('id', externalPaymentId);
+                } catch (emailErr) {
+                    console.error('[webhook/nave] Error al enviar email:', emailErr);
+                }
+            } else {
+                console.log('[webhook/nave] ⏭️ Email ya enviado — orden:', externalPaymentId);
             }
         }
 
