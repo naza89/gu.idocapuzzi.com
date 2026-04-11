@@ -4,6 +4,181 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-04-10
+
+### Fix Legales: word-spacing por justify + uppercase
+
+**Contexto:** Naza reportó párrafos con espacios enormes entre palabras en mobile.
+
+**Problema encontrado:** `.legales-body` combinaba `font-size: 0.78rem` + `text-align: justify` + `text-transform: uppercase`. El browser expande word-spacing para rellenar líneas justificadas con texto uppercase en viewports angostos.
+
+**Solución adoptada:** `font-size: 0.78rem` → `0.88rem`, `text-align: justify` → `left`.
+
+**Archivo modificado:** `src/app/globals.css` (~ln 4618)
+
+---
+
+### Fix Filtros Shop: exact match en lugar de substring
+
+**Problema encontrado:** Filtro por NEGRO mostraba remera BLANCA CON LOGO NEGRO. `applyFilters()` usaba `.includes()` en `.colorway` — "BLANCO LOGO NEGRO" matcheaba "NEGRO".
+
+**Solución adoptada:**
+- Exact match contra campo `.color` (color principal), no `.colorway` (descripción completa)
+- Normalización: musculosas `color: 'Negra'/'Blanca'` → `'Negro'/'Blanco'`
+
+**Archivo modificado:** `public/js/start.js` (~ln 878-883, ln 137-138)
+
+---
+
+### Checkout Mobile Fase 4: accordion ERD-style
+
+**Contexto:** Implementación de checkout mobile inspirado en ERD. Layout: Logo → Breadcrumb → Accordion (resumen colapsado) → Formulario.
+
+**Implementación:**
+- **HTML (`page.tsx`):** Sidebar con accordion toggle (`#checkout-summary-toggle`) + content wrapper (`#checkout-summary-content`). Slot vacío (`#checkout-summary-slot`) en checkout-main entre breadcrumb y step-1.
+- **CSS (`globals.css`):** Sidebar oculto mobile. Accordion: `max-height: 0` → `700px` con transition. Chevron rota 180°. Steps responsive (spacing, resumen-row auto, envio opciones). Desktop: toggle `display:none`, content `display:contents`.
+- **JS (`start.js`):** Toggle listener. En `enableCheckoutState()` mobile: mueve toggle+content al slot via DOM move (preserva IDs únicos, todo el JS existente funciona). Sync `#checkout-summary-total-preview` desde renderCheckoutCart() y actualizarTotalConEnvio().
+
+**Verificación:** `toggleInSlot: true`, `slotBetweenBreadcrumbAndFields: true`, `sidebarHidden: true` (preview_eval).
+
+**POST-PAGO:** Verificada responsive (max-width 600px, flex single-column, @600px existente). Sin cambios.
+
+### Pendientes identificados
+
+- [ ] Probar en dispositivo real
+- [ ] Step 2 (Envío) mobile verificar en real device
+- [ ] Fase 5: /cuenta mobile
+
+### Archivos modificados
+
+- `src/app/globals.css` — Fix legales + accordion CSS + checkout steps responsive
+- `src/app/page.tsx` — Accordion HTML + slot en checkout-main
+- `public/js/start.js` — Fix filtros + normalización musculosas + accordion toggle + DOM move en enableCheckoutState()
+
+---
+
+## 2026-04-08
+
+### Mobile Responsiveness Fase 3: PDP mobile ERD-compliant + button visibility fix
+
+**Contexto:** Sesión continuación. Usuario reportó PDP mobile layout incorrecto y botón AÑADIR AL CARRITO no visible.
+
+**PDP mobile reestructurado:**
+- **Problema:** Layout tenía TODA la info (título, colorway, precio, descripción, tamaños, cantidad, botón) ENCIMA de imágenes. No coincidía con ERD.
+- **Solución:** Refactorización `enablePDPState()` en `public/js/start.js` (~line 1225). Reemplazo de `.pdp-info` wrapper único con 3 bloques independientes:
+  - `.pdp-top-info` (título, colorway, precio)
+  - `.pdp-visual` (imágenes carousel)
+  - `.pdp-bottom-info` (tamaños, cantidad, botón, descripción)
+- **Desktop:** CSS grid 60/40. Visual columna 1 (rows 1-2). TopInfo columna 2 row 1. BottomInfo columna 2 row 2 (sticky).
+- **Mobile:** Flexbox `flex-direction: column` con `order`: topInfo=1, visual=2, bottomInfo=3. Resultado: TÍTULO → COLORWAY → PRECIO → IMÁGENES → TAMAÑOS → BOTÓN → DESCRIPCIÓN (ERD order).
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`
+
+**Description font fix:**
+- **Problema:** `.pdp-description` tenía `font-condensed` (Univers 67 Condensed) igual que colorway, 16px. Debería ser Regular y más chico.
+- **Solución:** Mobile override: `font-family: 'Univers', sans-serif` (Regular), `font-size: 12px`, `text-transform: uppercase`, `line-height: 18px`, text-align left.
+- **Archivo modificado:** `src/app/globals.css`
+
+**Button visibility fix:**
+- **Problema:** Botón AÑADIR AL CARRITO no aparecía en mobile. CSS tenía `position: fixed; bottom: 0; z-index: 200` pero quedaba ocluido.
+- **Causa:** z-index 200 << marquee 1100, header 1000. Botón quedaba detrás de otros elementos.
+- **Solución:** Mobile media query: `z-index: 9999 !important`, `position: fixed !important`, `bottom: 0 !important`, `left: 0 !important`, `right: 0 !important`, `width: 100vw`. Desktop: `position: relative` dentro `.pdp-bottom-info`.
+- **Verificación:** Eval confirmó botón visible en y=760-812 (375×812 viewport).
+
+**Verificación final:**
+- Mobile order: topInfo (order=1) → visual (order=2, scroll-snap) → bottomInfo (order=3) ✅
+- Description: Univers Regular 12px vs colorway Condensed 16px ✅
+- Button: position fixed, z-index 9999, bottom 0, visible ✅
+
+---
+
+## 2026-04-07
+
+### Mobile Responsiveness Fase 2.5: Header Gucci-style + Shop mobile + Filtros drawer
+
+**Header mobile reestructurado:**
+- 4 iconos SVG inline: lupa, persona, bolsa (con badge rojo), hamburger — inspirado en Gucci mobile
+- Hamburger igualado a 36×36 (era 44×44), líneas 18px. Gap 6px entre iconos. Padding header 12px.
+- **Archivos modificados:** `src/app/globals.css`, `src/app/page.tsx`
+
+**Menú mobile simplificado:**
+- Eliminado sistema SHOP/BUSCAR/CUENTA/CARRITO + overlay. Solo 6 categorías directas.
+- Stagger animation: 200ms base + 60ms × index por categoría.
+- **Archivos modificados:** `src/app/page.tsx`, `public/js/start.js`
+
+**Home sections mobile:**
+- btn-rect-mobile centrado ("CAMPAÑA 2026", "VER JEANS"), fondo blanco texto oscuro
+- Videos `<video>` separados mobile/desktop. Títulos 0.95rem blanco.
+- **Archivos modificados:** `src/app/page.tsx`, `src/app/globals.css`
+
+**Shop mobile:**
+- Grid 2 columnas. Título responsive `clamp(2rem, 12vw, 3rem)` (~45px en iPhone 375px).
+- **Problema:** Override `.shop-title-row h1` no aplicaba sobre `#shop-category-title` (ID > clase).
+- **Solución:** Override mobile usa `#shop-category-title` directamente.
+- Producto: nombre 0.85rem, colorway/precio 0.65rem. Colorway uppercase (ambos viewports).
+- Botón FILTROS: font 0.7rem, padding 6px 14px.
+
+**Filtros drawer mobile:**
+- Fullscreen `width: 100vw`, z-index 1200. Título 1.9rem izq. Sections 1.1rem. Buttons 0.9rem.
+- **Pendiente:** Lógica de filtrado (UI lista, lógica no implementada).
+
+**Footer:** Chevron SVG animado (rotate 180°). Manifesto actualizado.
+**Marquee:** 0.65rem en mobile.
+
+---
+
+## 2026-04-06
+
+### Mobile Responsiveness Fase 0-1: viewport + header + hamburger menu
+
+**Fase 0:**
+- `src/app/layout.tsx` — viewport meta tag `width=device-width, initial-scale=1.0` (sin esto, mobile browsers escalan el sitio como desktop)
+- `src/app/globals.css` — CSS variables mobile (`--header-height: 60px`, `--padding-sides: 20px`) en `@media (max-width: 768px)`
+
+**Fase 1 — Header mobile + hamburger menu:**
+
+**Problema encontrado:** `.header-center` tiene en desktop `position: absolute; left: 50%`. En mobile, el residual de `left: 50%` dejaba el logo a ~x=167px en lugar de x=20px.
+**Solución adoptada:** `position: relative; left: 0; transform: none` en el media query mobile.
+**Archivos modificados:** `src/app/globals.css`, `src/app/page.tsx`, `public/js/start.js`
+
+CSS mobile agregado:
+- Header: oculta `.header-left`/`.header-right`, muestra hamburger derecha, logo izquierda
+- `#mobile-menu`: fullscreen `translateX(100%) → translateX(0)`, 0.5s ease-out, z-index 1200 (por encima del announcement bar en 1100)
+- `.mobile-shop-view`: segunda vista del overlay (categorías), no accordion
+- `#cart-drawer`: fullscreen `100vw`, fondo `#202020` en mobile
+
+HTML agregado en `page.tsx`: `<button id="hamburger-btn">` + `<nav id="mobile-menu">` con vista principal y vista SHOP.
+
+JS agregado en `start.js`: `openMobileMenu()` / `closeMobileMenu()`, toggle SHOP overlay, category links (navegan + filtran), utils triggers, `updateCartCounts()` sincroniza `#mobile-cart-count`.
+
+**Verificación:** `logo.getBoundingClientRect().left === 20` — alineado con `--padding-sides`. Screenshot no disponible (verificar en dispositivo real).
+
+---
+
+### Email templates — responsive + dark mode + Supabase standalone
+
+**Problema encontrado:** Texto cortado en mobile, fondo oscurecido en dark mode.
+**Solución adoptada:** Media queries con `!important` en `src/lib/email.ts`. `color-scheme: light only` via `<meta>`. Logo `width: 100% !important` en mobile.
+
+**Nuevos archivos:**
+- `auth-confirm-email.html` — template "Activá tu cuenta" con inline styles, `{{ .ConfirmationURL }}`, responsive (heading 56px→32px)
+- `auth-reset-password.html` — template "Modificá tu contraseña", misma estructura
+
+**Pendiente:** Pegar HTML en Supabase Dashboard → Authentication → Email Templates.
+
+---
+
+## 2026-04-03
+
+### Fix NAVE payment_id + deploy producción
+
+**Bug raíz:** Soporte NAVE confirmó que `payment_request_id` (POST crear-pago) y `payment_id` (pago real) son entidades distintas. Consultábamos estado con el ID incorrecto → siempre PENDING.
+
+**Fix:** Migración 13 (`nave_payment_request_id`), `crear-pago` guarda en columna nueva, `nave_payment_id` queda NULL hasta webhook, GET fallback solo verifica si webhook ya seteó el ID real, polling 3s×5 en confirmación.
+
+**Test:** Orden #47 — webhook simulado → stock 50→49 → email enviado OK. Deploy a producción (commit `1697363`).
+
+---
+
 ## 2026-04-01
 
 ### Test e2e completo + 5 fixes críticos

@@ -101,6 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactEmail = document.getElementById('contact-email');
     const contactMsg = document.getElementById('contact-msg');
 
+    // Mobile menu DOM Elements
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const mobileCatLinks = document.querySelectorAll('.mobile-cat-link');
+
+    // Mobile header icon buttons
+    const mobileSearchIcon = document.getElementById('mobile-search-icon');
+    const mobileAccountIcon = document.getElementById('mobile-account-icon');
+    const mobileCartIcon = document.getElementById('mobile-cart-icon');
+    const mobileCartBadge = document.getElementById('mobile-cart-badge');
+
     // Checkout DOM Elements
     const checkoutSection = document.getElementById('checkout');
     const checkoutCartItemsContainer = document.getElementById('checkout-cart-items');
@@ -122,8 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { slug: 'remera-afligida-blanco', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanca-front.png', 'assets/images/products/remera-afligida-blanca-back.png'] },
 
         // MUSCULOSAS (2)
-        { slug: 'musculosa-negra', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Negra', colorway: 'NEGRO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
-        { slug: 'musculosa-blanca', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Blanca', colorway: 'BLANCO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
+        { slug: 'musculosa-negra', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
+        { slug: 'musculosa-blanca', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
 
         // JEANS (4)
         { slug: 'jean-selvedge-suelto-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE SUELTO.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
@@ -156,7 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Scroll Phase State Machine
     let scrollPhase = 0; // 0: initial, 1: logo morphed, 2: marquee hidden (free scroll)
     let isAnimating = false;
-    let scrollLocked = true; // Lock scroll during phase transitions
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    let scrollLocked = !isMobile; // Mobile: never lock scroll; Desktop: lock during phase transitions
 
     // Elements for parallax
     const selvedgeBlock = document.querySelector('.selvedge-block');
@@ -304,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleParallax() {
         if (!selvedgeSection || !selvedgeBlock) return;
         if (!body.classList.contains(STATE_HOME)) return; // Only run on home
+        if (isMobile) return; // No parallax on mobile — static positioning via CSS
 
         const rect = selvedgeSection.getBoundingClientRect();
         const sectionHeight = selvedgeSection.offsetHeight;
@@ -333,10 +347,56 @@ document.addEventListener('DOMContentLoaded', () => {
         selvedgeBlock.style.transform = `translateY(${translate}px)`;
     }
 
-    // Attach wheel listener to home container
+    // --- MOBILE: SCROLL POSITION PHASE DETECTION ---
+    // On mobile, wheel events don't fire for touch scroll.
+    // Instead, detect scroll position to trigger phases.
+    function handleMobileScroll() {
+        if (!isMobile) return;
+        if (!body.classList.contains(STATE_HOME)) return;
+
+        const scrollTop = homeContainer.scrollTop;
+
+        // Forward: trigger phases based on scroll position
+        if (scrollTop > 5 && scrollPhase === 0 && !isAnimating) {
+            triggerPhase1();
+        } else if (scrollPhase === 1 && !isAnimating) {
+            // Phase 2 triggers shortly after phase 1 completes
+            triggerPhase2();
+        }
+
+        // Reverse: when scrolled back to top, reverse phases
+        if (scrollTop === 0 && scrollPhase === 2 && !isAnimating) {
+            isAnimating = true;
+            if (announcementBar) {
+                announcementBar.classList.remove('hidden');
+                body.classList.remove('announcement-hidden');
+            }
+            setTimeout(() => {
+                scrollPhase = 1;
+                isAnimating = false;
+                // Continue reversing to phase 0
+                setTimeout(() => {
+                    if (homeContainer.scrollTop === 0 && scrollPhase === 1 && !isAnimating) {
+                        isAnimating = true;
+                        if (heroLogo) heroLogo.classList.remove('morphed');
+                        if (headerLogo) headerLogo.classList.remove('visible');
+                        setTimeout(() => {
+                            scrollPhase = 0;
+                            isAnimating = false;
+                        }, 800);
+                    }
+                }, 100);
+            }, 400);
+        }
+    }
+
+    // Attach listeners to home container
     if (homeContainer) {
         homeContainer.addEventListener('wheel', handleWheelEvent, { passive: false });
         homeContainer.addEventListener('scroll', handleParallax);
+        if (isMobile) {
+            homeContainer.addEventListener('scroll', handleMobileScroll);
+        }
     }
 
     // --- HEADER HOVER & DROPDOWN EFFECT ---
@@ -536,6 +596,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. LOGIC & FUNCTIONS (Original)
     // -------------------------------------------------------------------------
 
+    // --- MOBILE MENU LOGIC ---
+    function openMobileMenu() {
+        // Reset links before opening
+        mobileCatLinks.forEach(link => {
+            link.style.opacity = '0';
+            link.style.transform = 'translateY(12px)';
+        });
+        body.classList.add('mobile-menu-open');
+        // Stagger reveal (same pattern as desktop dropdown)
+        mobileCatLinks.forEach((link, i) => {
+            setTimeout(() => {
+                link.style.opacity = '1';
+                link.style.transform = 'translateY(0)';
+            }, 200 + i * 60);
+        });
+    }
+
+    function closeMobileMenu() {
+        body.classList.remove('mobile-menu-open');
+        // Reset for next open
+        mobileCatLinks.forEach(link => {
+            link.style.opacity = '0';
+            link.style.transform = 'translateY(12px)';
+        });
+    }
+
     // --- CART LOGIC ---
     function openCart(e) {
         if (e) e.preventDefault();
@@ -611,6 +697,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update Drawer Header
         if (cartTitle) cartTitle.textContent = `CARRITO (${totalQty})`;
+
+        // Update mobile menu cart count
+        // Mobile header cart badge
+        if (mobileCartBadge) {
+            mobileCartBadge.textContent = totalQty;
+            mobileCartBadge.style.display = totalQty > 0 ? 'flex' : 'none';
+        }
 
         // Update Drawer Fixed Footer
         if (cartTotalPrice) cartTotalPrice.textContent = `$${formatearPrecioARS(subtotal)}`;
@@ -718,13 +811,138 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- FILTER APPLICATION LOGIC ---
+    function getActiveFilters() {
+        // Sort (name="ordenar", values: ultimos, alto-bajo, bajo-alto)
+        const sortRadio = filtersDrawer.querySelector('input[name="ordenar"]:checked');
+        const sort = sortRadio ? sortRadio.value : 'ultimos';
+
+        // Colors (name="color", dynamically generated)
+        const colorChecked = filtersDrawer.querySelectorAll('#filter-color-options input[name="color"]:checked');
+        const colors = Array.from(colorChecked).map(c => c.value);
+
+        // Sizes (name="talle" — framework, all products have all sizes for now)
+        const sizeChecked = filtersDrawer.querySelectorAll('input[name="talle"]:checked');
+        const sizes = Array.from(sizeChecked).map(s => s.value);
+
+        // Categories (name="categoria", only visible in VER TODO)
+        const catChecked = filtersDrawer.querySelectorAll('input[name="categoria"]:checked');
+        const categories = Array.from(catChecked).map(c => c.value);
+
+        return { sort, colors, sizes, categories };
+    }
+
+    function parsePrice(priceStr) {
+        // "$50.000" → 50000, "$240.000" → 240000
+        return Number(priceStr.replace(/[^0-9]/g, '')) || 0;
+    }
+
+    function applyFilters() {
+        const { sort, colors, categories } = getActiveFilters();
+
+        // Start with category-filtered products (based on current shop view)
+        let filtered = products.slice();
+        if (currentShopCategory !== 'VER TODO') {
+            filtered = filtered.filter(p => p.category === currentShopCategory);
+        }
+
+        // Apply CATEGORIA filter (only in VER TODO, when checkboxes selected)
+        // Checkbox values → product.category mapping
+        if (currentShopCategory === 'VER TODO' && categories.length > 0) {
+            const catMap = {
+                'JEANS': 'PANTALONES / JEANS',
+                'REMERAS': 'REMERAS',
+                'BERMUDAS': 'BERMUDAS / SHORTS',
+                'MUSCULOSAS': 'TOPS / MUSCULOSAS',
+                'UNISEX': null,  // tag-based, not a category
+                'MUJER': null,   // tag-based, not a category
+                '1/1': 'ARCHIVO'
+            };
+            // Resolve mapped categories
+            const mappedCats = categories.map(c => catMap[c]).filter(Boolean);
+            // Special handling for UNISEX / MUJER (tag-based filters)
+            const hasUnisex = categories.includes('UNISEX');
+            const hasMujer = categories.includes('MUJER');
+            filtered = filtered.filter(p => {
+                // Category match
+                if (mappedCats.length > 0 && mappedCats.includes(p.category)) return true;
+                // MUJER: baby tees and items with feminine descriptors
+                if (hasMujer && (p.name.includes('BABY TEE') || p.name.includes('MUJER'))) return true;
+                // UNISEX: everything except baby tees
+                if (hasUnisex && !p.name.includes('BABY TEE') && !p.name.includes('MUJER')) return true;
+                return false;
+            });
+        }
+
+        // Apply COLOR filter (exact match on .color field — evita que "BLANCO LOGO NEGRO" matchee filtro NEGRO)
+        if (colors.length > 0) {
+            filtered = filtered.filter(p => {
+                const productColor = (p.color || '').toUpperCase();
+                return colors.some(c => productColor === c.toUpperCase());
+            });
+        }
+
+        // Apply SORT
+        if (sort === 'alto-bajo') {
+            filtered.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+        } else if (sort === 'bajo-alto') {
+            filtered.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+        }
+        // 'ultimos' = default order, no sort needed
+
+        // Re-render grid
+        const grid = document.getElementById('product-grid');
+        const count = document.getElementById('shop-count');
+
+        if (grid) {
+            if (filtered.length > 0) {
+                grid.innerHTML = filtered.map(product => {
+                    const idx = products.indexOf(product);
+                    const rawImgSrc = product.images && product.images.length > 0 ? product.images[0] : '';
+                    const imageSrc = rawImgSrc && !rawImgSrc.startsWith('/') ? '/' + rawImgSrc : rawImgSrc;
+                    const rawHoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
+                    const hoverSrc = rawHoverSrc && !rawHoverSrc.startsWith('/') ? '/' + rawHoverSrc : rawHoverSrc;
+                    return `
+                    <div class="product-card" data-index="${idx}">
+                        <div class="product-image">
+                            ${imageSrc ? `
+                                <img
+                                    class="product-img-primary"
+                                    src="${imageSrc}"
+                                    alt="${product.name}"
+                                    style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:2; transition: opacity 220ms ease;">
+                                ${hoverSrc ? `
+                                    <img
+                                        class="product-img-hover"
+                                        src="${hoverSrc}"
+                                        alt="${product.name}"
+                                        style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:1; opacity:1;">
+                                ` : ''}
+                            ` : ''}
+                        </div>
+                        <div class="product-info">
+                            <span class="product-name">${product.name}</span>
+                            <span class="product-color">${product.color}</span>
+                            <span class="product-price">${product.price}</span>
+                        </div>
+                    </div>
+                `}).join('');
+            } else {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 50px; font-family: var(--font-condensed); text-transform: uppercase; opacity: 0.5;">No hay productos con estos filtros</div>';
+            }
+            attachProductClickListeners();
+            revealProductCards(grid);
+        }
+        if (count) count.textContent = `${filtered.length} Productos`;
+    }
+
     // Clear all filters (QUITAR TODOS)
     if (filtersClearBtn) {
         filtersClearBtn.addEventListener('click', () => {
             // Reset all radio buttons to first option
             const radios = filtersDrawer.querySelectorAll('input[type="radio"]');
             radios.forEach((radio, index) => {
-                radio.checked = index === 0; // First one checked
+                radio.checked = index === 0;
             });
 
             // Uncheck all checkboxes
@@ -732,12 +950,17 @@ document.addEventListener('DOMContentLoaded', () => {
             checkboxes.forEach(checkbox => {
                 checkbox.checked = false;
             });
+
+            // Re-render grid with no filters
+            applyFilters();
+            closeFilters();
         });
     }
 
-    // Apply filters button (MOSTRAR) - just closes for now
+    // Apply filters button (MOSTRAR)
     if (filtersApplyBtn) {
         filtersApplyBtn.addEventListener('click', () => {
+            applyFilters();
             closeFilters();
         });
     }
@@ -999,37 +1222,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const qtyContainerStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
 
             productPage.innerHTML = `
-                <div class="pdp-container vertical-stack-layout">
-                    <div class="pdp-visual">${imagesHTML}</div>
-                    <div class="pdp-info">
-                        <div class="pdp-sticky-wrapper">
-                            <div class="pdp-header">
-                                <h1 class="font-condensed">${product.title || product.name}</h1>
-                                <span class="pdp-colorway font-condensed">${product.colorway || product.color}</span>
-                                <span class="pdp-price font-condensed">${product.price}</span>
-                            </div>
-                            <p class="pdp-description font-condensed">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
-                            <div class="pdp-selectors">
-                                <div class="selector-group">
-                                    <label>Talle</label>
-                                    <div class="size-options">
-                                        <button class="size-btn" ${sizeOtherStyle}>XS</button>
-                                        <button class="size-btn active">S</button>
-                                        <button class="size-btn" ${sizeOtherStyle}>M</button>
-                                        <button class="size-btn" ${sizeOtherStyle}>L</button>
-                                    </div>
-                                </div>
-                                <div class="selector-group">
-                                    <label>Cantidad</label>
-                                    <div class="qty-selector" ${qtyContainerStyle}>
-                                        <button class="qty-btn minus">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="qty-btn plus">+</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="add-to-cart-btn font-condensed" id="pdp-add-btn">AÑADIR AL CARRITO</button>
+                <div class="pdp-container">
+                    <div class="pdp-top-info">
+                        <div class="pdp-header">
+                            <h1 class="font-condensed">${product.title || product.name}</h1>
+                            <span class="pdp-colorway font-condensed">${product.colorway || product.color}</span>
+                            <span class="pdp-price font-condensed">${product.price}</span>
                         </div>
+                        <p class="pdp-description pdp-description--desktop">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
+                    </div>
+                    <div class="pdp-visual">${imagesHTML}</div>
+                    <div class="pdp-bottom-info">
+                        <div class="pdp-selectors">
+                            <div class="selector-group">
+                                <div class="size-options">
+                                    <button class="size-btn" ${sizeOtherStyle}>XS</button>
+                                    <button class="size-btn active">S</button>
+                                    <button class="size-btn" ${sizeOtherStyle}>M</button>
+                                    <button class="size-btn" ${sizeOtherStyle}>L</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-to-cart-btn font-condensed" id="pdp-add-btn">AÑADIR AL CARRITO</button>
+                        <p class="pdp-description pdp-description--mobile">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
                     </div>
                 </div>
                 <div class="related-section">
@@ -1065,16 +1280,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
                         </div>
-                        <div class="footer-brand-description">
-                            <p class="manifesto-text font-condensed">
-                                GÜIDO vive en la consciencia de su nieto, Nazareno Capuzzi,<br>
-                                en su afán de querer crear y compartir con el mundo una visión que lo<br>
-                                precede. "Quiero construir lo que busco y no encuentro, crear en virtud<br>
-                                de materializar lo que siento para dejar una huella de lo que llaman Alma.<br>
-                                Mi proyecto es el símbolo de una idea que se instancia en la materia,<br>
-                                pero que pertenece, esencialmente, al espíritu".
-                            </p>
-                        </div>
+                    </div>
+                    <div class="footer-copyright">
+                        <p>© <span class="footer-year-range"></span> GÜIDO CAPUZZI, Capmat Studios S.R.L. Todos los derechos reservados. <span class="footer-cuit">CUIT 33-71917919-9</span></p>
                     </div>
                     <div class="footer-logo-container">
                         <svg class="footer-logo" viewBox="0 0 478.12614 58.217856" xmlns="http://www.w3.org/2000/svg" aria-label="GÜIDO CAPUZZI">
@@ -2038,6 +2246,18 @@ document.addEventListener('DOMContentLoaded', () => {
             checkoutSection.style.pointerEvents = 'auto';
         }
 
+        // On mobile: move accordion from sidebar to slot inside main (after breadcrumb)
+        // Use live viewport check (not cached isMobile) to handle ngrok / late resize cases
+        if (window.innerWidth <= 768) {
+            const slot = document.getElementById('checkout-summary-slot');
+            const summaryToggle = document.getElementById('checkout-summary-toggle');
+            const summaryContent = document.getElementById('checkout-summary-content');
+            if (slot && summaryToggle && summaryContent && !slot.contains(summaryToggle)) {
+                slot.appendChild(summaryToggle);
+                slot.appendChild(summaryContent);
+            }
+        }
+
         // Populate checkout sidebar with cart items
         renderCheckoutCart();
 
@@ -2071,6 +2291,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const formattedSubtotal = `$${formatearPrecioARS(subtotal)}`;
         if (checkoutSubtotal) checkoutSubtotal.textContent = formattedSubtotal;
         if (checkoutTotal) checkoutTotal.textContent = formattedSubtotal;
+        // Sync mobile accordion total preview
+        const summaryTotalPreview = document.getElementById('checkout-summary-total-preview');
+        if (summaryTotalPreview) summaryTotalPreview.textContent = formattedSubtotal;
+    }
+
+    function initFooterYearRange() {
+        const currentYear = new Date().getFullYear();
+        const yearText = currentYear >= 2027 ? `2026\u20132${currentYear}` : '2026';
+        document.querySelectorAll('.footer-year-range').forEach(el => {
+            el.textContent = yearText;
+        });
     }
 
     function initFooterLogoReveal() {
@@ -2105,50 +2336,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // [C4] initFooterShuffle eliminado — reemplazado por highlight L→R en CSS
 
-    // ─── F1: MANIFESTO SCROLL REVEAL ───
-    function initManifestoReveal() {
-        const manifestos = document.querySelectorAll('.manifesto-text:not([data-manifesto-init])');
-        if (!manifestos.length) return;
-
-        manifestos.forEach(p => {
-            p.dataset.manifestoInit = 'true';
-
-            // Dividir por <br> en líneas individuales
-            const rawHTML = p.innerHTML;
-            const lines = rawHTML.split(/<br\s*\/?>/i);
-
-            p.innerHTML = lines.map(line => line.trim() ? `
-                <span class="manifesto-line" style="display:block; overflow:hidden;">
-                    <span class="manifesto-line-inner" style="display:block; transform:translateY(105%); opacity:0;">
-                        ${line.trim()}
-                    </span>
-                </span>` : '').filter(Boolean).join('');
-
-            // El home scrollea dentro de #home-container
-            const scrollRoot = p.closest('#home-container') || null;
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const lineInners = entry.target.querySelectorAll('.manifesto-line-inner');
-                        lineInners.forEach((inner, i) => {
-                            setTimeout(() => {
-                                inner.style.transition = 'transform 380ms cubic-bezier(0.25,0,0,1), opacity 300ms ease';
-                                inner.style.transform = 'translateY(0)';
-                                inner.style.opacity = '1';
-                            }, i * 80);
-                        });
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                root: scrollRoot,
-                threshold: 0.15
-            });
-
-            observer.observe(p);
-        });
-    }
 
     function injectFooterInAccount() {
         const shopFooter = document.querySelector('.shop-footer');
@@ -2170,10 +2357,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     delete logo.dataset.logoInit;
                     logo.classList.remove('revealed');
                 });
-                // Limpiar el manifesto para que el reveal se active de nuevo
-                clone.querySelectorAll('.manifesto-text').forEach(p => {
-                    delete p.dataset.manifestoInit;
-                });
                 parent.appendChild(clone);
             }
         };
@@ -2182,10 +2365,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (accountCreateSection) appendAndReset(accountCreateSection);
         if (accountContactSection) appendAndReset(accountContactSection);
 
-        // Re-initialize logo reveal + manifesto reveal para footers clonados
+        // Re-initialize logo reveal + year range + accordion para footers clonados
         setTimeout(() => {
             initFooterLogoReveal();
-            initManifestoReveal();
+            initFooterYearRange();
+            initFooterAccordion();
         }, 50);
     }
 
@@ -2349,6 +2533,49 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.activeElement) document.activeElement.blur();
         });
     });
+
+    // Mobile Menu (hamburger → categories only)
+    if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMobileMenu);
+    if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMobileMenu);
+
+    // Mobile menu: category links (direct, no sub-view)
+    mobileCatLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const category = link.dataset.cat;
+            closeMobileMenu();
+            enableShopState(null, category);
+            setShopCategory(category);
+        });
+    });
+
+    // Mobile header icons (search, account, cart)
+    if (mobileSearchIcon) {
+        mobileSearchIcon.addEventListener('click', () => {
+            openSearch();
+        });
+    }
+    if (mobileAccountIcon) {
+        mobileAccountIcon.addEventListener('click', (e) => {
+            enableAccountState(e);
+        });
+    }
+    if (mobileCartIcon) {
+        mobileCartIcon.addEventListener('click', () => {
+            openCart();
+        });
+    }
+
+    // Checkout Summary Accordion (mobile only)
+    const summaryToggle = document.getElementById('checkout-summary-toggle');
+    const summaryContent = document.getElementById('checkout-summary-content');
+    if (summaryToggle && summaryContent) {
+        summaryToggle.addEventListener('click', () => {
+            const isOpen = summaryContent.classList.toggle('open');
+            const chevron = summaryToggle.querySelector('.checkout-summary-chevron');
+            if (chevron) chevron.classList.toggle('open', isOpen);
+        });
+    }
 
     // Cart Global Toggles
     if (cartTrigger) cartTrigger.addEventListener('click', openCart);
@@ -2553,8 +2780,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const resumenEmail = document.getElementById('resumen-email');
         const resumenUbicacion = document.getElementById('resumen-ubicacion');
+        const ubicacionStr = ubicacionParts.join(', ') || '—';
         if (resumenEmail) resumenEmail.textContent = email;
-        if (resumenUbicacion) resumenUbicacion.textContent = ubicacionParts.join(', ') || '—';
+        if (resumenUbicacion) resumenUbicacion.textContent = ubicacionStr;
+
+        // 1b. Sync mobile accordion contact block + show it
+        const resumenMobileEmail = document.getElementById('resumen-mobile-email');
+        const resumenMobileUbi = document.getElementById('resumen-mobile-ubicacion');
+        const contactBlock = document.getElementById('checkout-summary-contact-block');
+        if (resumenMobileEmail) resumenMobileEmail.textContent = email;
+        if (resumenMobileUbi) resumenMobileUbi.textContent = ubicacionStr;
+        if (contactBlock) contactBlock.style.display = 'block';
 
         // 2. Hide Step 1 sections (CONTACTO + DIRECCIÓN)
         const step1Sections = document.querySelectorAll('#checkout .checkout-main > .checkout-section');
@@ -2772,6 +3008,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const stepEnvio = document.getElementById('checkout-step-envio');
         if (stepEnvio) stepEnvio.style.display = 'none';
 
+        // 2b. Hide mobile accordion contact block (Step 2+ exclusive)
+        const contactBlock = document.getElementById('checkout-summary-contact-block');
+        if (contactBlock) contactBlock.style.display = 'none';
+
         // 3. Update breadcrumb
         const breadcrumbSteps = document.querySelectorAll('.breadcrumb-step');
         breadcrumbSteps.forEach((step, index) => {
@@ -2967,7 +3207,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const envioValue = envioPrecioCentavos / 100;
         const total = subtotalValue + envioValue;
 
-        totalEl.textContent = '$' + formatearPrecioARS(total);
+        const formatted = '$' + formatearPrecioARS(total);
+        totalEl.textContent = formatted;
+        // Sync mobile accordion total preview
+        const summaryPreview = document.getElementById('checkout-summary-total-preview');
+        if (summaryPreview) summaryPreview.textContent = formatted;
     }
 
     // Expose Step 2 functions globally
@@ -3613,9 +3857,24 @@ document.addEventListener('DOMContentLoaded', () => {
     initMarquee();
     window.addEventListener('resize', initMarquee);
 
-    // Footer logo clip-path reveal
+    // Footer logo clip-path reveal + copyright year
     initFooterLogoReveal();
-    initManifestoReveal();
+    initFooterYearRange();
+
+    // Footer accordion (mobile only)
+    function initFooterAccordion(root) {
+        const container = root || document;
+        container.querySelectorAll('.footer-nav-title').forEach(title => {
+            if (title.dataset.accordionInit) return;
+            title.dataset.accordionInit = 'true';
+            title.addEventListener('click', () => {
+                if (window.innerWidth > 768) return;
+                const column = title.closest('.footer-nav-column');
+                column.classList.toggle('open');
+            });
+        });
+    }
+    initFooterAccordion();
 
     // =========================================================================
     // MARQUEE — sincroniza body.header-active cuando el header se activa (negro)

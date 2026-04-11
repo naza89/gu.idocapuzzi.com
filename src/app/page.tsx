@@ -89,6 +89,31 @@ const siteHTML = `
                 <a href="#" id="account-trigger">Cuenta</a>
                 <a href="#" id="cart-trigger">Carrito (0)</a>
             </div>
+
+            <!-- MOBILE: icon bar (hidden on desktop via CSS) -->
+            <div class="header-mobile-icons">
+                <button id="mobile-search-icon" class="header-icon-btn" aria-label="Buscar">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C13.94 20 15.72 19.31 17.1 18.16L18.94 20L20 18.94L18.16 17.1C19.31 15.72 20 13.94 20 12ZM12 18.5C8.42 18.5 5.5 15.58 5.5 12C5.5 8.42 8.42 5.5 12 5.5C15.58 5.5 18.5 8.42 18.5 12C18.5 15.58 15.58 18.5 12 18.5Z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button id="mobile-account-icon" class="header-icon-btn" aria-label="Cuenta">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M12 14C14.76 14 17 11.76 17 9C17 6.24 14.76 4 12 4C9.24 4 7 6.24 7 9C7 11.76 9.24 14 12 14ZM12 5.5C13.93 5.5 15.5 7.07 15.5 9C15.5 10.93 13.93 12.5 12 12.5C10.07 12.5 8.5 10.93 8.5 9C8.5 7.07 10.07 5.5 12 5.5ZM18.75 18V20H17.25V18C17.25 17.31 16.69 16.75 16 16.75H8C7.31 16.75 6.75 17.31 6.75 18V20H5.25V18C5.25 16.48 6.48 15.25 8 15.25H16C17.52 15.25 18.75 16.48 18.75 18Z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button id="mobile-cart-icon" class="header-icon-btn" aria-label="Carrito">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M18.0002 7H15.7502V5.75C15.7502 4.79 14.9702 4 14.0002 4H9.99023C9.03023 4 8.24023 4.78 8.24023 5.75V7H5.99023C4.89023 7 3.99023 7.89 3.99023 9V18C3.99023 19.1 4.88023 20 5.99023 20H17.9902C19.0902 20 19.9902 19.11 19.9902 18V9C19.9902 7.9 19.1002 7 17.9902 7H18.0002ZM9.75023 5.75C9.75023 5.61 9.86023 5.5 10.0002 5.5H14.0102C14.1502 5.5 14.2602 5.61 14.2602 5.75V7H9.76023V5.75H9.75023ZM18.5002 18.01C18.5002 18.28 18.2802 18.51 18.0002 18.51H6.00023C5.73023 18.51 5.50023 18.29 5.50023 18.01V9.01C5.50023 8.74 5.72023 8.51 6.00023 8.51H8.25023V10.01H9.75023V8.51H14.2502V10.01H15.7502V8.51H18.0002C18.2702 8.51 18.5002 8.73 18.5002 9.01V18.01Z" fill="currentColor"/>
+                    </svg>
+                    <span id="mobile-cart-badge" class="header-cart-badge" style="display:none">0</span>
+                </button>
+                <button id="hamburger-btn" class="hamburger-btn" aria-label="Menú">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M20 6.5H4V5H20V6.5ZM20 11.25H4V12.75H20V11.25ZM20 17.5H4V19H20V17.5Z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
         </header>
 
         <!-- STATE: HOME (Atmosphere & Scroll) -->
@@ -98,8 +123,15 @@ const siteHTML = `
                 <img src="/assets/brand/logo-guido-blanco.svg" id="hero-logo" alt="GÜIDO CAPUZZI">
             </div>
 
-            <!-- Section 1: Campaign (Red) -->
+            <!-- Section 1: Campaign (Red / Video) -->
             <section class="home-section campaign-section">
+                <video class="campaign-video campaign-video-desktop" autoplay muted loop playsinline>
+                    <source src="/assets/videos/hero-desktop.mp4" type="video/mp4">
+                </video>
+                <video class="campaign-video campaign-video-mobile" autoplay muted loop playsinline>
+                    <source src="/assets/videos/hero-mobile.mp4" type="video/mp4">
+                </video>
+                <!-- Desktop content block (bottom-left) -->
                 <div class="section-content-block campaign-block">
                     <p class="section-subtitle">Descubrí los vestuarios del origen de Güido.</p>
                     <h2 class="section-title font-condensed">CAMPAÑA 2026</h2>
@@ -108,10 +140,16 @@ const siteHTML = `
                         <a href="#" class="btn-rect"><span>ARCHIVO</span></a>
                     </div>
                 </div>
+                <!-- Mobile content block (centered) -->
+                <div class="section-mobile-content">
+                    <h2 class="section-mobile-title font-condensed">CAMPAÑA 2026</h2>
+                    <a href="/shop" class="btn-rect btn-rect-mobile"><span>VER TODO</span></a>
+                </div>
             </section>
 
             <!-- Section 2: Selvedge (Brown) -->
             <section class="home-section selvedge-section">
+                <!-- Desktop content block (top-left, parallax) -->
                 <div class="section-content-block selvedge-block">
                     <p class="section-subtitle">Nuevos jeans de stock único.</p>
                     <h2 class="section-title font-condensed">SELVEDGE DENIM</h2>
@@ -119,6 +157,11 @@ const siteHTML = `
                         <a href="#" class="btn-rect"><span>COMPRAR AHORA</span></a>
                         <a href="#" class="btn-rect"><span>VER LOOKBOOK</span></a>
                     </div>
+                </div>
+                <!-- Mobile content block (centered) -->
+                <div class="section-mobile-content">
+                    <h2 class="section-mobile-title font-condensed">SELVEDGE DENIM</h2>
+                    <a href="/shop" class="btn-rect btn-rect-mobile" data-category="PANTALONES / JEANS"><span>VER JEANS</span></a>
                 </div>
             </section>
 
@@ -152,16 +195,9 @@ const siteHTML = `
                             </div>
                         </div>
                     </div>
-                    <div class="footer-brand-description">
-                        <p class="manifesto-text font-condensed">
-                            GÜIDO vive en la consciencia de su nieto, Nazareno Capuzzi,<br>
-                            en su afán de querer crear y compartir con el mundo una visión que lo<br>
-                            precede. "Quiero construir lo que busco y no encuentro, crear en virtud<br>
-                            de materializar lo que siento para dejar una huella de lo que llaman Alma.<br>
-                            Mi proyecto es el símbolo de una idea que se instancia en la materia,<br>
-                            pero que pertenece, esencialmente, al espíritu".
-                        </p>
-                    </div>
+                </div>
+                <div class="footer-copyright">
+                    <p>© <span class="footer-year-range"></span> GÜIDO CAPUZZI, Capmat Studios S.R.L. Todos los derechos reservados. <span class="footer-cuit">CUIT 33-71917919-9</span></p>
                 </div>
                 <div class="footer-logo-container">
                     <svg class="footer-logo" viewBox="0 0 478.12614 58.217856" xmlns="http://www.w3.org/2000/svg" aria-label="GÜIDO CAPUZZI">
@@ -219,16 +255,9 @@ const siteHTML = `
                             </div>
                         </div>
                     </div>
-                    <div class="footer-brand-description">
-                        <p class="manifesto-text font-condensed">
-                            GÜIDO vive en la consciencia de su nieto, Nazareno Capuzzi,<br>
-                            en su afán de querer crear y compartir con el mundo una visión que lo<br>
-                            precede. "Quiero construir lo que busco y no encuentro, crear en virtud<br>
-                            de materializar lo que siento para dejar una huella de lo que llaman Alma.<br>
-                            Mi proyecto es el símbolo de una idea que se instancia en la materia,<br>
-                            pero que pertenece, esencialmente, al espíritu".
-                        </p>
-                    </div>
+                </div>
+                <div class="footer-copyright">
+                    <p>© <span class="footer-year-range"></span> GÜIDO CAPUZZI, Capmat Studios S.R.L. Todos los derechos reservados. <span class="footer-cuit">CUIT 33-71917919-9</span></p>
                 </div>
                 <div class="footer-logo-container">
                     <svg class="footer-logo" viewBox="0 0 478.12614 58.217856" xmlns="http://www.w3.org/2000/svg" aria-label="GÜIDO CAPUZZI">
@@ -492,6 +521,9 @@ const siteHTML = `
                         <span class="breadcrumb-step">Pago</span>
                     </nav>
 
+                    <!-- Mobile summary slot: accordion moves here on mobile via JS -->
+                    <div id="checkout-summary-slot" class="checkout-summary-slot"></div>
+
                     <!-- CONTACTO Section -->
                     <div class="checkout-section">
                         <div class="checkout-section-header">
@@ -550,7 +582,7 @@ const siteHTML = `
 
                     <!-- STEP 2: ENVÍO (Hidden by default) -->
                     <div id="checkout-step-envio" style="display: none;">
-                        <div class="checkout-section">
+                        <div class="checkout-section" id="checkout-step2-resumen-section">
                             <div class="checkout-section-header">
                                 <h2 class="checkout-section-title font-condensed">RESUMEN</h2>
                             </div>
@@ -753,25 +785,52 @@ const siteHTML = `
 
                 <!-- RIGHT PANEL: Order Summary Sidebar -->
                 <aside class="checkout-sidebar">
-                    <div class="checkout-cart-items" id="checkout-cart-items">
-                        <!-- Items will be injected via JS -->
-                    </div>
-                    <div class="checkout-discount-section">
-                        <input type="text" id="checkout-discount" class="checkout-discount-input" placeholder="Código de descuento">
-                    </div>
-                    <div class="checkout-totals">
-                        <div class="checkout-total-row">
-                            <span class="checkout-total-label">Subtotal</span>
-                            <span class="checkout-total-value" id="checkout-subtotal">$0.00</span>
+                    <!-- Mobile-only accordion toggle (hidden on desktop via CSS) -->
+                    <div id="checkout-summary-toggle" class="checkout-summary-toggle">
+                        <div class="checkout-summary-toggle-left">
+                            <span class="checkout-summary-label">Resumen de la orden</span>
+                            <svg class="checkout-summary-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 5L7 10L12 5" stroke="#1A1A1A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
                         </div>
-                        <div class="checkout-total-row">
-                            <span class="checkout-total-label">Envío</span>
-                            <span class="checkout-total-note">Calculado en el próximo paso</span>
+                        <span id="checkout-summary-total-preview" class="checkout-summary-total-preview">$0</span>
+                    </div>
+                    <!-- Collapsible content (always open on desktop) -->
+                    <div id="checkout-summary-content" class="checkout-summary-content">
+                        <!-- Mobile-only: Contacto + Ubicación (solo visible en step 2+) -->
+                        <div id="checkout-summary-contact-block" class="checkout-summary-contact-block" style="display: none;">
+                            <div class="resumen-row">
+                                <span class="resumen-label">Contacto</span>
+                                <span class="resumen-value" id="resumen-mobile-email">—</span>
+                                <a href="#" class="resumen-cambiar" id="resumen-mobile-cambiar-contacto">Cambiar</a>
+                            </div>
+                            <div class="resumen-divider"></div>
+                            <div class="resumen-row">
+                                <span class="resumen-label">Ubicación</span>
+                                <span class="resumen-value" id="resumen-mobile-ubicacion">—</span>
+                                <a href="#" class="resumen-cambiar" id="resumen-mobile-cambiar-ubicacion">Cambiar</a>
+                            </div>
                         </div>
-                        <div class="checkout-total-row checkout-total-final">
-                            <span class="checkout-total-label font-condensed">TOTAL</span>
-                            <span class="checkout-total-currency">ARS</span>
-                            <span class="checkout-total-value checkout-total-amount font-condensed" id="checkout-total">$0.00</span>
+                        <div class="checkout-cart-items" id="checkout-cart-items">
+                            <!-- Items will be injected via JS -->
+                        </div>
+                        <div class="checkout-discount-section">
+                            <input type="text" id="checkout-discount" class="checkout-discount-input" placeholder="Código de descuento">
+                        </div>
+                        <div class="checkout-totals">
+                            <div class="checkout-total-row">
+                                <span class="checkout-total-label">Subtotal</span>
+                                <span class="checkout-total-value" id="checkout-subtotal">$0.00</span>
+                            </div>
+                            <div class="checkout-total-row">
+                                <span class="checkout-total-label">Envío</span>
+                                <span class="checkout-total-note">Calculado en el próximo paso</span>
+                            </div>
+                            <div class="checkout-total-row checkout-total-final">
+                                <span class="checkout-total-label font-condensed">TOTAL</span>
+                                <span class="checkout-total-currency">ARS</span>
+                                <span class="checkout-total-value checkout-total-amount font-condensed" id="checkout-total">$0.00</span>
+                            </div>
                         </div>
                     </div>
                 </aside>
@@ -1114,6 +1173,25 @@ const siteHTML = `
             <button id="filters-apply-btn" class="filters-action-btn filters-apply font-condensed">MOSTRAR</button>
         </div>
     </aside>
+
+    <!-- MOBILE MENU DRAWER -->
+    <nav id="mobile-menu" aria-label="Menú mobile">
+        <div class="mobile-menu-header">
+            <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Cerrar menú">
+                <img src="/assets/icons/cross-blanca.svg" alt="Cerrar" width="18" height="18" />
+            </button>
+        </div>
+
+        <!-- Categorías del Shop (directas, sin sub-vista) -->
+        <div class="mobile-menu-categories">
+            <a href="#" class="mobile-cat-link font-condensed" data-cat="REMERAS">REMERAS</a>
+            <a href="#" class="mobile-cat-link font-condensed" data-cat="TOPS / MUSCULOSAS">TOPS / MUSCULOSAS</a>
+            <a href="#" class="mobile-cat-link font-condensed" data-cat="PANTALONES / JEANS">PANTALONES / JEANS</a>
+            <a href="#" class="mobile-cat-link font-condensed" data-cat="BERMUDAS / SHORTS">BERMUDAS / SHORTS</a>
+            <a href="#" class="mobile-cat-link font-condensed" data-cat="ARCHIVO">ARCHIVO</a>
+            <a href="#" class="mobile-cat-link font-condensed" data-cat="VER TODO">VER TODO</a>
+        </div>
+    </nav>
 
     <!-- Supabase Client (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

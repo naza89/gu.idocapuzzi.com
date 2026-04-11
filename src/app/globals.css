@@ -21,6 +21,13 @@
     --ease-morph: cubic-bezier(0.22, 1, 0.36, 1);
     /* Premium morph easing */
 
+    /* ─── Breakpoints de referencia ───────────────────────────────────────────
+       480px  → mobile pequeño (iPhone SE y similares)
+       768px  → mobile / tablet portrait  ← breakpoint principal mobile
+       1024px → tablet landscape
+       > 1024px → desktop (comportamiento base)
+    ─────────────────────────────────────────────────────────────────────── */
+
     /* ─── A1: SISTEMA DE ANIMACIÓN GÜIDO ─── */
     --dur-cut:          0ms;
     --dur-enter:        280ms;
@@ -31,6 +38,14 @@
     --ease-cut:         cubic-bezier(0.4, 0, 1, 1);
     --ease-press:       cubic-bezier(0.4, 0, 0.6, 1);
     --ease-structural:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile: override spacing variables */
+@media (max-width: 768px) {
+    :root {
+        --header-height: 60px;
+        --padding-sides: 20px;
+    }
 }
 
 /* Font Faces */
@@ -463,6 +478,44 @@ body.state-contact.search-open .header-logo {
     gap: 12px;
 }
 
+/* Mobile content block (hidden on desktop, bottom-center on mobile) */
+.section-mobile-content {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 60;
+    gap: 16px;
+    text-align: center;
+    padding-bottom: 60px;
+}
+
+.section-mobile-title {
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-white);
+    line-height: 1;
+}
+
+/* Mobile btn-rect: white fill, dark text */
+.btn-rect.btn-rect-mobile {
+    background-color: var(--color-white) !important;
+    border-color: var(--color-white);
+    background: var(--color-white);
+}
+
+.btn-rect.btn-rect-mobile span {
+    color: var(--color-black) !important;
+    font-family: 'Univers', sans-serif !important;
+    font-weight: 400;
+}
+
 /* ─── BTN-RECT ─── */
 /* Fill horizontal de izquierda a derecha — más lento que links (320ms vs 260ms) para preservar jerarquía de acción */
 .btn-rect {
@@ -834,6 +887,31 @@ header.menu-open #dropdown-menu ul li {
 
 .campaign-section {
     background-color: var(--color-red);
+    overflow: hidden;
+}
+
+/* Video background for campaign section */
+.campaign-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+/* Desktop: show desktop video, hide mobile */
+.campaign-video-desktop {
+    display: block;
+}
+.campaign-video-mobile {
+    display: none;
+}
+
+/* Content block above video */
+.campaign-block {
+    z-index: 60;
 }
 
 .selvedge-section {
@@ -914,44 +992,33 @@ header.menu-open #dropdown-menu ul li {
 }
 
 
-/* Brand Description */
-.footer-brand-description {
-    max-width: 480px;
-    text-align: left;
-    flex-shrink: 0;
+/* Footer Copyright */
+.footer-copyright {
+    margin-top: 64px;
 }
 
-.footer-brand-description p {
-    font-size: 0.95rem;
-    line-height: 1.55;
-    letter-spacing: 0.02em;
-    margin: 0;
+.footer-copyright p {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    text-transform: uppercase;
     color: var(--color-white);
-}
-
-/* Manifesto Text - Estilo de bloque compacto */
-.manifesto-text {
-    /* 1. Anular la herencia de mayúsculas */
-    text-transform: none !important;
-
-    /* 2. Controlar la densidad del bloque */
     margin: 0;
-    line-height: 1.35;
-    /* Compacto pero legible */
-
-    /* 3. Asegurar que el color y peso sean correctos */
-    font-weight: 500;
-    letter-spacing: 0.02em;
-
-    /* 4. Evitar que el texto se rompa donde no debe */
-    white-space: nowrap;
 }
 
-/* RESPONSIVE: En móviles, permitir que el texto fluya */
+.footer-cuit {
+    opacity: 0.55;
+    font-size: 0.65rem;
+}
+
+.shop-footer .footer-copyright p {
+    color: var(--color-brown);
+}
+
 @media (max-width: 768px) {
-    .manifesto-text {
-        white-space: normal;
-        text-align: left;
+    .footer-copyright {
+        margin-top: 24px;
     }
 }
 
@@ -962,7 +1029,7 @@ header.menu-open #dropdown-menu ul li {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
-    margin-top: 60px;
+    margin-top: 32px;
     padding: 0;
 }
 
@@ -1026,13 +1093,7 @@ header.menu-open #dropdown-menu ul li {
 
 /* color de links del shop-footer gestionado en bloque C4 */
 
-.shop-footer .footer-brand-description p {
-    color: var(--color-brown);
-}
 
-.shop-footer .manifesto-text {
-    color: var(--color-brown);
-}
 
 
 /* =========================================
@@ -1191,6 +1252,10 @@ body.state-shop #shop {
     font-family: 'Univers', sans-serif;
     color: var(--color-black);
     opacity: 0.8;
+}
+
+.product-color {
+    text-transform: uppercase;
 }
 
 /* PDP FOOTER - Simple footer for product detail pages */
@@ -1456,22 +1521,22 @@ body.state-contact #account-contact {
 .pdp-container {
     display: grid;
     grid-template-columns: 60% 40%;
+    grid-template-rows: auto 1fr;
     min-height: calc(100vh - var(--header-height));
     height: auto;
-    /* Let content dictate height */
     position: relative;
-    /* Context for sticky */
 }
 
-/* Left Column: Visual Stack */
+/* Left Column: Visual Stack — spans both rows */
 .pdp-visual {
     background-color: var(--color-white);
     width: 100%;
     height: auto;
-    /* Let content dictate height */
     display: flex;
     flex-direction: column;
     gap: 0;
+    grid-column: 1;
+    grid-row: 1 / -1;
 }
 
 .pdp-image {
@@ -1479,25 +1544,34 @@ body.state-contact #account-contact {
     height: auto;
     object-fit: cover;
     display: block;
-    /* Remove inline gap */
 }
 
-/* Right Column */
-.pdp-info {
-    padding: 0 var(--padding-sides) 60px var(--padding-sides);
-    display: block;
-    height: 100%;
-}
-
-.pdp-sticky-wrapper {
-    position: sticky;
-    top: calc(var(--header-height) + 20px);
+/* Right Column — top block: title, colorway, price */
+.pdp-top-info {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0 var(--padding-sides);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+}
+
+/* Right Column — bottom block: selectors, button, description (sticky) */
+.pdp-bottom-info {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 0 var(--padding-sides) 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: sticky;
+    top: calc(var(--header-height) + 20px);
+    align-self: start;
     max-width: 600px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .pdp-header h1 {
@@ -1526,6 +1600,16 @@ body.state-contact #account-contact {
     line-height: 1.4;
     max-width: 90%;
     text-align: left;
+}
+
+/* Desktop: muestra descripción en top-info (entre precio y selectors), oculta la de bottom-info */
+.pdp-description--mobile {
+    display: none;
+}
+
+.pdp-description--desktop {
+    display: block;
+    margin-top: 24px;
 }
 
 .pdp-selectors {
@@ -3447,49 +3531,254 @@ body.state-checkout #checkout {
 }
 
 @media (max-width: 768px) {
+    /* ── Fondo: override del split desktop (linear-gradient 50/50) ── */
+    #checkout {
+        background: #FAFAFA;
+    }
+
+    /* ── Layout: 1 columna ── */
     .checkout-container {
         grid-template-columns: 1fr;
         padding: 0;
+        max-width: 100%;
     }
 
     .checkout-main {
-        padding: 30px 20px;
+        padding: 24px 20px 40px;
         order: 2;
+        background: #FAFAFA;
     }
 
+    /* Sidebar: oculto en mobile (contenido migrado al slot via JS) */
     .checkout-sidebar {
-        padding: 25px 20px;
-        order: 1;
-        border-left: none;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        display: none;
     }
 
+    /* ── Slot donde vive el accordion en mobile ── */
+    .checkout-summary-slot {
+        margin: 16px -20px 32px;
+        /* negativo para que el accordion ocupe full width, mayor espacio debajo */
+    }
+
+    /* ── Accordion toggle (VISIBLE solo en mobile) ── */
+    .checkout-summary-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+        cursor: pointer;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        user-select: none;
+        background: #FAFAFA;
+    }
+
+    .checkout-summary-toggle-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .checkout-summary-label {
+        font-family: 'Univers', 'Univers Regular', sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--color-black);
+    }
+
+    .checkout-summary-chevron {
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .checkout-summary-chevron.open {
+        transform: rotate(180deg);
+    }
+
+    .checkout-summary-total-preview {
+        font-family: 'Univers 67 Condensed', 'Univers Condensed', sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--color-black);
+    }
+
+    /* ── Contact block (Step 2 RESUMEN consolidado en accordion) ── */
+    .checkout-summary-contact-block {
+        padding: 14px 20px 4px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        margin-bottom: 4px;
+    }
+
+    .checkout-summary-contact-block .resumen-row {
+        grid-template-columns: 80px 1fr auto;
+        gap: 10px;
+        padding: 8px 0;
+        font-size: 12px;
+    }
+
+    .checkout-summary-contact-block .resumen-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #666;
+    }
+
+    .checkout-summary-contact-block .resumen-value {
+        font-size: 12px;
+        color: var(--color-black);
+    }
+
+    .checkout-summary-contact-block .resumen-cambiar {
+        font-size: 11px;
+    }
+
+    .checkout-summary-contact-block .resumen-divider {
+        margin: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    /* ── En mobile ocultamos el RESUMEN original de Step 2 (consolidado en accordion) ── */
+    #checkout-step2-resumen-section {
+        display: none !important;
+    }
+
+    /* ── CONTACTO section: más espacio después (antes de DIRECCIÓN) ── */
+    .checkout-main > .checkout-section:first-of-type {
+        margin-bottom: 42px;
+    }
+
+    /* ── Accordion content: colapsado por defecto ── */
+    .checkout-summary-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .checkout-summary-content.open {
+        max-height: 700px;
+        overflow: visible;
+    }
+
+    /* Padding del contenido cuando está abierto */
+    .checkout-summary-content .checkout-cart-items {
+        padding: 16px 20px 0;
+    }
+
+    .checkout-summary-content .checkout-discount-section {
+        padding: 12px 20px;
+    }
+
+    .checkout-summary-content .checkout-totals {
+        padding: 0 20px 16px;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        margin-top: 8px;
+        padding-top: 12px;
+    }
+
+    /* ── Form rows: 1 columna ── */
     .checkout-row-half,
     .checkout-row-thirds {
         grid-template-columns: 1fr;
     }
 
+    /* ── Spacing reducido ── */
+    .checkout-breadcrumb {
+        font-size: 11px;
+        gap: 4px;
+        margin-bottom: 20px;
+    }
+
+    .checkout-section-title {
+        font-size: 21px;
+        margin-bottom: 14px;
+    }
+
+    .checkout-section {
+        margin-bottom: 28px;
+    }
+
+    .checkout-form-group {
+        margin-bottom: 10px;
+    }
+
+    /* ── Resumen en steps 2/3: resumen-row responsive ── */
+    .resumen-row {
+        grid-template-columns: auto 1fr auto;
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .resumen-link {
+        font-size: 10px;
+    }
+
+    .envio-opcion {
+        padding: 14px 16px;
+    }
+
+    .envio-opcion-nombre {
+        font-size: 12px;
+    }
+
+    .envio-opcion-precio {
+        font-size: 12px;
+    }
+
+    /* ── Acciones: botón full width ── */
     .checkout-actions {
         justify-content: center;
+        flex-direction: column;
+        gap: 12px;
     }
 
     .checkout-continue-btn {
         width: 100%;
     }
 
+    .checkout-back-link {
+        text-align: center;
+    }
+
     .checkout-logo-img {
-        width: 200px;
+        width: 180px;
+    }
+}
+
+/* Slot + accordion: OCULTOS en desktop (vive en sidebar) */
+@media (min-width: 769px) {
+    .checkout-summary-slot {
+        display: none;
+    }
+
+    .checkout-summary-toggle {
+        display: none;
+    }
+
+    .checkout-summary-content {
+        display: contents;
+    }
+
+    /* Contact block solo existe en mobile accordion */
+    .checkout-summary-contact-block {
+        display: none !important;
     }
 }
 
 /* FILTERS MOBILE */
 @media (max-width: 768px) {
     #filters-drawer {
-        width: 85%;
+        width: 100vw;
+        z-index: 1200;
     }
 
     body.filters-open #site-wrapper {
-        transform: translateX(20%);
+        transform: none;
+        width: 100%;
+        margin-left: 0;
     }
 
     body.filters-open header,
@@ -3497,6 +3786,62 @@ body.state-checkout #checkout {
     body.filters-open #announcement-bar {
         left: 0;
         right: 0;
+    }
+
+    /* Header — título izquierda, X derecha */
+    .filters-header {
+        height: 65px;
+        padding: 0 var(--padding-sides);
+    }
+
+    #filters-title {
+        font-size: 1.9rem;
+    }
+
+    /* Content */
+    .filters-content {
+        padding: 45px var(--padding-sides) 0;
+    }
+
+    .filter-section {
+        margin-bottom: 45px;
+    }
+
+    .filter-section-title {
+        font-size: 1.1rem;
+        margin-bottom: 18px;
+    }
+
+    /* Radio & checkbox labels */
+    .radio-label,
+    .checkbox-label {
+        font-size: 0.7rem;
+    }
+
+    /* Grids: fit within fullscreen */
+    .filter-talle-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .filter-categoria-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px 16px;
+    }
+
+    .filter-options-checkbox {
+        gap: 10px 20px;
+    }
+
+    /* Footer buttons */
+    .filters-footer {
+        padding: 20px var(--padding-sides);
+        gap: 10px;
+    }
+
+    .filters-action-btn {
+        font-size: 0.9rem;
+        height: 40px;
     }
 }
 
@@ -4474,12 +4819,12 @@ body.state-legales #legales-container {
 /* ── CUERPO — uppercase justified, como ERD ── */
 .legales-body {
     font-family: 'Univers', sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     line-height: 1.75;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--color-black);
-    text-align: justify;
+    text-align: left;
 }
 
 .legales-body p {
@@ -5032,4 +5377,693 @@ body.state-legales #legales-container {
 .cookie-btn-decline:hover {
     opacity: 1;
     color: var(--color-red);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE — Header & Hamburger Menu
+   Breakpoint: ≤ 768px
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Mobile icon bar + hamburger: hidden on desktop ── */
+.header-mobile-icons {
+    display: none;
+}
+
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: inherit;
+}
+
+.header-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    position: relative;
+}
+
+.header-cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    font-family: 'Univers', sans-serif;
+    font-size: 0.6rem;
+    background-color: var(--color-red);
+    color: var(--color-white);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* ── Mobile header layout ── */
+@media (max-width: 768px) {
+    /* Ocultar nav desktop */
+    header .header-left,
+    header .header-right {
+        display: none;
+    }
+
+    /* Mostrar icon bar con hamburger */
+    .header-mobile-icons {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .header-mobile-icons .hamburger-btn {
+        display: flex;
+    }
+
+    /* Header: logo izq, icons der */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 12px;
+    }
+
+    /* Logo a la izquierda */
+    .header-center {
+        position: relative;
+        left: 0;
+        transform: none;
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+        margin: 0;
+        min-width: 0;
+    }
+
+    .header-logo {
+        width: 150px;
+        flex-shrink: 0;
+    }
+
+    .header-logo-link {
+        padding: 0;
+    }
+
+    /* Cart drawer: fullscreen en mobile, mismo estilo que desktop */
+    #cart-drawer {
+        width: 100vw !important;
+    }
+
+    /* Site wrapper no se desplaza en mobile con cart open */
+    body.cart-open #site-wrapper {
+        width: 100% !important;
+        right: 0 !important;
+    }
+
+    /* ── Home sections mobile ── */
+    .home-section {
+        min-height: 100vh;
+    }
+
+    /* Hide desktop content blocks, show mobile ones */
+    .section-content-block {
+        display: none;
+    }
+
+    .section-mobile-content {
+        display: flex;
+    }
+
+    /* Home sections: full viewport height */
+    .home-section {
+        min-height: 100vh;
+    }
+
+    /* Video: swap desktop → mobile */
+    .campaign-video-desktop {
+        display: none;
+    }
+    .campaign-video-mobile {
+        display: block;
+    }
+
+    /* Selvedge block: static bottom positioning, no parallax */
+    .selvedge-block {
+        position: absolute;
+        top: auto;
+        bottom: 30px;
+        will-change: auto;
+        transform: none !important;
+    }
+
+    /* ── Shop grid mobile: 2 columnas ── */
+    .shop-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 60px;
+    }
+
+    .product-card {
+        gap: 8px;
+    }
+
+    .product-info {
+        gap: 3px;
+        font-size: 0.75rem;
+    }
+
+    .product-name {
+        font-size: 0.85rem;
+    }
+
+    .product-color,
+    .product-price {
+        font-size: 0.65rem;
+    }
+
+    /* Shop header mobile */
+    .shop-header {
+        padding-left: var(--padding-sides);
+        padding-right: var(--padding-sides);
+    }
+
+    .shop-title-row h1,
+    #shop-category-title {
+        font-size: clamp(2rem, 12vw, 3rem);
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .announcement-text {
+        font-size: 0.65rem;
+    }
+
+    /* Shop controls row mobile */
+    .shop-controls-row {
+        font-size: 0.75rem;
+        padding-bottom: 8px;
+    }
+
+    .filtros-btn {
+        font-size: 0.7rem;
+        padding: 6px 14px;
+        border-width: 1.5px;
+    }
+
+    /* ── Footer mobile: acordeón ── */
+    .home-footer,
+    .shop-footer {
+        min-height: auto;
+        padding-top: 40px !important;
+        padding-bottom: 30px;
+        gap: 0;
+    }
+
+    .footer-main-content {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .footer-left-section {
+        width: 100%;
+    }
+
+    .footer-nav-columns {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .footer-nav-column {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 16px 0;
+    }
+
+    .shop-footer .footer-nav-column {
+        border-bottom-color: rgba(68, 37, 23, 0.15);
+    }
+
+    .footer-nav-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        margin-bottom: 0;
+        font-size: 1rem;
+    }
+
+    .footer-nav-title::after {
+        content: '';
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%23FAFAFA' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+        transition: transform 0.8s cubic-bezier(0.5, 0, 0, 1);
+        flex-shrink: 0;
+    }
+
+    .shop-footer .footer-nav-title::after {
+        background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%23442517' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    .footer-nav-column.open .footer-nav-title::after {
+        transform: rotate(180deg);
+    }
+
+    .footer-nav-list {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 300ms ease, margin-top 300ms ease;
+        margin-top: 0;
+    }
+
+    .footer-nav-column.open .footer-nav-list {
+        max-height: 200px;
+        margin-top: 12px;
+    }
+
+    .footer-logo-container {
+        margin-top: 24px;
+    }
+
+    /* ── Cookie banner mobile ── */
+    .cookie-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        padding: 16px var(--padding-sides);
+    }
+
+    .cookie-text {
+        font-size: 0.78rem;
+        max-width: 100%;
+        text-align: left;
+    }
+
+    .cookie-actions {
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .cookie-btn-accept {
+        flex: 1;
+    }
+
+    .cookie-btn-accept::before {
+        display: none;
+    }
+
+    .cookie-btn-accept span {
+        color: var(--color-white);
+    }
+
+    .cookie-btn-decline {
+        opacity: 0.7;
+        flex: 1;
+    }
+
+    /* ── Account & Contact — mobile ── */
+
+    /* Reducir padding-top para que empiece más abajo */
+    #account-login,
+    #account-create,
+    #account-recover,
+    #account-new-password,
+    #account-contact {
+        padding-top: 150px;
+    }
+
+    /* Título de página más grande */
+    .login-header h1 {
+        font-size: 2.4rem;
+    }
+
+    /* CREAR UNA CUENTA — título más pequeño para que entre en una línea */
+    #account-create .login-header h1 {
+        font-size: 1.8rem;
+    }
+
+    /* CREAR UNA CUENTA — centrar campos */
+    #account-create .login-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Link "¿olvidaste la contraseña?" en la misma línea, a la derecha */
+    .login-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+
+    .forgot-pwd {
+        font-size: 0.65rem !important;
+        white-space: nowrap;
+    }
+
+    /* Campos del formulario: ancho reducido y centrados */
+    .login-fields {
+        margin: 24px auto;
+        gap: 18px;
+        max-width: 280px;
+        width: 100%;
+    }
+
+    .input-group {
+        max-width: 100%;
+    }
+
+    .input-custom {
+        font-size: 0.9rem;
+    }
+
+    /* Nombre + Apellido apilados en mobile */
+    .name-row {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        max-width: 100%;
+    }
+
+    /* Botones: columna única en mobile, más grandes, ancho = header */
+    .login-actions {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 28px;
+        width: 100%;
+    }
+
+    .login-actions button {
+        padding: 18px;
+        font-size: 1rem;
+    }
+
+    .login-actions button .button-text {
+        font-size: 1rem;
+    }
+
+    /* Sobreescribir overrides de #account-create que usan margin-top menor */
+    #account-create .login-actions,
+    #account-contact .login-actions {
+        margin-top: 20px;
+    }
+
+    /* Textarea más alto en mobile para que sea cómodo escribir */
+    .textarea-custom {
+        height: 140px;
+        font-size: 0.9rem;
+    }
+
+    /* Contact container: quitar max-width fijo para que use el padding global */
+    .contact-container {
+        max-width: 100% !important;
+        padding: 0 var(--padding-sides) !important;
+    }
+
+    /* Label más pequeño en mobile */
+    .input-group label {
+        font-size: 0.7rem;
+    }
+}
+
+/* ── Touch devices: :active states for hover animations ── */
+@media (hover: none) {
+    .btn-rect:active::before {
+        width: 100%;
+    }
+    .btn-rect:active span {
+        color: var(--color-black);
+    }
+    .selvedge-block .btn-rect:active span {
+        color: var(--color-brown);
+    }
+    .footer-nav-list a:active::before {
+        width: 100%;
+    }
+    .home-footer .footer-nav-list a:active {
+        color: var(--color-black);
+    }
+    .shop-footer .footer-nav-list a:active {
+        color: var(--color-white) !important;
+    }
+}
+
+/* ── Mobile menu drawer ── */
+#mobile-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1200;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+body.mobile-menu-open #mobile-menu {
+    transform: translateX(0);
+}
+
+.mobile-menu-header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px var(--padding-sides);
+    z-index: 1;
+}
+
+.mobile-menu-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* ── Categorías directas (reemplaza vista principal + shop overlay) ── */
+.mobile-menu-categories {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 12px;
+}
+
+.mobile-cat-link {
+    display: block;
+    font-family: 'Univers 67 Condensed', 'Arial Narrow', Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-white);
+    text-decoration: none;
+    line-height: 1;
+    /* Stagger animation: start hidden, revealed by JS */
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 320ms ease, transform 320ms ease;
+}
+
+/* ══════════════════════════════════════════
+   PDP MOBILE — ERD-inspired layout
+   Order: Title+Colorway → Images → Sizes+Button → Description
+   Ref: enfantsrichesdeprimes.com mobile PDP
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .pdp-container {
+        display: flex;
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    /* ERD order: title/colorway FIRST */
+    .pdp-top-info {
+        order: 1;
+        width: 100%;
+        padding: 24px var(--padding-sides) 12px;
+        position: static;
+    }
+
+    /* Images SECOND — horizontal scroll carousel */
+    .pdp-visual {
+        order: 2;
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .pdp-visual::-webkit-scrollbar {
+        display: none;
+    }
+
+    .pdp-image {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+    }
+
+    /* Sizes + button + description THIRD */
+    .pdp-bottom-info {
+        order: 3;
+        width: 100%;
+        padding: 20px var(--padding-sides) 40px;
+        position: static;
+        align-self: auto;
+        max-width: 100%;
+    }
+
+    /* Title: 32px condensed bold, centered */
+    .pdp-header h1 {
+        font-size: 35px;
+        line-height: 35px;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    /* Colorway: 16px condensed, centered */
+    .pdp-colorway {
+        font-size: 16px;
+        line-height: 20px;
+        margin-bottom: 8px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    /* Price: 15px, centered */
+    .pdp-price {
+        font-size: 15px;
+        line-height: 19px;
+        margin-bottom: 0;
+        text-align: center;
+    }
+
+    /* Description: Univers Regular (not Condensed), smaller than colorway */
+    .pdp-description {
+        font-family: 'Univers', sans-serif;
+        font-size: 12px;
+        line-height: 18px;
+        margin-top: 24px;
+        margin-bottom: 12px;
+        max-width: 100%;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    /* Mobile: oculta la del top-info, muestra la del bottom-info */
+    .pdp-description--desktop {
+        display: none;
+    }
+
+    .pdp-description--mobile {
+        display: block;
+    }
+
+    .pdp-selectors {
+        margin-bottom: 24px;
+    }
+
+    .selector-group label {
+        font-size: 14px;
+    }
+
+    .size-btn {
+        padding: 6px 12px;
+        font-size: 16px;
+        min-width: 32px;
+    }
+
+    .qty-btn {
+        padding: 8px 12px;
+        font-size: 16px;
+    }
+
+    .qty-val {
+        font-size: 16px;
+    }
+
+    /* Inline CTA: justo debajo de los talles, flujo normal */
+    .add-to-cart-btn {
+        position: relative;
+        width: 100%;
+        height: 52px;
+        border-radius: 0;
+        padding: 0 16px;
+        font-size: 16px;
+        text-transform: uppercase;
+        background-color: var(--color-black);
+        color: var(--color-white);
+        margin-top: 16px;
+    }
+
+    /* Related products: horizontal scroll */
+    .related-section {
+        padding: 40px 0 80px;
+        overflow: hidden;
+    }
+
+    .related-header {
+        margin-bottom: 20px;
+        font-size: 16px;
+        padding: 0 var(--padding-sides);
+    }
+
+    .related-header h3 {
+        font-size: 18px;
+    }
+
+    .related-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 12px;
+        padding: 0 var(--padding-sides);
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .related-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .related-grid .product-card {
+        flex: 0 0 45%;
+        scroll-snap-align: start;
+    }
 }
