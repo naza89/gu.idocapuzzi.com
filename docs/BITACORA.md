@@ -4,6 +4,57 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-04-11
+
+### Diagnóstico error 500 NAVE — sandbox intermitente
+
+**Problema encontrado:** Al intentar redirigir al checkout de NAVE, el botón PAGAR devolvía `Backend error: 500` con alert "No se pudo inicializar el proceso de pago".
+
+**Investigación:** Curl directo a `POST /api/nave/crear-pago`. Primera llamada devolvió `NAVE payment_request failed (502)`. Las tres siguientes devolvieron 200 OK.
+
+**Conclusión:** Inestabilidad del sandbox NAVE, no un bug de código. Solución futura: retry automático en `redirigirPagoNave()`.
+
+---
+
+### Checkout Mobile — fix DOM move con live viewport check
+
+**Problema encontrado:** El accordion no aparecía si la página cargaba en viewport desktop antes de verse en mobile (ngrok). La variable `isMobile` se evaluaba una vez al cargar start.js.
+
+**Solución adoptada:** `if (isMobile)` → `if (window.innerWidth <= 768)` en `enableCheckoutState()`.
+
+**Archivo modificado:** `public/js/start.js`
+
+---
+
+### Checkout Mobile — refinamientos tipografía y fondo
+
+- Label accordion: "RESUMEN DE LA ORDEN" Condensed → "Resumen de la orden" Univers regular 12px
+- Total preview: Univers Condensed 14px bold uppercase
+- Chevron: reordenado, va después del texto label
+- Fondo mobile: override del linear-gradient desktop → #FAFAFA plano (evita viewport partido en 2 tonos)
+- Títulos CONTACTO / DIRECCIÓN: 17px → 21px
+- Espaciado accordion→CONTACTO: 32px; sección CONTACTO: margin-bottom 42px
+
+**Archivos modificados:** `src/app/globals.css`, `src/app/page.tsx`
+
+---
+
+### Checkout Mobile — consolidación RESUMEN Step 2 en accordion
+
+**Problema:** En Step 2 (Envío), sección "RESUMEN" (Contacto + Ubicación) duplicaba información ya en el accordion.
+
+**Solución:** En mobile, sección `#checkout-step2-resumen-section` oculta (`display: none !important`). Agregado `#checkout-summary-contact-block` dentro del accordion content. `goToStep2()` lo muestra y popula; `volverAStep1()` lo oculta.
+
+**Archivos modificados:** `src/app/page.tsx`, `public/js/start.js`, `src/app/globals.css`
+
+---
+
+### Deploy
+
+Commit `47eea95` pusheado a `origin/main` → Vercel deploy automático.
+
+---
+
 ## 2026-04-10
 
 ### Fix Legales: word-spacing por justify + uppercase
