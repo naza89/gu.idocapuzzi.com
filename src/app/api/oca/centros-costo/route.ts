@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
 import { XMLParser } from 'fast-xml-parser';
 
+export const preferredRegion = ['gru1'];
+
 /**
  * GET /api/oca/centros-costo?operativa=XXXXX
  *

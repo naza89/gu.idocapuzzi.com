@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
 import { OCA_CONFIG } from '@/lib/oca/config';
 
+export const preferredRegion = ['gru1'];
+
 /**
  * POST /api/oca/anular
  *

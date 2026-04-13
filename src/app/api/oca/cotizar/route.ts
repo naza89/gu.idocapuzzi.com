@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OCA_CONFIG } from '@/lib/oca/config';
+
+export const preferredRegion = ['gru1'];
 import { ocaGet } from '@/lib/oca/client';
 import { parsearCotizacion } from '@/lib/oca/xml-parser';
 import { validarCP, validarCotizacion } from '@/lib/oca/validations';

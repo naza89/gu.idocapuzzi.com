@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
 import { parsearSucursales } from '@/lib/oca/xml-parser';
+
+export const preferredRegion = ['gru1'];
 import { validarCP } from '@/lib/oca/validations';
 
 /**
