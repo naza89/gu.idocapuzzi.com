@@ -177,10 +177,17 @@ const teaserHTML = showTeaser ? `
 
   <script>
     (function() {
-      var logo   = document.getElementById('teaser-logo');
       var screen = document.getElementById('teaser-screen');
-      if (!logo || !screen) return;
+      if (!screen) return;
 
+      // Solo mostrar teaser en la raíz — /shop y demás rutas pasan directo
+      var path = window.location.pathname;
+      if (path !== '/' && path !== '') {
+        screen.style.display = 'none';
+        return;
+      }
+
+      var logo = document.getElementById('teaser-logo');
       document.body.classList.add('teaser-active');
 
       logo.addEventListener('animationend', function handler(e) {
