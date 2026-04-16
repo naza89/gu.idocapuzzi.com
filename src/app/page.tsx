@@ -16,6 +16,185 @@
  * If React hydrates these nodes, it will conflict with all of the above.
  */
 
+// ─── TEASER / BLACKOUT ────────────────────────────────────────────────────────
+// Controlado por la env var NEXT_PUBLIC_SHOW_TEASER=true en Vercel.
+// Para volver al home normal: cambiar a false y hacer Redeploy. Sin tocar código.
+const showTeaser = process.env.NEXT_PUBLIC_SHOW_TEASER === 'true';
+
+const teaserHTML = showTeaser ? `
+  <style>
+    /* ─── TEASER SCREEN ─────────────────────────────────────── */
+    #teaser-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 50% 46%, #1e1e1e 0%, #0d0d0d 78%);
+      overflow: hidden;
+    }
+
+    /* Vignette breathing */
+    #teaser-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 46%, transparent 28%, rgba(0,0,0,0.82) 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    #teaser-screen.breathing::before {
+      animation: teaserVignette 8s ease-in-out infinite;
+    }
+    @keyframes teaserVignette {
+      0%, 100% { opacity: 0;   }
+      50%       { opacity: 0.6; }
+    }
+
+    /* Film grain */
+    #teaser-screen::after {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.022;
+      pointer-events: none;
+      animation: teaserGrain 0.38s steps(1) infinite;
+      z-index: 99;
+    }
+    @keyframes teaserGrain {
+      0%  { transform: translate(0%,  0%); }  14% { transform: translate(-3%, 1%); }
+      28% { transform: translate(2%, -3%); }  42% { transform: translate(-1%, 3%); }
+      57% { transform: translate(3%, -1%); }  71% { transform: translate(-2%, 2%); }
+      85% { transform: translate(1%, -2%); } 100% { transform: translate(-3%, 1%); }
+    }
+
+    /* Logo */
+    #teaser-logo {
+      position: relative;
+      z-index: 1;
+      width: min(96vw, 1100px);
+      display: block;
+      opacity: 0;
+      transform: scale(1.015);
+      will-change: opacity, transform;
+      animation: teaserReveal 2600ms cubic-bezier(0.16, 1, 0.3, 1) 1000ms 1 forwards;
+    }
+    #teaser-logo.pulsing {
+      animation: teaserPulse 8s ease-in-out -4s infinite;
+      opacity: 1;
+      transform: none;
+    }
+    @keyframes teaserReveal {
+      from { opacity: 0; transform: scale(1.015); }
+      to   { opacity: 1; transform: scale(1);     }
+    }
+    @keyframes teaserPulse {
+      0%, 100% { opacity: 0;   }
+      50%       { opacity: 0.8; }
+    }
+
+    /* Bloquear scroll del site mientras el teaser está activo */
+    body.teaser-active { overflow: hidden; }
+  </style>
+
+  <div id="teaser-screen">
+    <svg id="teaser-logo"
+         viewBox="2652.6561 545.72168 457.11447 55.101227"
+         xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="GÜIDO CAPUZZI">
+      <path fill="#fafafa" d="
+        m 2698.4161,545.87827 v 6.38315 h 6.5601 v -6.38315 z
+        m 10.4608,0 v 6.38315 h 6.5608 v -6.38315 z
+        m -40.9337,10.69782 c -14.5986,0 -15.1307,10.93379 -15.1307,21.69042
+          0,16.19412 1.7137,22.39982 16.7259,22.39982 3.5462,0 9.634,-0.94538
+          12.0571,-1.41821 v -21.63163 h -13.7711 v 6.56034 h 4.8468 v 9.45632
+          c -1.3593,0.4727 -2.9552,0.82747 -4.4327,0.82747 -5.0826,0
+          -6.3833,-2.36419 -6.3833,-15.72127 0,-8.27423 0,-15.78055 5.5556,-15.78055
+          4.7284,0 5.3782,3.48703 5.3193,7.44676 h 8.8654
+          c 0.5321,-8.92453 -4.9053,-13.82947 -13.6523,-13.82947 z
+        m 138.173,0 c -14.7167,0 -14.7167,10.75648 -14.7167,22.04507
+          0,11.17034 0,22.04517 14.7167,22.04517 14.7165,0 14.7165,-10.87483
+          14.7165,-22.04517 0,-11.28859 0,-22.04507 -14.7165,-22.04507 z
+        m 44.7914,0 c -14.7167,0 -14.7167,10.75648 -14.7167,22.04507
+          0,11.17034 0,22.04517 14.7167,22.04517 8.3332,0 12.8839,-3.66434
+          12.8839,-15.07128 h -8.8061 c -0.1169,3.36882 0.061,8.68855
+          -4.0778,8.68855 -5.0239,0 -5.674,-4.72838 -5.674,-15.66245
+          0,-10.93396 0.6501,-15.66235 5.674,-15.66235 2.6595,0 3.6645,2.12761
+          3.6645,7.80169 h 8.7466 c 0.3547,-9.16094 -3.3094,-14.1844 -12.4111,-14.1844 z
+        m -158.52,0.7088 v 30.26077 c 0,8.0378 4.7284,13.12067 14.5391,13.12067
+          10.8752,0 14.4803,-6.73765 14.4803,-13.12067 v -30.26077 h -8.9244
+          v 29.66972 c 0,4.72809 -1.773,7.32899 -5.6738,7.32899
+          -3.2507,0 -5.497,-2.06895 -5.497,-7.32899 v -29.66972 z
+        m 39.7756,0 v 42.67202 h 8.9247 v -42.67202 z
+        m 19.6811,0 v 42.67202 h 14.5396 c 15.2484,0 14.2439,-15.01187
+          14.2439,-21.57219 0,-13.29814 -2.187,-21.09983 -13.8894,-21.09983 z
+        m 161.8725,0 v 42.67202 h 8.9246 v -17.37576 h 6.619
+          c 10.4615,0 11.8795,-7.68332 11.8795,-12.52962
+          0,-7.80154 -3.1908,-12.76664 -11.3473,-12.76664 z
+        m 34.8027,0 v 30.26077 c 0,8.0378 4.7281,13.12067 14.5391,13.12067
+          10.875,0 14.4802,-6.73765 14.4802,-13.12067 v -30.26077 h -8.9245
+          v 29.66972 c 0,4.72809 -1.7727,7.32899 -5.6733,7.32899
+          -3.2509,0 -5.497,-2.06895 -5.497,-7.32899 v -29.66972 z
+        m 37.2261,0 v 6.56034 h 17.0804 l -17.9076,28.31016 v 7.80152
+          h 26.9499 v -6.56017 h -18.3803 l 17.9671,-28.36926 v -7.74258 z
+        m 34.3304,0 v 6.56034 h 17.0805 l -17.9083,28.31016 v 7.80152
+          h 26.9506 v -6.56017 h -18.3809 l 17.9671,-28.36926 v -7.74258 z
+        m 33.5023,0 v 42.67202 h 8.9244 v -42.67202 z
+        m -182.4075,0.7094 11.8206,42.67204 h 11.7617 l 11.5841,-42.67202
+          h -9.3974 l -2.364,9.4566 h -12.1753 l -2.4229,-9.4566 z
+        m 219.0607,1.13963 c -10.8145,0 -19.4873,8.62039 -19.4873,19.43492
+          0,10.81436 8.6728,19.5395 19.4873,19.5395 10.7622,0 19.3824,-8.72514
+          19.3824,-19.5395 0,-10.81453 -8.6202,-19.43492 -19.3824,-19.43492 z
+        m 0,3.65724 c 8.6201,0 15.7253,7.05282 15.7253,15.77768
+          0,8.72484 -7.1052,15.88243 -15.7253,15.88243
+          -8.7769,0 -15.8301,-7.15759 -15.8301,-15.88243
+          0,-8.72484 7.0532,-15.77767 15.8301,-15.77768 z
+        m -284.1153,0.16759 c 5.0236,0 5.6735,4.72838 5.6735,15.66232
+          0,10.93412 -0.6499,15.66248 -5.6735,15.66248
+          -5.0237,0 -5.6741,-4.72838 -5.6741,-15.66248
+          0,-10.93394 0.6504,-15.66232 5.6741,-15.66232 z
+        m -45.3474,0.88643 h 4.6104 c 6.2057,0 6.2057,6.9154 6.2057,14.77589
+          0,10.69769 -1.0642,14.77562 -6.5015,14.77562 h -4.3146 z
+        m 161.8726,0 h 4.4913 c 4.019,0 4.9646,2.95568 4.9646,6.44272
+          0,2.83688 -1.832,5.73286 -4.4916,5.73286 h -4.9643 z
+        m 160.0146,3.33465 v 22.62159 h 5.12 v -9.35186 h 1.3061
+          c 3.971,0 3.5526,2.29903 3.5526,4.96344 0,1.51526 0,3.02992
+          0.679,4.38842 h 5.0156 c -0.4699,-0.94039 -0.5748,-5.1722
+          -0.5748,-6.63516 0,-4.07507 -3.3434,-4.33598 -4.4408,-4.38828
+          v -0.10429 c 3.3438,-0.52242 4.5461,-2.66411 4.5461,-5.53757
+          0,-3.866 -2.2473,-5.95584 -5.7475,-5.95584 z
+        m 5.12,3.76158 h 2.2989 c 1.6195,0 2.6646,0.83591 2.6646,2.97789
+          0,1.4628 -0.6272,3.34357 -2.6646,3.34357 h -2.2989 z
+        m -203.6028,3.06979 h 8.511 l -4.3145,18.44011 h -0.1171 z
+      "/>
+    </svg>
+  </div>
+
+  <script>
+    (function() {
+      var logo   = document.getElementById('teaser-logo');
+      var screen = document.getElementById('teaser-screen');
+      if (!logo || !screen) return;
+
+      document.body.classList.add('teaser-active');
+
+      logo.addEventListener('animationend', function handler(e) {
+        if (e.animationName !== 'teaserReveal') return;
+        logo.removeEventListener('animationend', handler);
+        requestAnimationFrame(function() {
+          logo.classList.add('pulsing');
+          screen.classList.add('breathing');
+        });
+      });
+    })();
+  </script>
+` : '';
+
 const siteHTML = `
     <!-- Pre-routing: ocultar home si la URL es de confirmación (evita flash de fondo rojo) -->
     <script>
@@ -1207,7 +1386,7 @@ export default function HomePage() {
     return (
         <div
             suppressHydrationWarning
-            dangerouslySetInnerHTML={{ __html: siteHTML }}
+            dangerouslySetInnerHTML={{ __html: teaserHTML + siteHTML }}
         />
     );
 }
