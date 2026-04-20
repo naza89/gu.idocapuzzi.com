@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
 import { parsearTracking } from '@/lib/oca/xml-parser';
 
-export const preferredRegion = ['gru1'];
-
 /**
  * GET /api/oca/tracking?nroEnvio=XX
  *

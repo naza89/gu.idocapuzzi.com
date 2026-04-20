@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { OCA_CONFIG } from '@/lib/oca/config';
-
-export const preferredRegion = ['gru1'];
 import { ocaPost } from '@/lib/oca/client';
 import { generarXMLEnvio } from '@/lib/oca/xml-generator';
 import { parsearCrearEnvio } from '@/lib/oca/xml-parser';

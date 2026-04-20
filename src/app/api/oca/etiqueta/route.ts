@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
 
-export const preferredRegion = ['gru1'];
-
 /**
  * GET /api/oca/etiqueta?ordenId=XX&formato=pdf
  *
