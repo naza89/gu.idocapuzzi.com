@@ -4,6 +4,126 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-04-20
+
+### Fix OCA 404 en producción — causa real: env var OCA_SANDBOX
+
+**Problema encontrado:** Cotización OCA fallaba en Vercel con 404. Funcionaba en local. Soporte OCA confirmó que no hay bloqueo por IP desde AWS US-East.
+
+**Causa real:** `OCA_SANDBOX=true` en Vercel → usa `OCA_API_URL_TEST` con credenciales de producción → 404. En local `OCA_SANDBOX=false` → URL correcta → OK.
+
+**Solución:**
+- `OCA_SANDBOX=false` en Vercel Dashboard
+- Removido `preferredRegion = ['gru1']` de las 7 routes OCA (workaround innecesario)
+
+**Archivos:** `src/app/api/oca/cotizar|sucursales|crear-envio|anular|etiqueta|tracking|centros-costo/route.ts`
+
+---
+
+### Test E2E en producción — checkout real con NAVE sandbox
+
+**Incidencias:** Supabase INACTIVE (auto-pause) → restaurado. Variables NAVE faltaban en Vercel → agregadas por Naza.
+
+**Resultado:** Orden #55 (`d0f86fea...`) completada, NAVE APPROVED, estado `pagado`. Post-pago no ejecutó (email/stock) por Vercel fire-and-forget.
+
+---
+
+### Fix webhook NAVE — after() garantiza post-pago completo
+
+**Problema:** Fire-and-forget en webhook. Vercel mataba la función async antes de completar stock/email.
+
+**Solución:**
+- `after()` de Next.js en lugar de fire-and-forget — ejecuta callback async tras la respuesta sin bloquearla
+- Red de seguridad en `GET /api/ordenes/[id]`: si `estado=pagado` con flags false, re-ejecuta post-pay (idempotente)
+
+**Archivos:** `src/app/api/webhooks/nave/route.ts`, `src/app/api/ordenes/[id]/route.ts`
+
+---
+
+### OCA — creación automática de envío al aprobar pago
+
+**Decisión:** Auto (no manual). `ConfirmarRetiro=false` → queda en carrito ePak para revisión antes de despachar.
+
+**Flujo drop-off:** Pago → draft en ePak → Naza confirma → imprime etiqueta → lleva a branch 1405 (Haedo) → OCA despacha.
+
+**Implementación:**
+- `src/lib/oca/crear-envio.ts` — función `crearEnvioOCA()` extraída del route, reutilizable
+- Webhook paso 4c: `crearEnvioOCA(ordenId, false)` — idempotente por `id_orden_retiro_oca`
+- `src/app/api/oca/crear-envio/route.ts` refactorizado
+
+**Commits:** `766a646`, `dfdedac`, `7393dcc`
+
+---
+
+## 2026-04-15
+
+### Teaser / Blackout page — diseño e implementación
+
+**Contexto:** Primera etapa de presencia online pre-lanzamiento. Blackout page minimalista en `guidocapuzzi.com` para generar hype y acumular datos del Meta Pixel, mientras el shop sigue accesible en `/shop`.
+
+**Preview standalone (`teaser-preview.html`):**
+- Logo SVG con path completo de GÜIDO CAPUZZI (mismo del header)
+- ViewBox corregido: `2652.6561 545.72168 457.11447 55.101227` — offset de Inkscape para que las coordenadas absolutas del path caigan dentro del área visible
+- Animación: reveal 2600ms → pulso 8s (0 → 0.8 → 0) con `animation-delay: -4s` para transición suave
+- Vignette breathing: pseudo-elemento `::before` con gradiente radial sincronizado al pulso del logo
+- Film grain: SVG `feTurbulence` inline animado en `steps(1)` 0.38s
+- Texto footer (3 líneas HTML) oculto temporalmente — approach pendiente de definir
+
+**Implementación en `page.tsx`:**
+- Variable `NEXT_PUBLIC_SHOW_TEASER` controla la visibilidad. `true` → teaser overlay. `false` o ausente → home normal
+- El teaser es un bloque HTML prepended al `siteHTML` existente — no modifica ni reemplaza el `#home-container`
+- `#teaser-screen` con `position: fixed; z-index: 9999` — tapa todo en `/`
+- Script inline: detecta `window.location.pathname` — si no es `/`, oculta el teaser. Así `/shop` y otras rutas pasan directo
+- `body.teaser-active` bloquea scroll mientras el teaser está visible
+- Build verificado: `npm run build` ✅
+
+**Deploy:**
+- Commit `e9a7957` — teaser overlay reversible vía env var
+- Commit `d319c72` — fix: teaser solo en la raíz
+- Ambos pusheados a `origin/main` → Vercel deploy automático
+- `NEXT_PUBLIC_SHOW_TEASER=true` configurado en Vercel Dashboard → blackout activo en producción
+
+**Meta Ads:**
+- 3 Saved Audiences creadas en Meta Ads Manager (Argentina moda indie, Lujo internacional, USA futura)
+- Ideas archivadas en vault: Kapso y WIDO marcadas como ⏸️ (no mencionar en planes)
+
+**Archivos modificados:**
+- `src/app/page.tsx` — bloque `teaserHTML` condicional + inyección en render
+- `teaser-preview.html` — preview standalone (nuevo, no committeado)
+
+---
+
+## 2026-04-13
+
+### Diagnóstico integración OCA — geo-bloqueo de IPs cloud
+
+**Problema encontrado:** Cotización OCA fallaba en producción (güidocapuzzi.com) con HTTP 404, pero funcionaba correctamente en localhost.
+
+**Investigación:**
+- Endpoint OCA: ✅ localhost 200 OK, ❌ Vercel 404
+- Env vars de OCA confirmadas presentes en Vercel
+- Cambio de región a gru1 (São Paulo): sin efecto, sigue 404
+
+**Conclusión:** OCA bloquea por whitelist. Rechaza todos los rangos de data centers cloud (AWS, Vercel).
+
+**Soluciones:**
+1. Whitelist CIDR de Vercel en OCA
+2. OAuth2/token-based auth (si OCA lo soporta)
+3. Proxy en Argentina (Fly.io ezeiza)
+
+**Consulta iniciada:** Soporte OCA contactado pidiendo IP ranges.
+
+**Archivos modificados:**
+- `src/app/api/oca/cotizar/route.ts` — preferredRegion = ['gru1']
+- `src/app/api/oca/sucursales/route.ts` — idem
+- `src/app/api/oca/crear-envio/route.ts` — idem
+- `src/app/api/oca/anular/route.ts` — idem
+- `src/app/api/oca/tracking/route.ts` — idem
+- `src/app/api/oca/etiqueta/route.ts` — idem
+- `src/app/api/oca/centros-costo/route.ts` — idem
+
+---
+
 ## 2026-04-11
 
 ### Diagnóstico error 500 NAVE — sandbox intermitente
