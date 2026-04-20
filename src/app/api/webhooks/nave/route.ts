@@ -19,6 +19,7 @@ import { after } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { verifyPaymentStatus } from '@/lib/nave/client';
 import { sendOrderConfirmationEmail } from '@/lib/email';
+import { crearEnvioOCA } from '@/lib/oca/crear-envio';
 
 interface NaveWebhookPayload {
     payment_id: string;
@@ -144,7 +145,7 @@ async function processWebhook(
             // Leer flags de idempotencia
             const { data: orden } = await supabase
                 .from('ordenes')
-                .select('stock_decremented, email_sent')
+                .select('stock_decremented, email_sent, id_orden_retiro_oca')
                 .eq('id', externalPaymentId)
                 .single();
 
@@ -196,6 +197,22 @@ async function processWebhook(
                 }
             } else {
                 console.log('[webhook/nave] ⏭️ Email ya enviado — orden:', externalPaymentId);
+            }
+
+            // 4c. Crear envío OCA — solo si no se creó antes
+            if (!orden?.id_orden_retiro_oca) {
+                try {
+                    const ocaResult = await crearEnvioOCA(externalPaymentId, false);
+                    if (ocaResult.success) {
+                        console.log('[webhook/nave] ✅ Envío OCA creado:', ocaResult.idOrdenRetiro, '— orden:', externalPaymentId);
+                    } else {
+                        console.error('[webhook/nave] ⚠️ OCA crear-envio falló:', ocaResult.error);
+                    }
+                } catch (ocaErr) {
+                    console.error('[webhook/nave] Error al crear envío OCA:', ocaErr);
+                }
+            } else {
+                console.log('[webhook/nave] ⏭️ Envío OCA ya creado — orden:', externalPaymentId);
             }
         }
 
