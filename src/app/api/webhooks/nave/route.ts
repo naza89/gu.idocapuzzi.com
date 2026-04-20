@@ -15,6 +15,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { verifyPaymentStatus } from '@/lib/nave/client';
 import { sendOrderConfirmationEmail } from '@/lib/email';
@@ -46,11 +47,16 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
     });
 
-    // ⚠️ CRITICAL: Respond 200 IMMEDIATELY, then process async
-    // In Next.js serverless, fire-and-forget the processing
-    processWebhook(payment_id, external_payment_id).catch((err) =>
-        console.error('[webhook/nave] Error en procesamiento async:', err)
-    );
+    // ⚠️ CRITICAL: Respond 200 IMMEDIATELY. `after()` garantiza que el
+    // procesamiento async siga corriendo después de enviar la respuesta
+    // (en fire-and-forget, Vercel mata la función al responder).
+    after(async () => {
+        try {
+            await processWebhook(payment_id, external_payment_id);
+        } catch (err) {
+            console.error('[webhook/nave] Error en procesamiento async:', err);
+        }
+    });
 
     return NextResponse.json({ received: true }, { status: 200 });
 }

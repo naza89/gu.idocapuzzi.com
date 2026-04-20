@@ -99,6 +99,7 @@ export async function GET(
         // nave_payment_id (real payment ID) is set by the webhook.
         // nave_payment_request_id (from crear-pago) does NOT work for status verification.
         // Only verify if the webhook has already set the real payment_id.
+        let runPostPayActions = false;
         if (data.estado === 'pago_pendiente' && data.nave_payment_id) {
             try {
                 const { verifyPaymentStatus } = await import('@/lib/nave/client');
@@ -122,13 +123,25 @@ export async function GET(
                         .eq('id', id);
 
                     data.estado = 'pagado';
+                    runPostPayActions = true;
+                }
+            } catch (verifyErr) {
+                console.error('[GET ordenes] Error verificando pago NAVE:', verifyErr);
+            }
+        }
 
-                    // Check idempotency flags
-                    const { data: flags } = await supabase
-                        .from('ordenes')
-                        .select('stock_decremented, email_sent')
-                        .eq('id', id)
-                        .single();
+        // Red de seguridad: si la orden está pagada pero el webhook no terminó
+        // los post-pay (Vercel mató la función async), los corremos acá.
+        if (data.estado === 'pagado') runPostPayActions = true;
+
+        if (runPostPayActions) {
+            try {
+                // Check idempotency flags
+                const { data: flags } = await supabase
+                    .from('ordenes')
+                    .select('stock_decremented, email_sent')
+                    .eq('id', id)
+                    .single();
 
                     // Decrement stock — solo si no se hizo antes
                     if (!flags?.stock_decremented) {
@@ -173,9 +186,8 @@ export async function GET(
                     } else {
                         console.log('[GET ordenes] ⏭️ Email ya enviado');
                     }
-                }
-            } catch (verifyErr) {
-                console.error('[GET ordenes] Error verificando pago NAVE:', verifyErr);
+            } catch (postPayErr) {
+                console.error('[GET ordenes] Error post-pay:', postPayErr);
             }
         }
 
