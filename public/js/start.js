@@ -2247,8 +2247,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // On mobile: move accordion from sidebar to slot inside main (after breadcrumb)
-        // Use live viewport check (not cached isMobile) to handle ngrok / late resize cases
-        if (window.innerWidth <= 768) {
+        // matchMedia matches exactly what CSS sees (reliable in DevTools simulation too)
+        if (window.matchMedia('(max-width: 768px)').matches) {
             const slot = document.getElementById('checkout-summary-slot');
             const summaryToggle = document.getElementById('checkout-summary-toggle');
             const summaryContent = document.getElementById('checkout-summary-content');
