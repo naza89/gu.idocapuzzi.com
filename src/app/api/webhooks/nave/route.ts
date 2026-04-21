@@ -140,18 +140,18 @@ async function processWebhook(
             console.log('[webhook/nave] ✅ Orden actualizada:', externalPaymentId, '→', status);
         }
 
-        // STEP 4: Post-payment actions (con idempotencia)
+        // STEP 4: Post-payment actions (idempotencia atómica via UPDATE ... WHERE flag=false)
         if (status === 'APPROVED') {
-            // Leer flags de idempotencia
-            const { data: orden } = await supabase
-                .from('ordenes')
-                .select('stock_decremented, email_sent, id_orden_retiro_oca')
-                .eq('id', externalPaymentId)
-                .single();
+            // 4a. Decrementar stock — atomic claim: solo el primer UPDATE que gana ejecuta el RPC
+            try {
+                const { data: stockClaimed } = await supabase
+                    .from('ordenes')
+                    .update({ stock_decremented: true })
+                    .eq('id', externalPaymentId)
+                    .eq('stock_decremented', false)
+                    .select('id');
 
-            // 4a. Decrementar stock (atómico via RPC) — solo si no se hizo antes
-            if (!orden?.stock_decremented) {
-                try {
+                if (stockClaimed && stockClaimed.length > 0) {
                     const { data: items, error: itemsError } = await supabase
                         .from('items_orden')
                         .select('variante_id, cantidad')
@@ -170,37 +170,42 @@ async function processWebhook(
                                     })
                                 )
                         );
-                        // Marcar como decrementado
-                        await supabase
-                            .from('ordenes')
-                            .update({ stock_decremented: true })
-                            .eq('id', externalPaymentId);
                         console.log('[webhook/nave] ✅ Stock decrementado — orden:', externalPaymentId);
                     }
-                } catch (stockErr) {
-                    console.error('[webhook/nave] Error al decrementar stock:', stockErr);
+                } else {
+                    console.log('[webhook/nave] ⏭️ Stock ya decrementado — orden:', externalPaymentId);
                 }
-            } else {
-                console.log('[webhook/nave] ⏭️ Stock ya decrementado — orden:', externalPaymentId);
+            } catch (stockErr) {
+                console.error('[webhook/nave] Error al decrementar stock:', stockErr);
             }
 
-            // 4b. Email de confirmación — solo si no se envió antes
-            if (!orden?.email_sent) {
-                try {
+            // 4b. Email de confirmación — atomic claim: solo el primer UPDATE que gana envía
+            try {
+                const { data: emailClaimed } = await supabase
+                    .from('ordenes')
+                    .update({ email_sent: true })
+                    .eq('id', externalPaymentId)
+                    .eq('email_sent', false)
+                    .select('id');
+
+                if (emailClaimed && emailClaimed.length > 0) {
                     await sendOrderConfirmationEmail(externalPaymentId);
-                    await supabase
-                        .from('ordenes')
-                        .update({ email_sent: true })
-                        .eq('id', externalPaymentId);
-                } catch (emailErr) {
-                    console.error('[webhook/nave] Error al enviar email:', emailErr);
+                    console.log('[webhook/nave] ✅ Email enviado — orden:', externalPaymentId);
+                } else {
+                    console.log('[webhook/nave] ⏭️ Email ya enviado — orden:', externalPaymentId);
                 }
-            } else {
-                console.log('[webhook/nave] ⏭️ Email ya enviado — orden:', externalPaymentId);
+            } catch (emailErr) {
+                console.error('[webhook/nave] Error al enviar email:', emailErr);
             }
 
             // 4c. Crear envío OCA — solo si no se creó antes
-            if (!orden?.id_orden_retiro_oca) {
+            const { data: ocaCheck } = await supabase
+                .from('ordenes')
+                .select('id_orden_retiro_oca')
+                .eq('id', externalPaymentId)
+                .single();
+
+            if (!ocaCheck?.id_orden_retiro_oca) {
                 try {
                     const ocaResult = await crearEnvioOCA(externalPaymentId, false);
                     if (ocaResult.success) {

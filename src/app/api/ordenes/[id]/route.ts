@@ -136,56 +136,52 @@ export async function GET(
 
         if (runPostPayActions) {
             try {
-                // Check idempotency flags
-                const { data: flags } = await supabase
+                // Atomic stock claim — solo el primer UPDATE que gana ejecuta el RPC
+                const { data: stockClaimed } = await supabase
                     .from('ordenes')
-                    .select('stock_decremented, email_sent')
+                    .update({ stock_decremented: true })
                     .eq('id', id)
-                    .single();
+                    .eq('stock_decremented', false)
+                    .select('id');
 
-                    // Decrement stock — solo si no se hizo antes
-                    if (!flags?.stock_decremented) {
-                        try {
-                            const items = data.items_orden || [];
-                            await Promise.all(
-                                items
-                                    .filter((item: { variante_id: string | null }) => item.variante_id != null)
-                                    .map((item: { variante_id: string; cantidad: number }) =>
-                                        supabase.rpc('decrement_stock', {
-                                            p_variante_id: item.variante_id,
-                                            p_cantidad: item.cantidad,
-                                        })
-                                    )
-                            );
-                            await supabase
-                                .from('ordenes')
-                                .update({ stock_decremented: true })
-                                .eq('id', id);
-                            console.log('[GET ordenes] ✅ Stock decrementado');
-                        } catch (stockErr) {
-                            console.error('[GET ordenes] Error stock:', stockErr);
-                        }
-                    } else {
-                        console.log('[GET ordenes] ⏭️ Stock ya decrementado');
+                if (stockClaimed && stockClaimed.length > 0) {
+                    try {
+                        const items = data.items_orden || [];
+                        await Promise.all(
+                            items
+                                .filter((item: { variante_id: string | null }) => item.variante_id != null)
+                                .map((item: { variante_id: string; cantidad: number }) =>
+                                    supabase.rpc('decrement_stock', {
+                                        p_variante_id: item.variante_id,
+                                        p_cantidad: item.cantidad,
+                                    })
+                                )
+                        );
+                        console.log('[GET ordenes] ✅ Stock decrementado');
+                    } catch (stockErr) {
+                        console.error('[GET ordenes] Error stock:', stockErr);
                     }
+                } else {
+                    console.log('[GET ordenes] ⏭️ Stock ya decrementado');
+                }
 
-                    // Send confirmation email — solo si no se envió antes
-                    if (!flags?.email_sent) {
-                        import('@/lib/email').then(({ sendOrderConfirmationEmail }) =>
-                            sendOrderConfirmationEmail(id)
-                                .then(() =>
-                                    supabase
-                                        .from('ordenes')
-                                        .update({ email_sent: true })
-                                        .eq('id', id)
-                                )
-                                .catch((emailErr) =>
-                                    console.error('[GET ordenes] Error email:', emailErr)
-                                )
-                        ).catch(() => console.warn('[GET ordenes] Email module not available'));
-                    } else {
-                        console.log('[GET ordenes] ⏭️ Email ya enviado');
-                    }
+                // Atomic email claim — solo el primer UPDATE que gana envía
+                const { data: emailClaimed } = await supabase
+                    .from('ordenes')
+                    .update({ email_sent: true })
+                    .eq('id', id)
+                    .eq('email_sent', false)
+                    .select('id');
+
+                if (emailClaimed && emailClaimed.length > 0) {
+                    import('@/lib/email').then(({ sendOrderConfirmationEmail }) =>
+                        sendOrderConfirmationEmail(id).catch((emailErr) =>
+                            console.error('[GET ordenes] Error email:', emailErr)
+                        )
+                    ).catch(() => console.warn('[GET ordenes] Email module not available'));
+                } else {
+                    console.log('[GET ordenes] ⏭️ Email ya enviado');
+                }
             } catch (postPayErr) {
                 console.error('[GET ordenes] Error post-pay:', postPayErr);
             }
