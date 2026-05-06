@@ -4,10 +4,8 @@
  * From: ventas@guidocapuzzi.com
  *
  * Templates disponibles:
- *   sendOrderConfirmationEmail(ordenId)  → Confirmación de compra (trigger: webhook NAVE APPROVED)
- *
- * Pendientes:
- *   sendShippingEmail(ordenId, tracking) → Pedido enviado con tracking OCA
+ *   sendOrderConfirmationEmail(ordenId)              → Confirmación de compra (trigger: webhook NAVE APPROVED)
+ *   sendShippingStatusEmail(ordenId, idEstado, ...) → Actualizaciones de estado del envío OCA
  */
 
 import { Resend } from 'resend';
@@ -110,6 +108,25 @@ function emailBaseStyles(): string {
       font-size: 10px; color: #ccc;
     }
     .accent-bar { height: 4px; background-color: #ad1c1c; }
+
+    /* ── Mobile responsive ── */
+    @media screen and (max-width: 480px) {
+      .wrapper { width: 100% !important; }
+      .header { padding: 28px 24px 24px !important; }
+      .logo-img { width: 100% !important; }
+      .body { padding: 28px 24px 24px !important; }
+      .eyebrow { font-size: 9px !important; }
+      .heading { font-size: 28px !important; line-height: 1.1 !important; margin-bottom: 16px !important; }
+      .copy { font-size: 12px !important; }
+      .item-name { font-size: 12px !important; }
+      .item-variant { font-size: 10px !important; }
+      .item-qty { font-size: 12px !important; }
+      .item-price { font-size: 12px !important; }
+      .totals-row td { font-size: 11px !important; }
+      .total-row td { font-size: 16px !important; }
+      .footer { padding: 0 24px 28px !important; }
+      .footer-note { font-size: 10px !important; }
+    }
   `;
 }
 
@@ -186,6 +203,8 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="supported-color-schemes" content="light only" />
   <title>Orden #${orden.numero_orden} confirmada — GÜIDO CAPUZZI</title>
   <style>${emailBaseStyles()}</style>
 </head>
@@ -264,5 +283,167 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
         console.error('[email] Resend error:', sendError);
     } else {
         console.log('[email] ✅ Email enviado a:', cliente.email, '— orden:', ordenId);
+    }
+}
+
+// ─── Template: Cambios de estado del envío OCA ────────────────────────────────
+
+interface Sucursal {
+    id: number;
+    nombre: string;
+    domicilio: string;
+    codigo_postal: string;
+    localidad: string;
+    provincia: string;
+}
+
+export async function sendShippingStatusEmail(
+    ordenId: string,
+    idEstado: number,
+    sucursal?: Sucursal,
+    motivo?: string
+): Promise<void> {
+    const supabase = createAdminClient();
+
+    const { data: orden, error } = await supabase
+        .from('ordenes')
+        .select(`
+            numero_orden,
+            clientes (nombre, email)
+        `)
+        .eq('id', ordenId)
+        .single();
+
+    if (error || !orden) {
+        console.error('[email] No se pudo obtener la orden:', error);
+        return;
+    }
+
+    const cliente = orden.clientes as unknown as ClienteOrden | null;
+    if (!cliente?.email) {
+        console.error('[email] Orden sin email de cliente:', ordenId);
+        return;
+    }
+
+    let asunto: string;
+    let eyebrow: string;
+    let titulo: string;
+    let contenido: string;
+
+    switch (idEstado) {
+        case 7:
+            // Disponible para retiro en sucursal
+            asunto = `Tu pedido está disponible para retiro — Orden #${orden.numero_orden}`;
+            eyebrow = 'Disponible para retiro';
+            titulo = `¡Llega a sucursal!`;
+            contenido = `
+                <p class="copy">
+                    Hola ${cliente.nombre}, tu pedido llegó a la sucursal de OCA y está disponible para retiro.<br>
+                    ${sucursal ? `
+                        <br>
+                        <strong>${sucursal.nombre}</strong><br>
+                        ${sucursal.domicilio}<br>
+                        ${sucursal.codigo_postal} ${sucursal.localidad}, ${sucursal.provincia}
+                    ` : ''}
+                </p>
+            `;
+            break;
+
+        case 10:
+            // Entregado
+            asunto = `¡Tu pedido fue entregado! — Orden #${orden.numero_orden}`;
+            eyebrow = 'Entregado';
+            titulo = `¡Llegó tu pedido!`;
+            contenido = `
+                <p class="copy">
+                    Hola ${cliente.nombre}, tu orden fue entregada con éxito.
+                    Esperamos que disfrutes tu compra. 👗
+                </p>
+            `;
+            break;
+
+        case 11:
+            // No entregado
+            asunto = `Revisión necesaria — No pudimos entregar tu pedido`;
+            eyebrow = 'No entregado';
+            titulo = `Necesitamos tu ayuda.`;
+            contenido = `
+                <p class="copy">
+                    Hola ${cliente.nombre}, por el momento no pudimos entregar tu pedido.
+                    ${motivo ? `<br><br><strong>Motivo:</strong> ${motivo}` : ''}
+                    <br><br>
+                    Por favor contactanos a <a href="mailto:ventas@guidocapuzzi.com">ventas@guidocapuzzi.com</a>
+                    para coordinar una nueva entrega.
+                </p>
+            `;
+            break;
+
+        default:
+            // Otros estados (en camino, en preparación, etc.)
+            asunto = `Actualización de tu pedido — Orden #${orden.numero_orden}`;
+            eyebrow = 'Actualización de envío';
+            titulo = `Tu pedido en camino.`;
+            contenido = `
+                <p class="copy">
+                    Hola ${cliente.nombre}, tu orden está en proceso de entrega.
+                </p>
+            `;
+    }
+
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="supported-color-schemes" content="light only" />
+  <title>${asunto}</title>
+  <style>${emailBaseStyles()}</style>
+</head>
+<body>
+  <div class="wrapper">
+
+    <div class="header">
+      <img class="logo-img" src="${LOGO_URL}" alt="Güido Capuzzi" width="500" />
+    </div>
+
+    <div class="body">
+      <p class="eyebrow">${eyebrow}</p>
+
+      <h1 class="heading">${titulo}</h1>
+
+      ${contenido}
+
+      <hr class="divider" />
+    </div>
+
+    <div class="footer">
+      <p class="footer-note">
+        Ante cualquier consulta respondé este email a
+        <a href="mailto:ventas@guidocapuzzi.com">ventas@guidocapuzzi.com</a>
+      </p>
+      <p class="footer-domain">GÜIDO CAPUZZI — güidocapuzzi.com</p>
+    </div>
+
+    <div class="accent-bar"></div>
+
+  </div>
+</body>
+</html>
+    `.trim();
+
+    const { error: sendError } = await resend.emails.send({
+        from: 'GÜIDO CAPUZZI <ventas@guidocapuzzi.com>',
+        to: cliente.email,
+        replyTo: 'ventas@guidocapuzzi.com',
+        subject: asunto,
+        html,
+    });
+
+    if (sendError) {
+        console.error('[email] Resend error:', sendError);
+    } else {
+        console.log('[email] ✅ Email de envío enviado a:', cliente.email, '— orden:', ordenId, '— estado:', idEstado);
     }
 }
