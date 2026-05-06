@@ -18,7 +18,7 @@ export function generarXMLEnvio(input: CrearEnvioInput): string {
 
   return `<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
 <ROWS>
-  <cabecera ver="2.0" nrocuenta="${OCA_CONFIG.nroCuenta}" />
+  <cabecera ver="2.0" nrocuenta="${OCA_CONFIG.nroCuenta}" origen="API" />
   <origenes>
     <origen
       calle="${sanitizar(o.calle)}"
