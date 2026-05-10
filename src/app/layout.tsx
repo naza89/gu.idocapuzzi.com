@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   },
 };
 
-const PIXEL_ID = "1882249755738633";
+const PIXEL_ID = "862180773603752";
 
 // Script inline sincrónico — corre antes que cualquier otro JS en la página.
 // Consent Mode v2: fbq existe desde el primer momento pero con consent revocado.
@@ -32,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script dangerouslySetInnerHTML={{ __html: pixelScript }} />
       </head>
       <body className="state-home" suppressHydrationWarning>

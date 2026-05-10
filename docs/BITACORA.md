@@ -4,6 +4,127 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-05-10
+
+### Meta Business Suite — Reset completo + planificación OCA/cuenta
+
+**Meta — Portfolio anterior perdido, nuevo creado:**
+- Email `ncgc@guidocapuzzi.com` quedó en bucle de confirmaciones (sin cuenta Facebook asociada)
+- Nuevo portfolio desde cuenta personal de Facebook: **gu.idocapuzzi** (ID: `1721079012391547`)
+- Perdidos: Pixel `1882249755738633`, Ad Account `1303341605016642`, 3 Saved Audiences
+- Dominio re-verificado ✅. Pendiente: crear nuevo Pixel + Ad Account, actualizar código
+
+**OCA — Confirmación webhook:** soporte confirmó procedimiento de suscripción (POST único, HTTPS requerido). Código ya implementado, falta suscripción.
+
+**Plan actualizado:** Meta (Pixel + MCP) → OCA suscripción → Panel /cuenta con tracking en vivo
+
+---
+
+## 2026-05-06
+
+### Implementación Bloque A — Webhook de novedades de OCA (MVP)
+
+Implementación completa de la infraestructura de tracking en vivo de envíos.
+
+**A.1 — Fix `origen="API"` en cabecera XML de OCA**
+- Commit `025140e`: agregado atributo `origen="API"` en `src/lib/oca/xml-generator.ts:21`
+- Requerimiento de OCA para conformidad de integración
+- Se dispone para responder a su mail de validación
+
+**A.2.a — Endpoint receptor de webhook (`POST /api/webhooks/oca`)**
+- Commit `a6e5642`: nuevo archivo `src/app/api/webhooks/oca/route.ts`
+- Responde 200 OK inmediatamente, procesa async con `after()`
+- Validación de header `X-OCA-Secret` contra env var `OCA_WEBHOOK_SECRET`
+- Match de orden por `nro_envio_oca` (identificador confiable según soporte)
+- Mapeo de códigos OCA (1-12) a estados internos (en_preparacion, disponible_retiro_sucursal, en_camino, entregado, no_entregado, en_devolucion)
+- Integración con tabla `eventos_envio_oca` para historial
+
+**A.2.b — Migración SQL**
+- Commit `a6e5642`: nuevo archivo `backend/sql/14_oca_webhook_novedades.sql`
+- Tabla `eventos_envio_oca`: registro completo de eventos con idempotencia vía UNIQUE `(nro_envio_oca, id_estado, fecha)`
+- Columna `ordenes.estado_envio` para tracking en vivo del cliente
+- Índices optimizados para búsquedas por orden, fecha y estado
+
+**A.2.c+1 — Notificaciones de envío por email**
+- Commit `a6e5642`: función `sendShippingStatusEmail()` en `src/lib/email.ts`
+- 4 templates dinámicos según estado OCA:
+  - Estado 7 (disponible retiro sucursal): dirección de sucursal
+  - Estado 10 (entregado): confirmación de entrega
+  - Estado 11 (no entregado): motivo + contacto
+  - Estados en camino: notificación de progreso
+- Reutilización de sistema visual de marca (Univers fonts, paleta #AD1C1C, etc.)
+
+**Stack técnico:**
+- Node.js 24 LTS con TypeScript, Vercel Fluid Compute
+- Supabase PostgreSQL para persistencia
+- Resend para emails transaccionales
+- `next/server` `after()` para async safety
+
+**Pendiente:**
+- [ ] A.2.d: Suscripción manual al webhook en OCA (POST a endpoint de suscripción, post-deploy)
+- [ ] A.3: Test e2e en producción (compra real, webhook en vivo, emails al cliente)
+
+**Métrica:** Bloque A — 3 de 4 items completados. Status: MVP implementado, pending testing y suscripción.
+
+---
+
+## 2026-04-30
+
+### Validación de OCA + Webhook de novedades + plan tripartito
+
+Sesión corta de planificación. OCA respondió pidiendo update.
+
+**Feedback OCA:** falta `origen="API"` en cabecera del XML de creación de envíos. Verificado en `src/lib/oca/xml-generator.ts:21` — fix de una línea pendiente.
+
+**Webhook de novedades OCA:**
+- PDF documentación recibido y movido a `docs/external/Webhook OCA.pdf`.
+- Endpoint suscripción: `POST http://www6.oca.com.ar/apinovedadesclientes/apinovedades/suscribir`.
+- POST entrante por cada cambio de estado (1-12) con sucursal y receptor.
+- Doc completa en vault: `Tech/Webhook OCA.md`.
+
+**Plan creado:** `hace-varios-dias-que-stateful-moonbeam`. 4 bloques:
+- A: cierre OCA (fix `origen="API"` + endpoint receptor + tabla `eventos_envio_oca` + suscripción).
+- B: panel `/cuenta` con tracking en vivo + emails de cambio de estado.
+- C: bot Telegram como sistema operativo (alimentado por A).
+- D: Meta MCP — conectar Custom Connector y mapear capacidades.
+
+**Meta MCP:** salió MCP oficial de Meta, Naza agregó Custom Connector. MCP > CLI para esta etapa — integración directa con el agente.
+
+**Archivos:** PDF movido a `docs/external/`. No hubo cambios de código en esta sesión.
+
+---
+
+## 2026-04-20 (sesión 2 — continuación)
+
+### Notas OCA actualizadas con aclaraciones de soporte
+
+Soporte OCA respondió email de consultas. Aclaraciones incorporadas a vault:
+- `IdFranjaHoraria` → irrelevante para drop-off
+- Dimensiones → OCA afora en planta; diferencias generan ajuste de facturación
+- `ConfirmarRetiro=false` → cliente no puede rastrear hasta confirmación manual en ePak
+- `nro_envio_oca` → identificador principal de tracking, confiable y estable
+
+### Stock restaurado y órdenes OCA limpiadas
+
+- Stock ítem de control restaurado a 50 via Supabase SQL
+- Órdenes test OCA 213901843/213901978/213902075 → ya inactivas (IdResult=120). Sin acción.
+
+### Fix accordion mobile — matchMedia reemplaza innerWidth
+
+**Problema:** Accordion checkout mobile no aparecía en DevTools simulation.
+**Causa:** `window.innerWidth` no refleja el viewport simulado de DevTools.
+**Solución:** `window.matchMedia('(max-width: 768px)').matches` — consulta el mismo engine CSS.
+**Verificación:** Accordion confirmado en www.güidocapuzzi.com ✅
+**Archivo:** `public/js/start.js` — `enableCheckoutState()`
+**Commit:** `65c678b`
+
+### Clarificación de dominios
+
+- `guidocapuzzi.com` (sin diéresis) = Google Workspace + Resend (emails). IP: 2.57.91.91. No es Vercel.
+- `güidocapuzzi.com` (con diéresis) = Vercel, proyecto gc.com. IP: 216.198.79.1.
+
+---
+
 ## 2026-04-20
 
 ### Fix OCA 404 en producción — causa real: env var OCA_SANDBOX
