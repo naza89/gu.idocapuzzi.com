@@ -91,6 +91,17 @@ export async function POST(request: NextRequest) {
 
   const { nroEnvio, idEstado, fecha } = body;
 
+  // ─── Validación de secret ─────────────────────────────────
+  const incomingSecret = request.headers.get('x-oca-secret');
+  const expectedSecret = process.env.OCA_WEBHOOK_SECRET;
+
+  if (!expectedSecret || incomingSecret !== expectedSecret) {
+    console.warn('[webhook/oca] ⛔ Secret inválido. Header recibido:', incomingSecret ? '(presente pero incorrecto)' : '(ausente)');
+    // Devolvemos 200 igual para evitar reintentos de OCA,
+    // pero no procesamos el evento.
+    return NextResponse.json({ received: true }, { status: 200 });
+  }
+
   console.log('[webhook/oca] 📩 Recibido:', {
     nroEnvio,
     idEstado,
