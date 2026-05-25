@@ -4,6 +4,9 @@
     --color-red: #AD1C1C;
     --color-brown: #442517;
     --color-black: #1A1A1A;
+    /* Verde bosque — único color fuera de la paleta principal.
+       Exclusivo para el cronograma de envío (estados HECHO/ENTREGADO, barra de progreso). */
+    --color-green: #2A5C3F;
 
     /* Spacing & Layout */
     --header-height: 80px;
@@ -5233,6 +5236,982 @@ body.state-legales #legales-container {
     .cuenta-section-title {
         font-size: 2.4rem;
     }
+}
+
+/* =========================================
+   CUENTA — PEDIDOS: CARDS CON TIMELINE
+   ========================================= */
+
+/* Override inherited cuenta-order for detailed layout */
+.cuenta-order {
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+    cursor: default;
+}
+.cuenta-order:first-of-type { padding-top: 0; }
+.cuenta-order:last-of-type { border-bottom: none; }
+
+.cuenta-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    cursor: pointer;
+    padding-bottom: 18px;
+}
+
+.cuenta-order-header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+}
+
+.cuenta-order-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cuenta-order-id {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-black);
+}
+
+.cuenta-order-date {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(26, 26, 26, 0.4);
+}
+
+.cuenta-order-status {
+    display: inline-block;
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+}
+
+.cuenta-order-status.status-pendiente { background: rgba(26,26,26,0.06); color: rgba(26,26,26,0.5); }
+.cuenta-order-status.status-pagado    { background: rgba(26,26,26,0.08); color: var(--color-black); }
+.cuenta-order-status.status-preparando { background: rgba(68,37,23,0.08); color: var(--color-brown); }
+.cuenta-order-status.status-activo   { background: rgba(26,26,26,0.08); color: var(--color-black); }
+.cuenta-order-status.status-entregado { background: rgba(26,26,26,0.04); color: rgba(26,26,26,0.45); }
+.cuenta-order-status.status-alerta   { background: rgba(173,28,28,0.08); color: var(--color-red); }
+.cuenta-order-status.status-cancelado { background: rgba(26,26,26,0.04); color: rgba(26,26,26,0.35); }
+
+.cuenta-pedido-chevron {
+    font-family: 'Univers', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(26,26,26,0.4);
+    transition: transform 240ms cubic-bezier(0.25, 0, 0, 1);
+    display: inline-block;
+    line-height: 1;
+}
+
+/* Items */
+.cuenta-pedido-items {
+    border-top: 1px solid rgba(26,26,26,0.07);
+    padding-top: 16px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cuenta-pedido-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.cuenta-pedido-thumb {
+    width: 52px;
+    height: 70px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(26,26,26,0.04);
+    display: block;
+}
+
+.cuenta-pedido-thumb--empty {
+    width: 52px;
+    height: 70px;
+    background: rgba(26,26,26,0.06);
+    flex-shrink: 0;
+}
+
+.cuenta-pedido-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.cuenta-pedido-item-name {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cuenta-pedido-item-detail {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.45);
+}
+
+.cuenta-pedido-item-price {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+    color: var(--color-black);
+    flex-shrink: 0;
+}
+
+/* Bottom row: timeline + total */
+.cuenta-pedido-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    border-top: 1px solid rgba(26,26,26,0.07);
+    padding-top: 18px;
+    margin-bottom: 0;
+}
+
+/* ══ Cronograma de Envío ══════════════════════════════════════════════════ */
+
+/* Mini barra de progreso — vista colapsada de la card */
+.cronograma-progress-mini {
+    flex: 1;
+}
+.cronograma-progress-mini .cronograma-progress-track {
+    height: 4px;
+    border-radius: 2px;
+}
+
+/* Barra de progreso */
+.cronograma-progress-track {
+    height: 5px;
+    background: rgba(26,26,26,0.15);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.cronograma-progress-fill {
+    height: 100%;
+    background: var(--color-green);
+    border-radius: 3px;
+    transition: width 800ms ease;
+}
+.cronograma-progress-fill--alert { background: var(--color-red); }
+
+/* Card wrapper (dentro del detail expandible) */
+.cronograma-card {
+    width: 100%;
+    padding-bottom: 4px;
+}
+
+/* Header: título + badge */
+.cronograma-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.cronograma-title {
+    font-family: 'UniversCondensed', 'Univers 67 Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--color-black);
+}
+
+/* Badge global de estado */
+.cronograma-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Univers', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.07em;
+    color: var(--color-white);
+    background: var(--color-brown);
+    padding: 3px 8px 3px 6px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+.cronograma-badge--transito  { background: var(--color-brown); }
+.cronograma-badge--sucursal  { background: var(--color-brown); }
+.cronograma-badge--entregado { background: var(--color-green); }
+.cronograma-badge--alerta    { background: var(--color-red); }
+.cronograma-badge--cancelado { background: var(--color-red); }
+.cronograma-badge-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--color-white);
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+/* Separador bajo el header */
+.cronograma-divider {
+    height: 1px;
+    background: var(--color-black);
+    opacity: 0.12;
+    margin-bottom: 14px;
+}
+
+/* Lista de pasos */
+.cronograma-steps {
+    list-style: none;
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+.cronograma-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+    padding-bottom: 20px;
+}
+.cronograma-step:last-child { padding-bottom: 0; }
+
+/* Línea vertical entre pasos */
+.cronograma-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 24px;
+    bottom: 0;
+    width: 1px;
+    background: rgba(26,26,26,0.18);
+}
+.cronograma-step--done:not(:last-child)::after {
+    background: var(--color-green);
+    opacity: 0.35;
+}
+.cronograma-step--active:not(:last-child)::after {
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(26,26,26,0.2) 0px,
+        rgba(26,26,26,0.2) 3px,
+        transparent 3px,
+        transparent 7px
+    );
+}
+
+/* Marcador (dot) */
+.cronograma-step-marker {
+    width: 24px; height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Dot DONE */
+.cronograma-dot-done {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--color-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cronograma-dot-done svg {
+    width: 10px; height: 10px;
+    fill: none;
+    stroke: var(--color-white);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Dot ACTIVE — spinner dashed + interior verde */
+.cronograma-dot-active {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cronograma-dot-active::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px dashed var(--color-brown);
+    animation: cronograma-spin 2.4s linear infinite;
+}
+.cronograma-dot-active-inner {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--color-green);
+}
+
+/* Dot PENDING */
+.cronograma-dot-pending {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--color-black);
+    opacity: 0.35;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cronograma-dot-pending span {
+    font-family: 'UniversCondensed', 'Univers 67 Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    color: var(--color-white);
+    line-height: 1;
+}
+
+/* Dot ALERT */
+.cronograma-dot-alert {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--color-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    line-height: 1;
+}
+
+/* Body del paso */
+.cronograma-step-body { flex: 1; min-width: 0; padding-top: 2px; }
+.cronograma-step-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+.cronograma-step-label {
+    font-family: 'UniversCondensed', 'Univers 67 Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--color-black);
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
+}
+.cronograma-step--pending .cronograma-step-label,
+.cronograma-step--pending .cronograma-step-desc { opacity: 0.42; }
+
+/* Pills */
+.cronograma-pill {
+    font-family: 'Univers', sans-serif;
+    font-weight: 700;
+    font-size: 8.5px;
+    letter-spacing: 0.07em;
+    padding: 2px 7px;
+    border-radius: 20px;
+    color: var(--color-white);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.cronograma-pill--hecho    { background: var(--color-green); }
+.cronograma-pill--activo   { background: var(--color-brown); }
+.cronograma-pill--pendiente { background: var(--color-black); opacity: 0.38; }
+.cronograma-pill--alerta   { background: var(--color-red); }
+
+/* Timestamp */
+.cronograma-step-time {
+    font-family: 'Univers', sans-serif;
+    font-size: 10px;
+    color: var(--color-black);
+    opacity: 0.42;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Descripción */
+.cronograma-step-desc {
+    font-family: 'Univers', sans-serif;
+    font-size: 11px;
+    color: var(--color-black);
+    opacity: 0.72;
+    line-height: 1.45;
+}
+
+/* Motivo de error */
+.cronograma-step-motivo {
+    font-family: 'UniversCondensed', 'Univers 67 Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--color-red);
+    margin-top: 4px;
+}
+
+/* Progreso */
+.cronograma-progress {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(26,26,26,0.1);
+}
+.cronograma-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.cronograma-progress-labels span {
+    font-family: 'Univers', sans-serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+    color: var(--color-black);
+}
+
+/* Separador entre cronograma y detalle de dirección */
+.cronograma-detail-divider {
+    height: 1px;
+    background: var(--color-black);
+    opacity: 0.08;
+    margin: 18px 0 14px;
+}
+
+/* Spinner animation */
+@keyframes cronograma-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.cuenta-pedido-total {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.cuenta-pedido-total-label {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.4);
+}
+
+.cuenta-pedido-total-value {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: var(--color-black);
+}
+
+/* Alert message */
+.cuenta-pedido-alert {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-red);
+    margin-top: 12px;
+}
+
+/* Collapsible detail */
+.cuenta-pedido-detail {
+    border-top: 1px solid rgba(26,26,26,0.07);
+    padding-top: 16px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cuenta-pedido-detail-row {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.cuenta-pedido-detail-label {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.4);
+    flex-shrink: 0;
+    min-width: 140px;
+}
+
+.cuenta-pedido-detail-value {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    color: var(--color-black);
+    text-align: right;
+}
+
+/* Eventos list */
+.cuenta-pedido-eventos {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cuenta-pedido-evento {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+}
+
+.evento-fecha {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(26,26,26,0.35);
+    flex-shrink: 0;
+    min-width: 80px;
+}
+
+.evento-estado {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-black);
+}
+
+.evento-motivo {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.5);
+}
+
+/* =========================================
+   CUENTA — DATOS: BLOQUES + DIRECCIONES
+   ========================================= */
+
+.cuenta-datos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+}
+
+.cuenta-datos-block-title {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.4);
+}
+
+.cuenta-edit-link {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-black);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    display: inline-block;
+}
+
+.cuenta-edit-link::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--color-black);
+    transform-origin: left;
+    transition: transform 200ms ease;
+}
+
+.cuenta-edit-link:hover::after { transform: scaleX(0); }
+
+.cuenta-field-verified::after {
+    content: ' ✓';
+    font-size: 0.65em;
+    color: rgba(26,26,26,0.35);
+}
+
+.cuenta-block-separator {
+    height: 1px;
+    background: rgba(26,26,26,0.1);
+    margin: 36px 0;
+}
+
+/* Dirección cards */
+.cuenta-direccion-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(26,26,26,0.07);
+}
+
+.cuenta-direccion-card:last-of-type { border-bottom: none; }
+
+.cuenta-direccion-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(26,26,26,0.35);
+    background: transparent;
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 0;
+    transition: background 200ms ease, border-color 200ms ease;
+}
+
+.cuenta-direccion-dot.is-principal {
+    background: var(--color-black);
+    border-color: var(--color-black);
+}
+
+.cuenta-direccion-dot:hover:not(.is-principal) {
+    background: rgba(26,26,26,0.15);
+}
+
+.cuenta-direccion-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.cuenta-direccion-calle {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-black);
+}
+
+.cuenta-direccion-detail {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.45);
+}
+
+.cuenta-direccion-principal {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.35);
+}
+
+.cuenta-direccion-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.cuenta-direccion-action {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.45);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: color 180ms ease;
+}
+
+.cuenta-direccion-action:hover { color: var(--color-black); }
+
+.cuenta-direccion-sep {
+    font-size: 0.65rem;
+    color: rgba(26,26,26,0.2);
+}
+
+/* =========================================
+   CUENTA — PREFERENCIAS
+   ========================================= */
+
+.cuenta-pref-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(26,26,26,0.07);
+}
+
+.cuenta-pref-row:last-of-type { border-bottom: none; }
+
+.cuenta-pref-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cuenta-pref-label {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-black);
+}
+
+.cuenta-pref-desc {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    color: rgba(26,26,26,0.4);
+}
+
+.cuenta-pref-action .cuenta-pref-label { cursor: default; }
+
+.cuenta-pref-danger .cuenta-pref-label { color: rgba(26,26,26,0.35); }
+
+.cuenta-pref-arrow {
+    font-size: 1.2rem;
+    color: rgba(26,26,26,0.4);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 180ms ease, transform 200ms ease;
+}
+
+.cuenta-pref-arrow:hover { color: var(--color-black); transform: translateX(3px); }
+.cuenta-pref-arrow--danger:hover { color: var(--color-red); }
+
+.cuenta-pref-separator {
+    height: 1px;
+    background: rgba(26,26,26,0.1);
+    margin: 8px 0;
+}
+
+/* Toggle switch */
+.cuenta-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.cuenta-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+.cuenta-toggle-track {
+    width: 40px;
+    height: 22px;
+    background: rgba(26,26,26,0.15);
+    border-radius: 11px;
+    position: relative;
+    transition: background 240ms ease;
+}
+
+.cuenta-toggle input:checked ~ .cuenta-toggle-track { background: var(--color-red); }
+
+.cuenta-toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: var(--color-white);
+    border-radius: 50%;
+    transition: transform 240ms cubic-bezier(0.25, 0, 0, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.cuenta-toggle input:checked ~ .cuenta-toggle-track .cuenta-toggle-knob {
+    transform: translateX(18px);
+}
+
+/* =========================================
+   CUENTA — MODALES
+   ========================================= */
+
+.cuenta-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.cuenta-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26,26,26,0.55);
+    opacity: 0;
+    transition: opacity 280ms ease;
+}
+
+.cuenta-modal.is-open .cuenta-modal-overlay { opacity: 1; }
+
+.cuenta-modal-content {
+    position: relative;
+    z-index: 1;
+    background: var(--color-white);
+    width: 100%;
+    max-width: 480px;
+    padding: 40px;
+    transform: translateY(12px);
+    opacity: 0;
+    transition: transform 280ms cubic-bezier(0.25, 0, 0, 1), opacity 280ms ease;
+}
+
+.cuenta-modal-content--small { max-width: 380px; }
+
+.cuenta-modal.is-open .cuenta-modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.cuenta-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.cuenta-modal-title {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-black);
+}
+
+.cuenta-modal-close {
+    font-size: 1.4rem;
+    color: rgba(26,26,26,0.4);
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 180ms ease;
+}
+.cuenta-modal-close:hover { color: var(--color-black); }
+
+.cuenta-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.cuenta-modal-row {
+    display: flex;
+    gap: 12px;
+}
+
+.cuenta-modal-row .input-group { flex: 1; }
+.cuenta-modal-row-wide { flex: 2 !important; }
+.cuenta-modal-row-narrow { flex: 1 !important; }
+
+.cuenta-modal-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: 'Univers', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.6);
+    margin-top: 4px;
+}
+
+.cuenta-modal-check input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--color-black);
+    flex-shrink: 0;
+}
+
+.cuenta-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.cuenta-modal-confirm-text {
+    font-family: 'Univers', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-black);
+    line-height: 1.65;
+}
+
+/* Cancel button for modals — outline style */
+.btn-cuenta-modal-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    background: transparent;
+    color: var(--color-black);
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid rgba(26,26,26,0.25);
+    cursor: pointer;
+    transition: border-color 200ms ease, color 200ms ease;
+}
+
+.btn-cuenta-modal-cancel span { display: block; }
+.btn-cuenta-modal-cancel:hover { border-color: var(--color-black); }
+
+/* Delete button variant — red sweep */
+.btn-modal-delete::before { background-color: var(--color-red) !important; }
+
+/* =========================================
+   CUENTA — RESPONSIVE ADDITIONS
+   ========================================= */
+
+@media (max-width: 900px) {
+    .cuenta-pedido-bottom { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .cuenta-pedido-total { align-items: flex-start; }
+    .cronograma-progress-mini { max-width: 100%; }
+    .cuenta-modal-content { padding: 28px 20px; }
+    .cuenta-modal-row { flex-direction: column; gap: 0; }
+    .cuenta-modal-row .input-group { flex: 1 !important; }
+    .cuenta-modal-actions { flex-direction: column-reverse; }
+    .btn-cuenta-modal-cancel, .btn-cuenta-logout.btn-modal-save, .btn-cuenta-logout.btn-modal-delete { width: 100%; justify-content: center; }
+    .cuenta-direccion-actions { flex-direction: column; align-items: flex-end; gap: 4px; }
+    .cuenta-direccion-sep { display: none; }
 }
 
 /* =========================================

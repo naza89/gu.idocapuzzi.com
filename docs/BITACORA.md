@@ -4,6 +4,180 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-05-25 — Cronograma de Envío vertical (Sub-fase A + B)
+
+### Diseño del componente (standalone HTML)
+
+**Contexto:** El timeline horizontal de 4 dots implementado en la sesión anterior era funcional pero visualmente plano. Naza diseñó en Inkscape (`cronograma.svg`) un cronograma vertical de 4 pasos con tipografía, pills de estado, spinner animado y barra de progreso.
+
+**Sub-fase A — Iteración visual aislada:**
+- Creado `cronograma-preview.html` en la raíz del repo (standalone, no committeable) replicando el SVG de referencia
+- 5 estados visualizables via selector: EN CAMINO (domicilio), EN SUCURSAL, ENTREGADO, INCIDENTE/ALERTA, CANCELADO
+- Dot verde con checkmark para HECHO, spinner dashed marrón `#442517` rotando con inner dot verde para ACTIVO, dot semiopaco con número para PENDIENTE, dot rojo con ⚠ para ALERTA
+- Barra de progreso verde `#2A5C3F` con transición `800ms ease`, roja en estados de alerta/cancelado
+- Pills HECHO/ACTIVO/PENDIENTE/ALERTA en Univers Regular Bold (no Condensed)
+- Badge de estado global (EN TRANSITO / EN SUCURSAL / ENTREGADO / NO ENTREGADO / CANCELADO) también en Univers Regular Bold
+
+**Decisiones de diseño confirmadas en sesión:**
+- Cronograma solo visible al **expandir** la card de pedido. Card colapsada muestra mini barra de progreso compacta
+- **Entrega estimada calculada internamente**: `pagado_at + N días hábiles` (CABA/GBA domicilio=3, sucursal=2; resto domicilio=5, sucursal=4)
+- Estado de error: pill **ALERTA** rojo + texto `MOTIVO: <descripción>` bajo el paso afectado + barra roja
+
+**Nuevo color de marca:** `--color-green: #2A5C3F` (verde bosque) — primera y única excepción a la paleta de 4 colores del proyecto. Documentado en `:root` con comentario explicativo.
+
+### Integración al panel `/cuenta` (Sub-fase B)
+
+**Archivos modificados:**
+- `src/app/globals.css` — agregado `--color-green: #2A5C3F`, bloque `.cronograma-*` completo (reemplaza `.timeline-*` eliminado), `@keyframes cronograma-spin`
+- `public/js/start.js` — nuevas funciones: `_sumarDiasHabiles()`, `_calcularEntregaEstimada()`, `_formatFechaCorta()`, `_formatTimestampCronograma()`, `_eventoParaPaso()`, `_buildCronograma()`, `renderCronograma()`, `renderProgressBar()`. Reemplaza `renderTimeline()` y `_getTimelineStep()` eliminados.
+- `src/app/api/cliente/ordenes/route.ts` — cap de `eventos_envio_oca` subido de 5 a 20 por orden
+
+**Lógica de mapeo (12 estados OCA → 4 pasos del cronograma):**
+- idEstado 1-6 → paso 2 activo/hecho
+- idEstado 7 → paso 3 activo "Disponible en sucursal" (solo envío sucursal)
+- idEstado 8-9 → paso 3 activo "En camino" (domicilio)
+- idEstado 10 → paso 4 done "Entregado" / "Retirado"
+- idEstado 11-12 → paso actual → estado `alert` + pill ALERTA rojo + MOTIVO
+
+**Verificación:** Build `npm run build` limpio. Validación visual del cronograma realizada contra el SVG de referencia via Chrome DevTools Preview. Los 5 estados se ven correctamente en desktop y mobile 375px. Sin órdenes en cuenta de prueba — verificación end-to-end diferida al e2e de OCA.
+
+**Pendiente:** Test e2e del cronograma en panel real, diferido al checkeo total OCA (compra ficticia + webhook + validación soporte).
+
+## 2026-05-22 (tarde)
+
+### Panel `/cuenta` — implementación completa (3 secciones funcionales)
+
+**Contexto:** El panel `/cuenta` tenía infraestructura armada (auth Supabase + layout dos columnas + nav switching) pero el contenido funcional estaba incompleto. "Mis Pedidos" era empty state hardcodeado, "Mis Datos" solo mostraba campos en read-only, no había sección de Preferencias ni gestión de direcciones.
+
+**Implementación end-to-end de las 3 secciones:**
+
+**Mis Pedidos (B.1 + B.2 del plan):**
+- Endpoint `GET /api/cliente/ordenes` — autenticado (Bearer token + email match en `clientes`)
+- Join completo: `items_orden` + `variantes_producto` + `productos` (para imágenes) + `direcciones_envio` + últimos 5 `eventos_envio_oca`
+- UI: cards con número de orden, fecha, badge de estado, items con thumbnail, **timeline visual de 4 dots** (Creado → Pagado → En camino → Entregado), total
+- Detalle expandible inline (no modal): dirección, N° seguimiento OCA, lista de eventos del webhook
+- Polling cada 60s con pausa via `visibilitychange` cuando la pestaña no es visible
+
+**Mis Datos + Direcciones:**
+- Bloque "DATOS PERSONALES": nombre, apellido, email (con check `✓` de verificado), teléfono
+- Modal EDITAR con sweep rojo en el botón GUARDAR, `PATCH /api/cliente/datos`
+- Bloque "DIRECCIONES DE ENVÍO" separado por hairline
+- Mini-cards con dot principal (●) o secundario (○), click en dot vacío → set como principal
+- Modal AGREGAR/EDITAR con form completo (calle, número, piso, depto, ciudad, provincia, CP, checkbox principal)
+- `GET/POST/PATCH/DELETE /api/cliente/direcciones` + `[id]` para CRUD completo
+
+**Preferencias:**
+- Toggle newsletter (track `#E5E5E5` → `#AD1C1C` cuando ON)
+- Botón CAMBIAR CONTRASEÑA → `supabaseClient.auth.resetPasswordForEmail()` con email del usuario
+- ELIMINAR CUENTA en gris al fondo, doble confirmación textual ("escribí ELIMINAR para confirmar")
+
+**Auth pattern adoptado:** Bearer token. Frontend extrae `access_token` de `supabaseClient.auth.getSession()`, server lo verifica con `supabase.auth.getUser(token)` y matchea por email. Consistente con el resto del proyecto (no usa `@supabase/ssr` que no está instalado).
+
+**Decisión de timeline diferida:** El timeline funcional está implementado pero Naza no está convencido del resultado visual (simples dots conectados). Próxima sesión: buscar referencias en Pinterest + codear standalone HTML aislado primero, integrar después.
+
+**Cambio de approach declarado:** A partir de la próxima sesión se abandona desktop-first. Todo lo nuevo (refinamiento timeline, futuras features) se hace desktop + mobile en paralelo.
+
+**Verificación visual:** Build pasa limpio mostrando 4 routes nuevas. Preview server confirmó renderizado correcto: sidebar 3 nav items, empty states, mock card con timeline (3 dots rellenos + 1 vacío + lineas conectoras), modales con transiciones smooth, toggle rojo. Inspeccionado: badge en Univers 67 Condensed 9.92px tracking 1.19px y dots 8×8px `#1A1A1A`.
+
+**Bug pre-existente fixeado:** `_cuentaNavInitialized` nunca se reseteaba en logout. Ahora el handler de logout llama `stopPedidosPolling()` y resetea el flag, permitiendo re-bind correcto si el usuario vuelve a loguearse.
+
+**Pendiente:** Iterar timeline visual, mobile responsiveness, endpoint `DELETE /api/cliente/cuenta` (backend de eliminar cuenta), test e2e con cuenta real con órdenes.
+
+**Archivos modificados:**
+- `src/app/api/cliente/ordenes/route.ts` (nuevo)
+- `src/app/api/cliente/datos/route.ts` (nuevo)
+- `src/app/api/cliente/direcciones/route.ts` (nuevo)
+- `src/app/api/cliente/direcciones/[id]/route.ts` (nuevo)
+- `src/app/page.tsx` — restructura `account-dashboard` con 3 secciones + 3 modales
+- `src/app/globals.css` — bloque grande de estilos (pedido card, timeline, datos, direcciones, preferencias, toggle, modales, responsive @900px)
+- `public/js/start.js` — ~400 líneas: load/render/polling/modales/handlers
+
+---
+
+## 2026-05-22
+
+### OCA — Respuesta de soporte: integración validada + XML compartido
+
+**Email de auditoría enviado a OCA** con descripción técnica del flujo completo:
+cotización → sucursales → auto-creación vía webhook NAVE → `ConfirmarRetiro=false` → confirmación manual en ePak → etiqueta → despacho → webhook de novedades.
+
+**Respuesta de OCA:**
+- ✅ Integración validada ("en principio, estaría todo correcto")
+- ✅ `ConfirmarRetiro=false` aceptado — no es necesario cambiar
+- ℹ️ Observación de "creación vía ePak" era meramente informativa, no un error
+- ⏳ Listos para test e2e — esperan número de envío + idOrdenRetiro + timestamp
+- ⏳ Solicitaron XML de `IngresoORMultiplesRetiros` para revisión
+
+**Variables de entorno verificadas:**
+- `OCA_NUMERO_CUENTA` = `197239/000` ✅ (valor correcto en Vercel)
+
+**Próximos pasos:**
+1. Responder a OCA con XML de creación
+2. A.3: generar compra de prueba (sandbox NAVE) → compartir `nroEnvio` + `idOrdenRetiro` a OCA → validar webhook de novedades end-to-end
+
+---
+
+## 2026-05-18
+
+### OCA webhook — re-suscripción con cuenta real + validación secret
+
+**Contexto:** OCA soporte informó que la suscripción anterior (sesión 2026-05-10) fue hecha con el número de cuenta de test (`111757/001`) en lugar del número real. La suscripción no estaba activa.
+
+**Re-suscripción ejecutada:**
+- POST a `http://www6.oca.com.ar/apinovedadesclientes/apinovedades/suscribir`
+- Body enviado:
+  ```json
+  {
+    "NroCuenta": "197239/000",
+    "UrlApi": "https://güidocapuzzi.com/api/webhooks/oca",
+    "Origen": "GUIDO CAPUZZI",
+    "Headers": [{ "Clave": "X-OCA-Secret", "Valor": "<secret>" }]
+  }
+  ```
+- Respuesta OCA: `{}` HTTP 200 OK
+- URL enviada en Punycode (`xn--gidocapuzzi-thb.com`) por limitación de terminal
+- Secret nuevo generado y actualizado en Vercel + redeployado
+
+**Fix — validación X-OCA-Secret:**
+- Commit `dc5bc4d`: validación implementada en `src/app/api/webhooks/oca/route.ts`
+- Secret inválido o ausente → responde 200 pero no procesa el evento
+
+**Estado:** Pendiente confirmación de OCA de que la suscripción con cuenta real quedó activa.
+
+---
+
+## 2026-05-10 (continuación)
+
+### Meta — Ejecución: Pixel + código + MCP + OCA suscripción
+
+**D.0 — Pixel + Ad Account creados (Naza):**
+- Ad Account GÜIDO ADS: ID `1293014999694073`
+- Pixel GÜIDO Pixel: ID `862180773603752`
+- Portfolio nuevo: `gu.idocapuzzi` (ID: `1721079012391547`)
+- Dominio `güidocapuzzi.com` ya verificado
+
+**D.1 — Actualización Pixel ID en código:**
+- `src/app/layout.tsx:12`: actualizado a `const PIXEL_ID = "862180773603752"`
+- Deploy automático a Vercel completado
+
+**D.2 — Verificación Pixel post-deploy:**
+- Network tab: 200 OK a `facebook.com/tr` con Pixel ID correcto ✅
+- Events Manager: PageView event visible en tiempo real ✅
+- Tracking activo y funcionando en producción
+
+**Meta MCP — Reconectado:**
+- Naza reconectó usando Facebook personal account (`na.zz.a@hotmail.com`)
+- Ads features aún en rollout (no bloqueante, operable manualmente)
+
+**A.2.d — OCA webhook suscripción completada:**
+- POST exitoso a `http://www6.oca.com.ar/apinovedadesclientes/apinovedades/suscribir`
+- Keys en PascalCase (reintento tras primer fallo con lowercase)
+- Respuesta: 200 OK
+- Secret en Vercel env var `OCA_WEBHOOK_SECRET` ✅
+- Endpoint activo en `https://güidocapuzzi.com/api/webhooks/oca`
+
+---
+
 ## 2026-05-10
 
 ### Meta Business Suite — Reset completo + planificación OCA/cuenta

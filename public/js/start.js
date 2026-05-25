@@ -1715,6 +1715,10 @@ document.addEventListener('DOMContentLoaded', () => {
             window.scrollTo(0, 0);
             injectFooterInAccount();
             _initCuentaNav();
+            _initCuentaListeners();
+            loadCuentaPedidos();
+            loadCuentaDirecciones();
+            _loadCuentaPreferencias();
         });
     }
 
@@ -1747,9 +1751,719 @@ document.addEventListener('DOMContentLoaded', () => {
         btnLogout.addEventListener('click', async () => {
             await window.supabaseClient.auth.signOut();
             console.log('[Auth] Sesión cerrada');
+            stopPedidosPolling();
+            _cuentaNavInitialized = false;
             _showAccountLogin();
         });
     }
+
+    // =========================================================================
+    // CUENTA — PEDIDOS, DATOS, DIRECCIONES, PREFERENCIAS
+    // =========================================================================
+
+    let _pedidosPollingTimer = null;
+    let _cuentaListenersInitialized = false;
+
+    async function _getAccessToken() {
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        return session?.access_token ?? null;
+    }
+
+    async function loadCuentaPedidos() {
+        const token = await _getAccessToken();
+        if (!token) return;
+        const listEl = document.getElementById('cuenta-pedidos-list');
+        if (!listEl) return;
+
+        try {
+            const res = await fetch('/api/cliente/ordenes', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Error al cargar pedidos');
+            const { ordenes } = await res.json();
+
+            if (!ordenes || ordenes.length === 0) {
+                listEl.innerHTML = '<p class="cuenta-pedidos-empty">TODAVÍA NO TENÉS PEDIDOS. <a href="/shop">EXPLORÁ LA TIENDA</a> PARA HACER TU PRIMERA COMPRA.</p>';
+                stopPedidosPolling();
+                return;
+            }
+
+            listEl.innerHTML = ordenes.map(renderPedidoCard).join('');
+
+            const hasActive = ordenes.some(o =>
+                ['en_preparacion', 'en_camino', 'disponible_retiro_sucursal'].includes(o.estado_envio)
+            );
+            if (hasActive) startPedidosPolling();
+        } catch (err) {
+            console.error('[Cuenta] Error cargando pedidos:', err);
+            if (listEl.querySelector('.cuenta-pedidos-empty')) return;
+            listEl.innerHTML = '<p class="cuenta-pedidos-empty">ERROR AL CARGAR TUS PEDIDOS. RECARGÁ LA PÁGINA.</p>';
+        }
+    }
+
+    function _formatFechaOrden(isoString) {
+        if (!isoString) return '—';
+        const d = new Date(isoString);
+        const meses = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+        return `${d.getDate()} ${meses[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function _formatPrecio(centavos) {
+        if (centavos == null) return '—';
+        return '$' + Math.round(centavos / 100).toLocaleString('es-AR');
+    }
+
+    function _getOrdenBadge(estado, estado_envio) {
+        if (estado === 'cancelado') return { label: 'CANCELADO', cls: 'status-cancelado' };
+        if (estado_envio === 'entregado' || estado === 'entregado') return { label: 'ENTREGADO', cls: 'status-entregado' };
+        if (estado_envio === 'no_entregado') return { label: 'INCIDENCIA', cls: 'status-alerta' };
+        if (estado_envio === 'en_devolucion') return { label: 'EN DEVOLUCIÓN', cls: 'status-alerta' };
+        if (estado_envio === 'en_camino' || estado_envio === 'disponible_retiro_sucursal' || estado === 'enviado') return { label: 'EN CAMINO', cls: 'status-activo' };
+        if (estado === 'pagado' || estado === 'preparando' || estado_envio === 'en_preparacion') return { label: 'PROCESANDO', cls: 'status-pagado' };
+        return { label: 'PENDIENTE', cls: 'status-pendiente' };
+    }
+
+    // ── Cronograma de envío ──────────────────────────────────────────────────
+
+    function _sumarDiasHabiles(fecha, dias) {
+        const d = new Date(fecha);
+        let added = 0;
+        while (added < dias) {
+            d.setDate(d.getDate() + 1);
+            const dow = d.getDay();
+            if (dow !== 0 && dow !== 6) added++;
+        }
+        return d;
+    }
+
+    function _calcularEntregaEstimada(pagadoAt, tipoEnvio, provincia) {
+        if (!pagadoAt) return null;
+        const p = (provincia || '').toLowerCase();
+        const cerca = p.includes('caba') || p.includes('capital federal') || p.includes('ciudad autónoma') || p.includes('buenos aires');
+        const dias = tipoEnvio === 'sucursal' ? (cerca ? 2 : 4) : (cerca ? 3 : 5);
+        return _sumarDiasHabiles(pagadoAt, dias);
+    }
+
+    function _formatFechaCorta(isoStr) {
+        if (!isoStr) return null;
+        const d = new Date(isoStr);
+        const meses = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+        return `${d.getDate()} ${meses[d.getMonth()]}`;
+    }
+
+    function _formatTimestampCronograma(isoStr) {
+        if (!isoStr) return null;
+        const d = new Date(isoStr);
+        const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        const h = String(d.getHours()).padStart(2,'0');
+        const m = String(d.getMinutes()).padStart(2,'0');
+        return `${d.getDate()} ${meses[d.getMonth()]}, ${h}:${m}`;
+    }
+
+    function _eventoParaPaso(eventos, idEstados) {
+        return (eventos || [])
+            .filter(ev => idEstados.includes(ev.id_estado))
+            .sort((a, b) => new Date(a.fecha_evento) - new Date(b.fecha_evento))[0] || null;
+    }
+
+    function _buildCronograma(orden) {
+        const esSucursal = (orden.id_sucursal_oca || 0) > 0;
+        const ev = orden.eventos_envio_oca || [];
+        const estado = orden.estado;
+        const estadoEnvio = orden.estado_envio;
+        const cancelado = estado === 'cancelado';
+        const isAlert = estadoEnvio === 'no_entregado' || estadoEnvio === 'en_devolucion';
+
+        const ev2 = _eventoParaPaso(ev, [1,2,3,4,5,6]);
+        const ev3 = _eventoParaPaso(ev, esSucursal ? [7] : [8,9]);
+        const ev4 = _eventoParaPaso(ev, [10]);
+        const evAlert = _eventoParaPaso(ev, [11,12]);
+
+        // Paso 1 — Orden confirmada
+        const paso1Estado = (cancelado && !orden.pagado_at) ? 'pending' : 'done';
+        const paso1 = {
+            numero: 1,
+            label: 'Orden confirmada',
+            desc: `Pago recibido — orden #${String(orden.numero_orden || '').padStart(5,'0')} confirmada`,
+            estado: paso1Estado,
+            timestamp: _formatTimestampCronograma(orden.pagado_at),
+        };
+
+        // Paso 2 — Procesando
+        let paso2Estado;
+        if (cancelado) {
+            paso2Estado = 'pending';
+        } else if (['entregado','en_camino','disponible_retiro_sucursal','no_entregado','en_devolucion'].includes(estadoEnvio) || estado === 'entregado' || estado === 'enviado') {
+            paso2Estado = 'done';
+        } else if (estadoEnvio === 'en_preparacion' || estado === 'pagado' || estado === 'preparando') {
+            paso2Estado = 'active';
+        } else {
+            paso2Estado = 'pending';
+        }
+        const paso2 = {
+            numero: 2,
+            label: 'Procesando',
+            desc: esSucursal ? 'Preparando para despacho a sucursal' : 'Preparando tu pedido',
+            estado: paso2Estado,
+            timestamp: _formatTimestampCronograma(ev2?.fecha_evento),
+        };
+
+        // Paso 3 — En camino / Disponible en sucursal
+        let paso3Estado, paso3Motivo;
+        if (cancelado) {
+            paso3Estado = 'pending';
+        } else if (estadoEnvio === 'entregado' || estado === 'entregado') {
+            paso3Estado = 'done';
+        } else if (isAlert) {
+            paso3Estado = 'alert';
+            paso3Motivo = evAlert?.motivo || null;
+        } else if (estadoEnvio === 'en_camino' || estadoEnvio === 'disponible_retiro_sucursal' || estado === 'enviado') {
+            paso3Estado = 'active';
+        } else {
+            paso3Estado = 'pending';
+        }
+        const sucursalNombre = (ev3 || evAlert)?.sucursal_info?.nombre || '';
+        let paso3Desc;
+        if (isAlert && estadoEnvio === 'en_devolucion') {
+            paso3Desc = 'El paquete está en devolución';
+        } else if (esSucursal) {
+            paso3Desc = sucursalNombre ? `Disponible en ${sucursalNombre}` : 'Disponible en sucursal OCA';
+        } else {
+            paso3Desc = (paso3Estado === 'done') ? 'El pedido se dirigió hacia tu domicilio' : 'El pedido se dirige hacia tu domicilio';
+        }
+        const paso3 = {
+            numero: 3,
+            label: esSucursal ? 'Disponible en sucursal' : 'En camino',
+            desc: paso3Desc,
+            estado: paso3Estado,
+            timestamp: _formatTimestampCronograma((ev3 || evAlert)?.fecha_evento),
+            motivo: paso3Motivo,
+        };
+
+        // Paso 4 — Entregado / Retirado
+        const paso4Estado = (estadoEnvio === 'entregado' || estado === 'entregado') ? 'done' : 'pending';
+        const paso4 = {
+            numero: 4,
+            label: esSucursal ? 'Retirado' : 'Entregado',
+            desc: esSucursal ? 'Pedido retirado en sucursal' : (paso4Estado === 'done' ? 'El paquete fue entregado en tu domicilio' : 'El paquete será entregado en tu domicilio'),
+            estado: paso4Estado,
+            timestamp: _formatTimestampCronograma(ev4?.fecha_evento),
+        };
+
+        // Badge global
+        let badge;
+        if (cancelado)                                                  badge = { label: 'CANCELADO', variant: 'cancelado' };
+        else if (estadoEnvio === 'no_entregado')                        badge = { label: 'NO ENTREGADO', variant: 'alerta' };
+        else if (estadoEnvio === 'en_devolucion')                       badge = { label: 'EN DEVOLUCIÓN', variant: 'alerta' };
+        else if (estadoEnvio === 'entregado' || estado === 'entregado') badge = { label: 'ENTREGADO', variant: 'entregado' };
+        else if (estadoEnvio === 'disponible_retiro_sucursal')          badge = { label: 'EN SUCURSAL', variant: 'sucursal' };
+        else if (estadoEnvio === 'en_camino' || estado === 'enviado')   badge = { label: 'EN TRÁNSITO', variant: 'transito' };
+        else if (estadoEnvio === 'en_preparacion' || estado === 'preparando') badge = { label: 'PROCESANDO', variant: 'transito' };
+        else                                                            badge = { label: 'CONFIRMADO', variant: 'transito' };
+
+        // Progreso
+        let progreso, alertFill = false;
+        if (cancelado)               { progreso = 100; alertFill = true; }
+        else if (isAlert)            { progreso = 75;  alertFill = true; }
+        else if (paso4Estado === 'done')  progreso = 100;
+        else if (paso3Estado === 'done')  progreso = 80;
+        else if (paso3Estado === 'active') progreso = 65;
+        else if (paso2Estado === 'done')  progreso = 50;
+        else if (paso2Estado === 'active') progreso = 35;
+        else                              progreso = 15;
+
+        // Etiqueta de entrega estimada
+        let estimadaLabel = null;
+        if (paso4Estado === 'done' && ev4?.fecha_evento) {
+            estimadaLabel = `ENTREGADO el ${_formatFechaCorta(ev4.fecha_evento)}`;
+        } else if (orden.pagado_at) {
+            const dir = orden.direcciones_envio;
+            const tipoEnvio = esSucursal ? 'sucursal' : 'domicilio';
+            const fechaEst = _calcularEntregaEstimada(orden.pagado_at, tipoEnvio, dir?.provincia || '');
+            if (fechaEst) estimadaLabel = `ENTREGA ESTIMADA: ${_formatFechaCorta(fechaEst)}`;
+        }
+
+        return { pasos: [paso1, paso2, paso3, paso4], badge, progreso, alertFill, estimadaLabel };
+    }
+
+    function renderCronograma(orden) {
+        const { pasos, badge, progreso, alertFill, estimadaLabel } = _buildCronograma(orden);
+        const pillMap = {
+            done:    ['HECHO',     'hecho'],
+            active:  ['ACTIVO',    'activo'],
+            pending: ['PENDIENTE', 'pendiente'],
+            alert:   ['ALERTA',    'alerta'],
+        };
+        const stepsHTML = pasos.map(p => {
+            let marker;
+            if (p.estado === 'done') {
+                marker = `<div class="cronograma-dot-done"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9.5 10,3"/></svg></div>`;
+            } else if (p.estado === 'active') {
+                marker = `<div class="cronograma-dot-active"><div class="cronograma-dot-active-inner"></div></div>`;
+            } else if (p.estado === 'alert') {
+                marker = `<div class="cronograma-dot-alert">⚠</div>`;
+            } else {
+                marker = `<div class="cronograma-dot-pending"><span>${p.numero}</span></div>`;
+            }
+            const [pillLabel, pillCls] = pillMap[p.estado] || pillMap.pending;
+            const timeHTML  = p.timestamp ? `<time class="cronograma-step-time">${p.timestamp}</time>` : '';
+            const motivoHTML = p.motivo ? `<p class="cronograma-step-motivo">MOTIVO: ${p.motivo}</p>` : '';
+            return `<li class="cronograma-step cronograma-step--${p.estado}">
+                <div class="cronograma-step-marker">${marker}</div>
+                <div class="cronograma-step-body">
+                    <div class="cronograma-step-row">
+                        <span class="cronograma-step-label">${p.label}</span>
+                        <span class="cronograma-pill cronograma-pill--${pillCls}">${pillLabel}</span>
+                        ${timeHTML}
+                    </div>
+                    <p class="cronograma-step-desc">${p.desc}</p>
+                    ${motivoHTML}
+                </div>
+            </li>`;
+        }).join('');
+
+        const fillCls = alertFill ? ' cronograma-progress-fill--alert' : '';
+        return `<div class="cronograma-card">
+            <div class="cronograma-header">
+                <h3 class="cronograma-title">CRONOGRAMA DE ENVIO</h3>
+                <span class="cronograma-badge cronograma-badge--${badge.variant}">
+                    <span class="cronograma-badge-dot"></span>${badge.label}
+                </span>
+            </div>
+            <div class="cronograma-divider"></div>
+            <ol class="cronograma-steps">${stepsHTML}</ol>
+            <div class="cronograma-progress">
+                <div class="cronograma-progress-track">
+                    <div class="cronograma-progress-fill${fillCls}" style="width:${progreso}%"></div>
+                </div>
+                <div class="cronograma-progress-labels">
+                    <span>${estimadaLabel || '—'}</span>
+                    <span>${progreso} % COMPLETADO</span>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function renderProgressBar(orden) {
+        const { progreso, alertFill } = _buildCronograma(orden);
+        const fillCls = alertFill ? ' cronograma-progress-fill--alert' : '';
+        return `<div class="cronograma-progress-mini">
+            <div class="cronograma-progress-track">
+                <div class="cronograma-progress-fill${fillCls}" style="width:${progreso}%"></div>
+            </div>
+        </div>`;
+    }
+
+    function renderPedidoCard(orden) {
+        const { label, cls } = _getOrdenBadge(orden.estado, orden.estado_envio);
+        const fecha = _formatFechaOrden(orden.created_at);
+        const total = _formatPrecio(orden.total_centavos);
+        const numero = String(orden.numero_orden || '').padStart(5, '0');
+
+        const items = (orden.items_orden || []).map(item => {
+            const imgs = item.variantes_producto?.productos?.imagenes || [];
+            const thumb = imgs[0]
+                ? `<img class="cuenta-pedido-thumb" src="${imgs[0]}" alt="${item.nombre_producto}" loading="lazy">`
+                : `<div class="cuenta-pedido-thumb cuenta-pedido-thumb--empty"></div>`;
+            return `<div class="cuenta-pedido-item">${thumb}<div class="cuenta-pedido-item-info"><span class="cuenta-pedido-item-name">${item.nombre_producto}</span><span class="cuenta-pedido-item-detail">${item.color} · ${item.talle} · ×${item.cantidad}</span></div><span class="cuenta-pedido-item-price">${_formatPrecio(item.precio_unitario_centavos * item.cantidad)}</span></div>`;
+        }).join('');
+
+        const progressBar = renderProgressBar(orden);
+        const cronogramaHTML = renderCronograma(orden);
+
+        const dir = orden.direcciones_envio;
+        const dirStr = dir
+            ? `${dir.calle ? dir.calle + ' ' + dir.numero : dir.direccion}, ${dir.ciudad}, ${dir.provincia} ${dir.codigo_postal}`
+            : '—';
+
+        const nroEnvioRow = orden.nro_envio_oca
+            ? `<div class="cuenta-pedido-detail-row"><span class="cuenta-pedido-detail-label">N° DE SEGUIMIENTO</span><span class="cuenta-pedido-detail-value">${orden.nro_envio_oca}</span></div>`
+            : '';
+
+        return `<div class="cuenta-order" id="pedido-${orden.id}">
+            <div class="cuenta-order-header" onclick="window._togglePedidoDetail('${orden.id}')">
+                <div class="cuenta-order-header-left">
+                    <span class="cuenta-order-id">#${numero}</span>
+                    <span class="cuenta-order-date">${fecha}</span>
+                </div>
+                <div class="cuenta-order-header-right">
+                    <span class="cuenta-order-status ${cls}">${label}</span>
+                    <span class="cuenta-pedido-chevron" id="chevron-${orden.id}">›</span>
+                </div>
+            </div>
+            <div class="cuenta-pedido-items">${items}</div>
+            <div class="cuenta-pedido-bottom">${progressBar}<div class="cuenta-pedido-total"><span class="cuenta-pedido-total-label">TOTAL</span><span class="cuenta-pedido-total-value">${total}</span></div></div>
+            <div class="cuenta-pedido-detail" id="detail-${orden.id}" style="display:none;">
+                ${cronogramaHTML}
+                <div class="cronograma-detail-divider"></div>
+                <div class="cuenta-pedido-detail-row"><span class="cuenta-pedido-detail-label">DIRECCIÓN DE ENVÍO</span><span class="cuenta-pedido-detail-value">${dirStr}</span></div>
+                ${nroEnvioRow}
+            </div>
+        </div>`;
+    }
+
+    function _togglePedidoDetail(ordenId) {
+        const detail = document.getElementById('detail-' + ordenId);
+        const chevron = document.getElementById('chevron-' + ordenId);
+        if (!detail) return;
+        const isOpen = detail.style.display !== 'none';
+        detail.style.display = isOpen ? 'none' : 'block';
+        if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(90deg)';
+    }
+    window._togglePedidoDetail = _togglePedidoDetail;
+
+    function startPedidosPolling() {
+        if (_pedidosPollingTimer) return;
+        _pedidosPollingTimer = setInterval(loadCuentaPedidos, 60000);
+        document.addEventListener('visibilitychange', _handlePedidosVisibility);
+    }
+
+    function stopPedidosPolling() {
+        if (_pedidosPollingTimer) { clearInterval(_pedidosPollingTimer); _pedidosPollingTimer = null; }
+        document.removeEventListener('visibilitychange', _handlePedidosVisibility);
+    }
+
+    function _handlePedidosVisibility() {
+        if (document.hidden) {
+            if (_pedidosPollingTimer) { clearInterval(_pedidosPollingTimer); _pedidosPollingTimer = null; }
+        } else {
+            _pedidosPollingTimer = setInterval(loadCuentaPedidos, 60000);
+        }
+    }
+
+    // --- DIRECCIONES ---
+
+    async function loadCuentaDirecciones() {
+        const token = await _getAccessToken();
+        if (!token) return;
+        try {
+            const res = await fetch('/api/cliente/direcciones', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!res.ok) return;
+            const { direcciones } = await res.json();
+            _renderDirecciones(direcciones || []);
+        } catch (err) {
+            console.error('[Cuenta] Error cargando direcciones:', err);
+        }
+    }
+
+    function _renderDirecciones(direcciones) {
+        const listEl = document.getElementById('cuenta-direcciones-list');
+        const emptyEl = document.getElementById('cuenta-direcciones-empty');
+        if (!listEl) return;
+        listEl.querySelectorAll('.cuenta-direccion-card').forEach(c => c.remove());
+        if (direcciones.length === 0) {
+            if (emptyEl) emptyEl.style.display = 'block';
+            return;
+        }
+        if (emptyEl) emptyEl.style.display = 'none';
+        direcciones.forEach(dir => listEl.appendChild(_crearDireccionCardEl(dir)));
+    }
+
+    function _crearDireccionCardEl(dir) {
+        const el = document.createElement('div');
+        el.className = 'cuenta-direccion-card';
+        el.id = 'dir-' + dir.id;
+        const dirStr = dir.calle
+            ? `${dir.calle} ${dir.numero}${dir.piso ? ', Piso ' + dir.piso : ''}${dir.depto ? ' Dpto ' + dir.depto : ''}`
+            : dir.direccion;
+        el.innerHTML = `
+            <button class="cuenta-direccion-dot ${dir.es_predeterminada ? 'is-principal' : ''}" onclick="window._setPrincipalDireccion('${dir.id}')" title="${dir.es_predeterminada ? 'Dirección principal' : 'Marcar como principal'}"></button>
+            <div class="cuenta-direccion-info">
+                <span class="cuenta-direccion-calle">${dirStr.toUpperCase()}</span>
+                <span class="cuenta-direccion-detail">${dir.ciudad.toUpperCase()}, ${dir.provincia.toUpperCase()} · CP ${dir.codigo_postal}</span>
+                ${dir.es_predeterminada ? '<span class="cuenta-direccion-principal">Principal</span>' : ''}
+            </div>
+            <div class="cuenta-direccion-actions">
+                <button class="cuenta-direccion-action" onclick="window._editarDireccion('${dir.id}')">EDITAR</button>
+                <span class="cuenta-direccion-sep">·</span>
+                <button class="cuenta-direccion-action" onclick="window._confirmarEliminarDireccion('${dir.id}')">ELIMINAR</button>
+            </div>`;
+        return el;
+    }
+
+    async function _setPrincipalDireccion(id) {
+        const token = await _getAccessToken();
+        if (!token) return;
+        try {
+            await fetch(`/api/cliente/direcciones/${id}`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ es_predeterminada: true })
+            });
+            loadCuentaDirecciones();
+        } catch (err) { console.error('[Cuenta] Error seteando dirección principal:', err); }
+    }
+    window._setPrincipalDireccion = _setPrincipalDireccion;
+
+    async function _editarDireccion(id) {
+        const token = await _getAccessToken();
+        if (!token) return;
+        try {
+            const res = await fetch('/api/cliente/direcciones', { headers: { 'Authorization': `Bearer ${token}` } });
+            const { direcciones } = await res.json();
+            const dir = (direcciones || []).find(d => d.id === id);
+            if (!dir) return;
+            document.getElementById('modal-direccion-title').textContent = 'EDITAR DIRECCIÓN';
+            document.getElementById('edit-direccion-id').value = id;
+            document.getElementById('edit-addr-calle').value = dir.calle || '';
+            document.getElementById('edit-addr-numero').value = dir.numero || '';
+            document.getElementById('edit-addr-piso').value = dir.piso || '';
+            document.getElementById('edit-addr-depto').value = dir.depto || '';
+            document.getElementById('edit-addr-ciudad').value = dir.ciudad || '';
+            document.getElementById('edit-addr-provincia').value = dir.provincia || '';
+            document.getElementById('edit-addr-cp').value = dir.codigo_postal || '';
+            document.getElementById('edit-addr-principal').checked = !!dir.es_predeterminada;
+            _openModal(document.getElementById('modal-direccion'));
+        } catch (err) { console.error('[Cuenta] Error cargando dirección:', err); }
+    }
+    window._editarDireccion = _editarDireccion;
+
+    function _confirmarEliminarDireccion(id) {
+        document.getElementById('delete-direccion-id').value = id;
+        _openModal(document.getElementById('modal-confirm-delete'));
+    }
+    window._confirmarEliminarDireccion = _confirmarEliminarDireccion;
+
+    async function _ejecutarEliminarDireccion() {
+        const id = document.getElementById('delete-direccion-id')?.value;
+        if (!id) return;
+        const token = await _getAccessToken();
+        if (!token) return;
+        const btnConfirm = document.getElementById('btn-confirm-delete');
+        if (btnConfirm) { btnConfirm.disabled = true; btnConfirm.querySelector('span').textContent = 'ELIMINANDO...'; }
+        try {
+            await fetch(`/api/cliente/direcciones/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            _closeModal(document.getElementById('modal-confirm-delete'));
+            loadCuentaDirecciones();
+        } catch (err) { console.error('[Cuenta] Error eliminando dirección:', err); }
+        finally { if (btnConfirm) { btnConfirm.disabled = false; btnConfirm.querySelector('span').textContent = 'ELIMINAR'; } }
+    }
+
+    // --- MODALES: SHARED HELPERS ---
+
+    function _openModal(modal) {
+        if (!modal) return;
+        modal.setAttribute('aria-hidden', 'false');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add('is-open')));
+    }
+
+    function _closeModal(modal) {
+        if (!modal) return;
+        modal.classList.remove('is-open');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }, 280);
+    }
+
+    // --- MODAL: EDITAR DATOS ---
+
+    function _openModalEditDatos() {
+        const modal = document.getElementById('modal-edit-datos');
+        if (!modal) return;
+        const get = id => { const el = document.getElementById(id); return el && el.textContent.trim() !== '—' ? el.textContent.trim() : ''; };
+        document.getElementById('edit-nombre').value = get('dash-nombre');
+        document.getElementById('edit-apellido').value = get('dash-apellido');
+        document.getElementById('edit-telefono').value = get('dash-telefono');
+        _openModal(modal);
+    }
+
+    async function _submitEditDatos() {
+        const token = await _getAccessToken();
+        if (!token) return;
+        const nombre = document.getElementById('edit-nombre')?.value?.trim();
+        const apellido = document.getElementById('edit-apellido')?.value?.trim();
+        const telefono = document.getElementById('edit-telefono')?.value?.trim();
+        const btnSave = document.getElementById('btn-save-datos');
+        if (btnSave) { btnSave.disabled = true; btnSave.querySelector('span').textContent = 'GUARDANDO...'; }
+        try {
+            const res = await fetch('/api/cliente/datos', {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, apellido, telefono })
+            });
+            if (!res.ok) throw new Error('Error al guardar');
+            const { cliente } = await res.json();
+            if (document.getElementById('dash-nombre')) document.getElementById('dash-nombre').textContent = cliente.nombre || '—';
+            if (document.getElementById('dash-apellido')) document.getElementById('dash-apellido').textContent = cliente.apellido || '—';
+            if (document.getElementById('dash-telefono')) document.getElementById('dash-telefono').textContent = cliente.telefono || '—';
+            const greet = document.getElementById('cuenta-greeting');
+            if (greet && cliente.nombre) greet.textContent = `BIENVENIDO, ${cliente.nombre.toUpperCase()}.`;
+            _closeModal(document.getElementById('modal-edit-datos'));
+        } catch (err) { console.error('[Cuenta] Error guardando datos:', err); }
+        finally { if (btnSave) { btnSave.disabled = false; btnSave.querySelector('span').textContent = 'GUARDAR'; } }
+    }
+
+    // --- MODAL: DIRECCIÓN ---
+
+    function _openModalAddDireccion() {
+        const modal = document.getElementById('modal-direccion');
+        if (!modal) return;
+        document.getElementById('modal-direccion-title').textContent = 'NUEVA DIRECCIÓN';
+        document.getElementById('edit-direccion-id').value = '';
+        ['calle','numero','piso','depto','ciudad','provincia','cp'].forEach(f => {
+            const el = document.getElementById('edit-addr-' + f);
+            if (el) el.value = '';
+        });
+        document.getElementById('edit-addr-principal').checked = false;
+        _openModal(modal);
+    }
+
+    async function _submitDireccion() {
+        const token = await _getAccessToken();
+        if (!token) return;
+        const id = document.getElementById('edit-direccion-id')?.value;
+        const body = {
+            calle: document.getElementById('edit-addr-calle')?.value?.trim(),
+            numero: document.getElementById('edit-addr-numero')?.value?.trim(),
+            piso: document.getElementById('edit-addr-piso')?.value?.trim() || null,
+            depto: document.getElementById('edit-addr-depto')?.value?.trim() || null,
+            ciudad: document.getElementById('edit-addr-ciudad')?.value?.trim(),
+            provincia: document.getElementById('edit-addr-provincia')?.value?.trim(),
+            codigo_postal: document.getElementById('edit-addr-cp')?.value?.trim(),
+            es_predeterminada: document.getElementById('edit-addr-principal')?.checked || false,
+        };
+        if (!body.calle || !body.numero || !body.ciudad || !body.provincia || !body.codigo_postal) {
+            alert('Completá calle, número, ciudad, provincia y código postal.');
+            return;
+        }
+        const btnSave = document.getElementById('btn-save-direccion');
+        if (btnSave) { btnSave.disabled = true; btnSave.querySelector('span').textContent = 'GUARDANDO...'; }
+        try {
+            const url = id ? `/api/cliente/direcciones/${id}` : '/api/cliente/direcciones';
+            const method = id ? 'PATCH' : 'POST';
+            const res = await fetch(url, {
+                method,
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) throw new Error('Error al guardar dirección');
+            _closeModal(document.getElementById('modal-direccion'));
+            loadCuentaDirecciones();
+        } catch (err) { console.error('[Cuenta] Error guardando dirección:', err); }
+        finally { if (btnSave) { btnSave.disabled = false; btnSave.querySelector('span').textContent = 'GUARDAR'; } }
+    }
+
+    // --- PREFERENCIAS ---
+
+    async function _loadCuentaPreferencias() {
+        if (!window.supabaseClient) return;
+        try {
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user?.email) return;
+            const { data: cliente } = await window.supabaseClient
+                .from('clientes')
+                .select('newsletter, telefono')
+                .eq('email', user.email)
+                .single();
+            if (cliente) {
+                const toggle = document.getElementById('pref-newsletter');
+                if (toggle) toggle.checked = !!cliente.newsletter;
+                const telEl = document.getElementById('dash-telefono');
+                if (telEl && (!telEl.textContent || telEl.textContent === '—')) {
+                    telEl.textContent = cliente.telefono || '—';
+                }
+            }
+        } catch (err) { console.error('[Cuenta] Error cargando preferencias:', err); }
+    }
+
+    async function _toggleNewsletter(checked) {
+        const token = await _getAccessToken();
+        if (!token) return;
+        try {
+            await fetch('/api/cliente/datos', {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newsletter: checked })
+            });
+        } catch (err) {
+            console.error('[Cuenta] Error actualizando newsletter:', err);
+            const toggle = document.getElementById('pref-newsletter');
+            if (toggle) toggle.checked = !checked;
+        }
+    }
+
+    async function _triggerPasswordReset() {
+        if (!window.supabaseClient) return;
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        if (!user?.email) return;
+        try {
+            await window.supabaseClient.auth.resetPasswordForEmail(user.email, {
+                redirectTo: window.location.origin + '/cuenta'
+            });
+            const btn = document.getElementById('btn-change-password');
+            if (btn) {
+                const orig = btn.textContent;
+                btn.textContent = '✓';
+                setTimeout(() => { btn.textContent = orig; }, 3000);
+            }
+        } catch (err) { console.error('[Cuenta] Error enviando reset password:', err); }
+    }
+
+    // --- INICIALIZAR LISTENERS DE CUENTA (solo una vez) ---
+
+    function _initCuentaListeners() {
+        if (_cuentaListenersInitialized) return;
+        _cuentaListenersInitialized = true;
+
+        // Editar datos
+        const btnEditDatos = document.getElementById('btn-edit-datos');
+        if (btnEditDatos) btnEditDatos.addEventListener('click', _openModalEditDatos);
+        const btnSaveDatos = document.getElementById('btn-save-datos');
+        if (btnSaveDatos) btnSaveDatos.addEventListener('click', _submitEditDatos);
+        const btnCancelDatos = document.getElementById('btn-cancel-edit-datos');
+        if (btnCancelDatos) btnCancelDatos.addEventListener('click', () => _closeModal(document.getElementById('modal-edit-datos')));
+        const overlayEditDatos = document.getElementById('modal-edit-datos-overlay');
+        if (overlayEditDatos) overlayEditDatos.addEventListener('click', () => _closeModal(document.getElementById('modal-edit-datos')));
+        const btnCloseDatos = document.getElementById('btn-close-edit-datos');
+        if (btnCloseDatos) btnCloseDatos.addEventListener('click', () => _closeModal(document.getElementById('modal-edit-datos')));
+
+        // Agregar dirección
+        const btnAddDir = document.getElementById('btn-add-direccion');
+        if (btnAddDir) btnAddDir.addEventListener('click', _openModalAddDireccion);
+        const btnSaveDir = document.getElementById('btn-save-direccion');
+        if (btnSaveDir) btnSaveDir.addEventListener('click', _submitDireccion);
+        const btnCancelDir = document.getElementById('btn-cancel-direccion');
+        if (btnCancelDir) btnCancelDir.addEventListener('click', () => _closeModal(document.getElementById('modal-direccion')));
+        const overlayDir = document.getElementById('modal-direccion-overlay');
+        if (overlayDir) overlayDir.addEventListener('click', () => _closeModal(document.getElementById('modal-direccion')));
+        const btnCloseDir = document.getElementById('btn-close-direccion');
+        if (btnCloseDir) btnCloseDir.addEventListener('click', () => _closeModal(document.getElementById('modal-direccion')));
+
+        // Confirmar eliminar
+        const btnConfirmDel = document.getElementById('btn-confirm-delete');
+        if (btnConfirmDel) btnConfirmDel.addEventListener('click', _ejecutarEliminarDireccion);
+        const btnCancelDel = document.getElementById('btn-cancel-delete');
+        if (btnCancelDel) btnCancelDel.addEventListener('click', () => _closeModal(document.getElementById('modal-confirm-delete')));
+        const overlayDel = document.getElementById('modal-confirm-delete-overlay');
+        if (overlayDel) overlayDel.addEventListener('click', () => _closeModal(document.getElementById('modal-confirm-delete')));
+        const btnCloseDel = document.getElementById('btn-close-confirm-delete');
+        if (btnCloseDel) btnCloseDel.addEventListener('click', () => _closeModal(document.getElementById('modal-confirm-delete')));
+
+        // Preferencias
+        const newsletter = document.getElementById('pref-newsletter');
+        if (newsletter) newsletter.addEventListener('change', (e) => _toggleNewsletter(e.target.checked));
+        const btnChangePwd = document.getElementById('btn-change-password');
+        if (btnChangePwd) btnChangePwd.addEventListener('click', _triggerPasswordReset);
+
+        // Escape key to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                ['modal-edit-datos','modal-direccion','modal-confirm-delete'].forEach(id => {
+                    const m = document.getElementById(id);
+                    if (m && m.classList.contains('is-open')) _closeModal(m);
+                });
+            }
+        });
+    }
+
+    // =========================================================================
 
     function switchToCreateAccount() {
         // Fade out Login

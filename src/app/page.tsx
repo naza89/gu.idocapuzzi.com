@@ -616,6 +616,7 @@ const siteHTML = `
                     <nav class="cuenta-nav" aria-label="Secciones de cuenta">
                         <button class="cuenta-nav-link active" data-section="pedidos">Mis Pedidos</button>
                         <button class="cuenta-nav-link" data-section="datos">Mis Datos</button>
+                        <button class="cuenta-nav-link" data-section="preferencias">Preferencias</button>
                     </nav>
                     <button class="btn-cuenta-logout" id="btn-logout">
                         <span>CERRAR SESIÓN</span>
@@ -623,6 +624,8 @@ const siteHTML = `
                 </aside>
                 <div class="cuenta-content">
                     <span class="cuenta-greeting" id="cuenta-greeting">MI CUENTA</span>
+
+                    <!-- MIS PEDIDOS -->
                     <section class="cuenta-section active" id="cuenta-pedidos">
                         <h2 class="cuenta-section-title">Mis Pedidos</h2>
                         <div id="cuenta-pedidos-list">
@@ -631,8 +634,14 @@ const siteHTML = `
                             </p>
                         </div>
                     </section>
+
+                    <!-- MIS DATOS -->
                     <section class="cuenta-section" id="cuenta-datos">
                         <h2 class="cuenta-section-title">Mis Datos</h2>
+                        <div class="cuenta-datos-header">
+                            <span class="cuenta-datos-block-title">DATOS PERSONALES</span>
+                            <button class="cuenta-edit-link" id="btn-edit-datos">EDITAR</button>
+                        </div>
                         <div class="cuenta-field">
                             <span class="cuenta-field-label">Nombre</span>
                             <span class="cuenta-field-value" id="dash-nombre">—</span>
@@ -643,9 +652,151 @@ const siteHTML = `
                         </div>
                         <div class="cuenta-field">
                             <span class="cuenta-field-label">Email</span>
-                            <span class="cuenta-field-value" id="dash-email">—</span>
+                            <span class="cuenta-field-value cuenta-field-verified" id="dash-email">—</span>
+                        </div>
+                        <div class="cuenta-field">
+                            <span class="cuenta-field-label">Teléfono</span>
+                            <span class="cuenta-field-value" id="dash-telefono">—</span>
+                        </div>
+                        <div class="cuenta-block-separator"></div>
+                        <div class="cuenta-datos-header">
+                            <span class="cuenta-datos-block-title">DIRECCIONES DE ENVÍO</span>
+                            <button class="cuenta-edit-link" id="btn-add-direccion">AGREGAR +</button>
+                        </div>
+                        <div id="cuenta-direcciones-list">
+                            <p class="cuenta-pedidos-empty" id="cuenta-direcciones-empty">
+                                AÚN NO TENÉS DIRECCIONES GUARDADAS. AGREGÁ UNA PARA AGILIZAR TUS COMPRAS.
+                            </p>
                         </div>
                     </section>
+
+                    <!-- PREFERENCIAS -->
+                    <section class="cuenta-section" id="cuenta-preferencias">
+                        <h2 class="cuenta-section-title">Preferencias</h2>
+                        <div class="cuenta-pref-row">
+                            <div class="cuenta-pref-info">
+                                <span class="cuenta-pref-label">RECIBIR NOVEDADES</span>
+                                <span class="cuenta-pref-desc">Novedades, drops y campañas de GÜIDO CAPUZZI.</span>
+                            </div>
+                            <label class="cuenta-toggle">
+                                <input type="checkbox" id="pref-newsletter">
+                                <span class="cuenta-toggle-track"><span class="cuenta-toggle-knob"></span></span>
+                            </label>
+                        </div>
+                        <div class="cuenta-pref-row cuenta-pref-action">
+                            <span class="cuenta-pref-label">CAMBIAR CONTRASEÑA</span>
+                            <button class="cuenta-pref-arrow" id="btn-change-password">›</button>
+                        </div>
+                        <div class="cuenta-pref-separator"></div>
+                        <div class="cuenta-pref-row cuenta-pref-action cuenta-pref-danger">
+                            <span class="cuenta-pref-label">ELIMINAR CUENTA</span>
+                            <button class="cuenta-pref-arrow cuenta-pref-arrow--danger" id="btn-delete-account">›</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- MODAL: Editar Datos Personales -->
+            <div class="cuenta-modal" id="modal-edit-datos" aria-hidden="true" style="display:none;">
+                <div class="cuenta-modal-overlay" id="modal-edit-datos-overlay"></div>
+                <div class="cuenta-modal-content">
+                    <div class="cuenta-modal-header">
+                        <span class="cuenta-modal-title">EDITAR DATOS</span>
+                        <button class="cuenta-modal-close" id="btn-close-edit-datos" aria-label="Cerrar">×</button>
+                    </div>
+                    <div class="cuenta-modal-body">
+                        <div class="input-group">
+                            <label for="edit-nombre">NOMBRE</label>
+                            <input type="text" class="input-custom" id="edit-nombre" autocomplete="given-name" />
+                        </div>
+                        <div class="input-group">
+                            <label for="edit-apellido">APELLIDO</label>
+                            <input type="text" class="input-custom" id="edit-apellido" autocomplete="family-name" />
+                        </div>
+                        <div class="input-group">
+                            <label for="edit-telefono">TELÉFONO</label>
+                            <input type="tel" class="input-custom" id="edit-telefono" autocomplete="tel" />
+                        </div>
+                    </div>
+                    <div class="cuenta-modal-actions">
+                        <button class="btn-cuenta-modal-cancel" id="btn-cancel-edit-datos"><span>CANCELAR</span></button>
+                        <button class="btn-cuenta-logout btn-modal-save" id="btn-save-datos"><span>GUARDAR</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL: Agregar / Editar Dirección -->
+            <div class="cuenta-modal" id="modal-direccion" aria-hidden="true" style="display:none;">
+                <div class="cuenta-modal-overlay" id="modal-direccion-overlay"></div>
+                <div class="cuenta-modal-content">
+                    <div class="cuenta-modal-header">
+                        <span class="cuenta-modal-title" id="modal-direccion-title">NUEVA DIRECCIÓN</span>
+                        <button class="cuenta-modal-close" id="btn-close-direccion" aria-label="Cerrar">×</button>
+                    </div>
+                    <div class="cuenta-modal-body">
+                        <input type="hidden" id="edit-direccion-id" />
+                        <div class="cuenta-modal-row">
+                            <div class="input-group cuenta-modal-row-wide">
+                                <label for="edit-addr-calle">CALLE</label>
+                                <input type="text" class="input-custom" id="edit-addr-calle" autocomplete="street-address" />
+                            </div>
+                            <div class="input-group cuenta-modal-row-narrow">
+                                <label for="edit-addr-numero">NÚMERO</label>
+                                <input type="text" class="input-custom" id="edit-addr-numero" />
+                            </div>
+                        </div>
+                        <div class="cuenta-modal-row">
+                            <div class="input-group">
+                                <label for="edit-addr-piso">PISO</label>
+                                <input type="text" class="input-custom" id="edit-addr-piso" placeholder="Opcional" />
+                            </div>
+                            <div class="input-group">
+                                <label for="edit-addr-depto">DEPTO</label>
+                                <input type="text" class="input-custom" id="edit-addr-depto" placeholder="Opcional" />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="edit-addr-ciudad">CIUDAD / LOCALIDAD</label>
+                            <input type="text" class="input-custom" id="edit-addr-ciudad" autocomplete="address-level2" />
+                        </div>
+                        <div class="cuenta-modal-row">
+                            <div class="input-group cuenta-modal-row-wide">
+                                <label for="edit-addr-provincia">PROVINCIA</label>
+                                <input type="text" class="input-custom" id="edit-addr-provincia" autocomplete="address-level1" />
+                            </div>
+                            <div class="input-group cuenta-modal-row-narrow">
+                                <label for="edit-addr-cp">CÓDIGO POSTAL</label>
+                                <input type="text" class="input-custom" id="edit-addr-cp" autocomplete="postal-code" />
+                            </div>
+                        </div>
+                        <label class="cuenta-modal-check">
+                            <input type="checkbox" id="edit-addr-principal" />
+                            <span>USAR COMO DIRECCIÓN PRINCIPAL</span>
+                        </label>
+                    </div>
+                    <div class="cuenta-modal-actions">
+                        <button class="btn-cuenta-modal-cancel" id="btn-cancel-direccion"><span>CANCELAR</span></button>
+                        <button class="btn-cuenta-logout btn-modal-save" id="btn-save-direccion"><span>GUARDAR</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL: Confirmar Eliminar Dirección -->
+            <div class="cuenta-modal" id="modal-confirm-delete" aria-hidden="true" style="display:none;">
+                <div class="cuenta-modal-overlay" id="modal-confirm-delete-overlay"></div>
+                <div class="cuenta-modal-content cuenta-modal-content--small">
+                    <div class="cuenta-modal-header">
+                        <span class="cuenta-modal-title">ELIMINAR DIRECCIÓN</span>
+                        <button class="cuenta-modal-close" id="btn-close-confirm-delete" aria-label="Cerrar">×</button>
+                    </div>
+                    <div class="cuenta-modal-body">
+                        <p class="cuenta-modal-confirm-text">¿ELIMINÁS ESTA DIRECCIÓN? ESTA ACCIÓN NO SE PUEDE DESHACER.</p>
+                        <input type="hidden" id="delete-direccion-id" />
+                    </div>
+                    <div class="cuenta-modal-actions">
+                        <button class="btn-cuenta-modal-cancel" id="btn-cancel-delete"><span>CANCELAR</span></button>
+                        <button class="btn-cuenta-logout btn-modal-delete" id="btn-confirm-delete"><span>ELIMINAR</span></button>
+                    </div>
                 </div>
             </div>
         </section>
