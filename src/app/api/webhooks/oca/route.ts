@@ -174,6 +174,23 @@ async function processWebhook(
 
     console.log('[webhook/oca] ✅ Orden encontrada:', orden.id);
 
+    // STEP 2b: Si encontramos la orden por fallback (nroDocCliente) y todavía no
+    // tiene nro_envio_oca guardado, persistirlo ahora. Así los siguientes eventos
+    // de OCA usan la búsqueda primaria (por nroEnvio) sin necesitar el fallback.
+    if (nroEnvio) {
+      const { error: nroEnvioError } = await supabase
+        .from('ordenes')
+        .update({ nro_envio_oca: nroEnvio })
+        .eq('id', orden.id)
+        .is('nro_envio_oca', null); // Solo actualiza si aún no está seteado (idempotente)
+
+      if (nroEnvioError) {
+        console.warn('[webhook/oca] No se pudo guardar nro_envio_oca:', nroEnvioError.message);
+      } else {
+        console.log('[webhook/oca] ✅ nro_envio_oca guardado en orden:', nroEnvio);
+      }
+    }
+
     // STEP 3: Mapear estado OCA a estado interno
     const estadoInterno = OCA_STATUS_MAP[idEstado] || 'en_preparacion';
     console.log('[webhook/oca] Estado mapeado:', idEstado, '→', estadoInterno);
