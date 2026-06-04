@@ -86,27 +86,26 @@ export async function POST(request: NextRequest) {
     body = JSON.parse(rawBody);
   } catch {
     console.error('[webhook/oca] Body inválido (no es JSON):', rawBody);
+    // Logueamos igual el body crudo para diagnóstico, sin bloquear la respuesta.
+    after(() => logRawWebhook(null, rawBody, { parseError: true, secretReceived: false, secretMatched: false }));
     return NextResponse.json({ received: true }, { status: 200 });
   }
 
   const { nroEnvio, idEstado, fecha } = body;
 
-  // ─── Validación de secret ─────────────────────────────────
+  // ─── Diagnóstico de secret (sin descartar todavía) ────────
   const incomingSecret = request.headers.get('x-oca-secret');
   const expectedSecret = process.env.OCA_WEBHOOK_SECRET;
-
-  if (!expectedSecret || incomingSecret !== expectedSecret) {
-    console.warn('[webhook/oca] ⛔ Secret inválido. Header recibido:', incomingSecret ? '(presente pero incorrecto)' : '(ausente)');
-    // Devolvemos 200 igual para evitar reintentos de OCA,
-    // pero no procesamos el evento.
-    return NextResponse.json({ received: true }, { status: 200 });
-  }
+  const secretReceived = incomingSecret != null;
+  const secretMatched = !!expectedSecret && incomingSecret === expectedSecret;
 
   console.log('[webhook/oca] 📩 Recibido:', {
     nroEnvio,
     idEstado,
     estado: body.estado,
     fecha,
+    secretReceived,
+    secretMatched,
     timestamp: new Date().toISOString(),
   });
 
@@ -115,6 +114,17 @@ export async function POST(request: NextRequest) {
   // después de enviar la respuesta.
   after(async () => {
     try {
+      // 1. Auditoría: persistir SIEMPRE el request crudo para diagnóstico,
+      //    independientemente de si el secret matchea o si se encuentra la orden.
+      await logRawWebhook(body, rawBody, { secretReceived, secretMatched });
+
+      // 2. Recién ahora descartamos si el secret no es válido.
+      if (!secretMatched) {
+        console.warn('[webhook/oca] ⛔ Secret inválido. Header:', secretReceived ? '(presente pero incorrecto)' : '(ausente)');
+        return;
+      }
+
+      // 3. Procesamiento normal.
       await processWebhook(body, rawBody);
     } catch (err) {
       console.error('[webhook/oca] Error en procesamiento async:', err);
@@ -122,6 +132,30 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.json({ received: true }, { status: 200 });
+}
+
+// ─── Logging de auditoría ─────────────────────────────────
+// Persiste cada request entrante de OCA en webhook_logs para diagnóstico.
+// No lanza errores (best-effort): si falla el log, no rompe el webhook.
+
+async function logRawWebhook(
+  body: OCAWebhookPayload | null,
+  rawBody: string,
+  diagnostics: Record<string, unknown>
+): Promise<void> {
+  try {
+    const supabase = createAdminClient();
+    await supabase.from('webhook_logs').insert({
+      source: 'oca',
+      event_type: body ? `${body.idEstado ?? ''}:${body.estado ?? ''}` : 'parse_error',
+      order_id: null,
+      payload: { body, raw: rawBody, diagnostics },
+      received_at: new Date().toISOString(),
+    });
+    console.log('[webhook/oca] 📝 Request logueado en webhook_logs');
+  } catch (err) {
+    console.error('[webhook/oca] No se pudo loguear en webhook_logs:', err);
+  }
 }
 
 // ─── GET Handler (health check) ───────────────────────────
