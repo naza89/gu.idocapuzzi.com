@@ -187,7 +187,7 @@ async function processWebhook(
     // STEP 1: Buscar la orden por nroEnvio (preferred)
     let { data: orden, error: ordenError } = await supabase
       .from('ordenes')
-      .select('id, cliente_id, email')
+      .select('id, cliente_id')
       .eq('nro_envio_oca', nroEnvio)
       .single();
 
@@ -198,7 +198,7 @@ async function processWebhook(
       if (nroDocCliente) {
         const { data: ordenAlt } = await supabase
           .from('ordenes')
-          .select('id, cliente_id, email')
+          .select('id, cliente_id')
           .eq('numero_orden', Math.abs(parseInt(nroDocCliente)))
           .single();
         orden = ordenAlt;
@@ -273,11 +273,19 @@ async function processWebhook(
     }
 
     // STEP 6: Enviar email al cliente para ciertos estados
+    // Email se obtiene de la tabla clientes (no existe en ordenes)
     const shouldNotify = [7, 10, 11].includes(idEstado); // sucursal, entregado, no_entregado
-    if (shouldNotify && orden.email) {
+    if (shouldNotify) {
       try {
-        await sendShippingStatusEmail(orden.id, idEstado, sucursal, motivo);
-        console.log('[webhook/oca] ✅ Email enviado al cliente:', { ordenId: orden.id, idEstado });
+        const { data: cliente } = await supabase
+          .from('clientes')
+          .select('email')
+          .eq('id', orden.cliente_id)
+          .single();
+        if (cliente?.email) {
+          await sendShippingStatusEmail(orden.id, idEstado, sucursal, motivo);
+          console.log('[webhook/oca] ✅ Email enviado al cliente:', { ordenId: orden.id, idEstado });
+        }
       } catch (emailErr) {
         console.error('[webhook/oca] Error al enviar email:', emailErr);
         // No interrumpimos el flujo si el email falla
