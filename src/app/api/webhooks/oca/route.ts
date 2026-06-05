@@ -145,11 +145,15 @@ async function logRawWebhook(
 ): Promise<void> {
   try {
     const supabase = createAdminClient();
+    // Intentar parsear rawBody a objeto para JSONB; fallback a string envuelto en objeto
+    let rawParsed: unknown;
+    try { rawParsed = JSON.parse(rawBody); } catch { rawParsed = { _raw: rawBody }; }
+
     await supabase.from('webhook_logs').insert({
       source: 'oca',
       event_type: body ? `${body.idEstado ?? ''}:${body.estado ?? ''}` : 'parse_error',
       order_id: null,
-      payload: { body, raw: rawBody, diagnostics },
+      payload: { body: body ?? null, raw: rawParsed, diagnostics },
       received_at: new Date().toISOString(),
     });
     console.log('[webhook/oca] 📝 Request logueado en webhook_logs');
@@ -195,7 +199,7 @@ async function processWebhook(
         const { data: ordenAlt } = await supabase
           .from('ordenes')
           .select('id, cliente_id, email')
-          .eq('numero_orden', parseInt(nroDocCliente))
+          .eq('numero_orden', Math.abs(parseInt(nroDocCliente)))
           .single();
         orden = ordenAlt;
       }
