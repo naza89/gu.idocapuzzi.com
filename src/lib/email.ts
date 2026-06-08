@@ -288,13 +288,17 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
 
 // ─── Template: Cambios de estado del envío OCA ────────────────────────────────
 
+// Forma real del objeto `sucursal` que envía el webhook de novedades de OCA.
+// (ver docs/external/Webhook OCA.pdf, sección 3.1)
 interface Sucursal {
-    id: number;
-    nombre: string;
-    domicilio: string;
-    codigo_postal: string;
-    localidad: string;
-    provincia: string;
+    sigla?: string;
+    descripcion?: string;
+    calle?: string;
+    numero?: string;
+    localidad?: string;
+    provincia?: string;
+    latitud?: number;
+    longitud?: number;
 }
 
 export async function sendShippingStatusEmail(
@@ -325,6 +329,9 @@ export async function sendShippingStatusEmail(
         return;
     }
 
+    // OCA envía idEstado como string ("7"). Normalizar a número para el switch (usa ===).
+    idEstado = Number(idEstado);
+
     let asunto: string;
     let eyebrow: string;
     let titulo: string;
@@ -341,9 +348,9 @@ export async function sendShippingStatusEmail(
                     Hola ${cliente.nombre}, tu pedido llegó a la sucursal de OCA y está disponible para retiro.<br>
                     ${sucursal ? `
                         <br>
-                        <strong>${sucursal.nombre}</strong><br>
-                        ${sucursal.domicilio}<br>
-                        ${sucursal.codigo_postal} ${sucursal.localidad}, ${sucursal.provincia}
+                        <strong>${sucursal.descripcion ?? 'Sucursal OCA'}</strong><br>
+                        ${[sucursal.calle, sucursal.numero].filter(Boolean).join(' ')}<br>
+                        ${[sucursal.localidad, sucursal.provincia].filter(Boolean).join(', ')}
                     ` : ''}
                 </p>
             `;

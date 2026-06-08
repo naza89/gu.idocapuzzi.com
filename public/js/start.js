@@ -1922,7 +1922,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             paso3Estado = 'pending';
         }
-        const sucursalNombre = (ev3 || evAlert)?.sucursal_info?.nombre || '';
+        // OCA envía el nombre de la sucursal en `descripcion` (no `nombre`).
+        const sucursalNombre = (ev3 || evAlert)?.sucursal_info?.descripcion || '';
         let paso3Desc;
         if (isAlert && estadoEnvio === 'en_devolucion') {
             paso3Desc = 'El paquete está en devolución';

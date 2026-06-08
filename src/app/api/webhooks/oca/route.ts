@@ -7,26 +7,33 @@
  * ⚠️ CRITICAL: Responde HTTP 200 INMEDIATAMENTE.
  * Si no, OCA reintenta (máximo configurable).
  *
- * Payload de OCA:
+ * Payload real de OCA (ver docs/external/Webhook OCA.pdf). Nota: idEstado/idMotivo
+ * llegan como STRING:
  * {
- *   "nroEnvio": "1234567890123456789",
- *   "nroDocCliente": "12345678",
- *   "idEstado": 8,
- *   "estado": "En camino",
- *   "motivo": null,
- *   "fecha": "2026-05-06T10:30:00",
+ *   "nroDocCliente": "123ABC",
+ *   "nroEnvio": "1234500000000000001",
+ *   "idEstado": "7",
+ *   "estado": "Envío en espera de retiro en Sucursal",
+ *   "idMotivo": "",
+ *   "motivo": "",
+ *   "fecha": "2026-01-10 09:00",
+ *   "latitud": -33.33612967,
+ *   "longitud": -60.2143605,
  *   "sucursal": {
- *     "id": 123,
- *     "nombre": "Sucursal Centro",
- *     "domicilio": "Calle 123",
- *     "codigo_postal": "1010",
- *     "localidad": "Buenos Aires",
- *     "provincia": "Buenos Aires"
+ *     "sigla": "NIC",
+ *     "descripcion": "SAN NICOLAS",
+ *     "calle": "ESPAÑA",
+ *     "numero": "280",
+ *     "localidad": "SAN NICOLAS",
+ *     "provincia": "BUENOS AIRES",
+ *     "latitud": -33.33612967,
+ *     "longitud": -60.2143605
  *   },
  *   "datosReceptor": {
- *     "nombre": "Juan",
- *     "apellido": "Pérez",
- *     "domicilio": "Calle 456"
+ *     "nombre": "JUAN",
+ *     "apellido": "PEREZ",
+ *     "vinculo": "TITULAR",
+ *     "dni": 11223344
  *   }
  * }
  */
@@ -36,25 +43,33 @@ import { after } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { sendShippingStatusEmail } from '@/lib/email';
 
+// Forma real del payload de novedades de OCA (ver docs/external/Webhook OCA.pdf, sección 3.1).
+// ⚠️ OCA envía los códigos numéricos (idEstado, idMotivo) como STRING.
 interface OCAWebhookPayload {
   nroEnvio: string;
   nroDocCliente?: string;
-  idEstado: number;
+  idEstado: string | number;
   estado?: string;
+  idMotivo?: string;
   motivo?: string;
   fecha: string;
+  latitud?: number;
+  longitud?: number;
   sucursal?: {
-    id: number;
-    nombre: string;
-    domicilio: string;
-    codigo_postal: string;
-    localidad: string;
-    provincia: string;
+    sigla?: string;
+    descripcion?: string;
+    calle?: string;
+    numero?: string;
+    localidad?: string;
+    provincia?: string;
+    latitud?: number;
+    longitud?: number;
   };
   datosReceptor?: {
-    nombre: string;
-    apellido: string;
-    domicilio: string;
+    nombre?: string;
+    apellido?: string;
+    dni?: string | number;
+    vinculo?: string;
   };
 }
 
@@ -179,7 +194,10 @@ async function processWebhook(
   payload: OCAWebhookPayload,
   rawBody: string
 ): Promise<void> {
-  const { nroEnvio, nroDocCliente, idEstado, estado, motivo, fecha, sucursal, datosReceptor } = payload;
+  const { nroEnvio, nroDocCliente, estado, motivo, fecha, sucursal, datosReceptor } = payload;
+  // OCA envía idEstado como string ("7"). Normalizar a número: las comparaciones
+  // estrictas (Array.includes, switch en sendShippingStatusEmail) lo requieren.
+  const idEstado = Number(payload.idEstado);
 
   try {
     const supabase = createAdminClient();
