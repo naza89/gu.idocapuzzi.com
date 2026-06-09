@@ -90,6 +90,22 @@ const OCA_STATUS_MAP: Record<number, string> = {
   12: 'en_devolucion',    // En devolución
 };
 
+// ─── Normalización de fecha ───────────────────────────────
+// OCA manda `fecha` en hora local de Argentina (UTC-3) SIN timezone
+// (ej: "2026-06-09 00:00"). Si la guardamos tal cual en una columna TIMESTAMPTZ,
+// Postgres la interpreta como UTC y el display en el browser (hora AR) se corre
+// -3h, cruzando la medianoche. Le anexamos el offset -03:00 para guardar el
+// instante correcto. Argentina no observa DST, así que -03:00 es fijo.
+function normalizarFechaOCA(fecha?: string): string | null {
+  if (!fecha) return null;
+  const t = fecha.trim().replace(' ', 'T');
+  // Si ya viene con offset o Z, respetarla
+  if (/(?:[zZ]|[+-]\d{2}:?\d{2})$/.test(t)) return t;
+  // Asegurar segundos antes de anexar offset
+  const withSecs = /T\d{2}:\d{2}$/.test(t) ? `${t}:00` : t;
+  return `${withSecs}-03:00`;
+}
+
 // ─── POST Handler ────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
@@ -263,7 +279,7 @@ async function processWebhook(
         motivo: motivo,
         sucursal_info: sucursal ? JSON.stringify(sucursal) : null,
         datos_receptor: datosReceptor ? JSON.stringify(datosReceptor) : null,
-        fecha_evento: fecha,
+        fecha_evento: normalizarFechaOCA(fecha),
         raw_json: JSON.parse(rawBody),
       });
 
