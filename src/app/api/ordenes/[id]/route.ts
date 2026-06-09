@@ -49,6 +49,7 @@ export async function GET(
             .from('ordenes')
             .select(`
                 id,
+                numero_orden,
                 estado,
                 total_centavos,
                 costo_envio_centavos,

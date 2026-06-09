@@ -2657,12 +2657,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Formatea el numero_orden igual que el panel /cuenta y los emails: #00061
+    function _formatNumeroOrden(numero) {
+        return `Orden #${String(numero ?? '').padStart(5, '0')}`;
+    }
+
     async function populateConfirmation(ordenId) {
-        // Order number (first 8 chars of UUID)
+        // Número de orden = numero_orden (consistente con panel /cuenta y emails).
+        // Fast path: sessionStorage (flujo carrito + redirect NAVE). La API lo confirma luego.
         const ordenEl = document.getElementById('confirmacion-orden');
         if (ordenEl) {
-            const shortId = ordenId ? ordenId.substring(0, 8).toUpperCase() : '--------';
-            ordenEl.textContent = `Orden #${shortId}`;
+            const stored = sessionStorage.getItem('checkout_numero_orden');
+            ordenEl.textContent = stored ? _formatNumeroOrden(stored) : 'Orden #—————';
         }
 
         if (cart.length > 0) {
@@ -2781,6 +2787,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Mostrar mensaje de procesamiento en vez de datos vacíos
                 var pendingNotaEl = document.getElementById('confirmacion-nota');
                 if (pendingNotaEl) pendingNotaEl.textContent = 'TU PAGO ESTÁ SIENDO PROCESADO. RECIBIRÁS UN EMAIL DE CONFIRMACIÓN EN BREVE.';
+            }
+
+            // Número de orden autoritativo desde la API (numero_orden)
+            const ordenNumEl = document.getElementById('confirmacion-orden');
+            if (ordenNumEl && orden.numero_orden != null) {
+                ordenNumEl.textContent = _formatNumeroOrden(orden.numero_orden);
             }
 
             // Products from items_orden
@@ -2939,7 +2951,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('home-container'),
             accountLoginSection,
             accountCreateSection,
-            accountContactSection
+            accountContactSection,
+            document.getElementById('account-dashboard')
         ];
         sectionsToHide.forEach(sec => {
             if (sec) sec.style.display = 'none';
