@@ -322,14 +322,14 @@ const siteHTML = `
                     <p class="section-subtitle">Descubrí los vestuarios del origen de Güido.</p>
                     <h2 class="section-title font-condensed">CAMPAÑA 2026</h2>
                     <div class="section-buttons">
-                        <a href="#" class="btn-rect"><span>VER TODO</span></a>
-                        <a href="#" class="btn-rect"><span>ARCHIVO</span></a>
+                        <a href="/shop" class="btn-rect" data-shop-cat="VER TODO"><span>VER TODO</span></a>
+                        <a href="#" class="btn-rect" data-pending="campana"><span>ARCHIVO</span></a>
                     </div>
                 </div>
                 <!-- Mobile content block (centered) -->
                 <div class="section-mobile-content">
                     <h2 class="section-mobile-title font-condensed">CAMPAÑA 2026</h2>
-                    <a href="/shop" class="btn-rect btn-rect-mobile"><span>VER TODO</span></a>
+                    <a href="/shop" class="btn-rect btn-rect-mobile" data-shop-cat="VER TODO"><span>VER TODO</span></a>
                 </div>
             </section>
 
@@ -340,14 +340,14 @@ const siteHTML = `
                     <p class="section-subtitle">Nuevos jeans de stock único.</p>
                     <h2 class="section-title font-condensed">SELVEDGE DENIM</h2>
                     <div class="section-buttons">
-                        <a href="#" class="btn-rect"><span>COMPRAR AHORA</span></a>
-                        <a href="#" class="btn-rect"><span>VER LOOKBOOK</span></a>
+                        <a href="/shop?cat=PANTALONES%20%2F%20JEANS" class="btn-rect" data-shop-cat="PANTALONES / JEANS"><span>COMPRAR AHORA</span></a>
+                        <a href="#" class="btn-rect" data-pending="campana"><span>VER LOOKBOOK</span></a>
                     </div>
                 </div>
                 <!-- Mobile content block (centered) -->
                 <div class="section-mobile-content">
                     <h2 class="section-mobile-title font-condensed">SELVEDGE DENIM</h2>
-                    <a href="/shop" class="btn-rect btn-rect-mobile" data-category="PANTALONES / JEANS"><span>VER JEANS</span></a>
+                    <a href="/shop?cat=PANTALONES%20%2F%20JEANS" class="btn-rect btn-rect-mobile" data-shop-cat="PANTALONES / JEANS"><span>VER JEANS</span></a>
                 </div>
             </section>
 
@@ -375,8 +375,8 @@ const siteHTML = `
                             <div class="footer-nav-column">
                                 <h3 class="footer-nav-title font-condensed">SOCIALES</h3>
                                 <ul class="footer-nav-list">
-                                    <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer"><span>INSTAGRAM</span></a></li>
-                                    <li><a href="https://tiktok.com" target="_blank" rel="noopener noreferrer"><span>TIKTOK</span></a></li>
+                                    <li><a href="https://www.instagram.com/gu.idocapuzzi/" target="_blank" rel="noopener noreferrer"><span>INSTAGRAM</span></a></li>
+                                    <li><a href="https://www.tiktok.com/@gu.idocapuzzi" target="_blank" rel="noopener noreferrer"><span>TIKTOK</span></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -435,8 +435,8 @@ const siteHTML = `
                             <div class="footer-nav-column">
                                 <h3 class="footer-nav-title font-condensed">SOCIALES</h3>
                                 <ul class="footer-nav-list">
-                                    <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer"><span>INSTAGRAM</span></a></li>
-                                    <li><a href="https://tiktok.com" target="_blank" rel="noopener noreferrer"><span>TIKTOK</span></a></li>
+                                    <li><a href="https://www.instagram.com/gu.idocapuzzi/" target="_blank" rel="noopener noreferrer"><span>INSTAGRAM</span></a></li>
+                                    <li><a href="https://www.tiktok.com/@gu.idocapuzzi" target="_blank" rel="noopener noreferrer"><span>TIKTOK</span></a></li>
                                 </ul>
                             </div>
                         </div>

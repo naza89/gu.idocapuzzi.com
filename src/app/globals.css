@@ -1220,6 +1220,20 @@ body.state-shop #shop {
     opacity: 0;
 }
 
+/* Restricción temporal (opción B): prendas no disponibles aún — teaser en el Shop.
+   Foto atenuada; "PRÓXIMAMENTE" ocupa el lugar del precio; el click NO abre la PDP. */
+.product-card--restricted {
+    cursor: default;
+}
+
+.product-card--restricted .product-img-primary {
+    opacity: 0.25 !important;
+}
+
+.product-card--restricted .product-img-hover {
+    display: none;
+}
+
 /* Sin scale genérico — eliminado del ADN GÜIDO */
 .product-image img {
     transition: none;
@@ -1259,6 +1273,17 @@ body.state-shop #shop {
 }
 
 .product-color {
+    text-transform: uppercase;
+}
+
+/* Precio con highlight negro al ras del texto (aplica también a "PRÓXIMAMENTE") */
+.product-price {
+    display: inline-block;
+    background-color: #1A1A1A;
+    color: #FAFAFA;
+    opacity: 1;
+    padding: 2px 6px;
+    line-height: 1;
     text-transform: uppercase;
 }
 
@@ -1536,11 +1561,22 @@ body.state-contact #account-contact {
     background-color: var(--color-white);
     width: 100%;
     height: auto;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    /* FEATURE 2: [ fotos apiladas (scroll) ][ rail de miniaturas ] */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0;
+}
+
+/* Columna de fotos: stack vertical (desktop) — se mantiene el scroll vertical */
+.pdp-main-wrap {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 0;
-    grid-column: 1;
-    grid-row: 1 / -1;
 }
 
 .pdp-image {
@@ -1548,6 +1584,64 @@ body.state-contact #account-contact {
     height: auto;
     object-fit: cover;
     display: block;
+    scroll-margin-top: var(--header-height);
+}
+
+/* Rail de miniaturas — borde interno (derecho), sticky y anclado al FONDO del
+   viewport (como Martine Rose). Aparece tras pasar la 1ª imagen (margin-top por JS). */
+.pdp-thumbs-rail {
+    position: sticky;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    width: 134px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    pointer-events: none;
+}
+
+.pdp-thumbs {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 134px;
+    padding-left: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    pointer-events: auto;
+}
+
+.pdp-thumb {
+    width: 120px;
+    height: 120px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    display: block;
+    opacity: 1;
+    transition: filter 320ms var(--ease-expose),
+                opacity 320ms var(--ease-expose),
+                transform 320ms var(--ease-expose);
+}
+
+.pdp-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Hover del rail: la hovereada se achica, las otras en gris */
+.pdp-thumbs:hover .pdp-thumb:not(:hover) {
+    filter: grayscale(1);
+    opacity: 0.45;
+}
+
+.pdp-thumbs .pdp-thumb:hover {
+    transform: scale(0.9);
 }
 
 /* Right Column — top block: title, colorway, price */
@@ -1598,7 +1692,7 @@ body.state-contact #account-contact {
 }
 
 .pdp-description {
-    font-size: 1rem;
+    font-size: 15px;
     text-transform: uppercase;
     margin-bottom: 30px;
     line-height: 1.4;
@@ -1616,11 +1710,33 @@ body.state-contact #account-contact {
     margin-top: 24px;
 }
 
+/* Bloque CUIDADO — debajo del botón AÑADIR, alineado a su borde izquierdo */
+.pdp-care {
+    width: 100%;
+    text-align: left;
+    margin-top: 55px;
+}
+
+.pdp-care-title {
+    font-size: 23px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+    color: var(--color-black);
+}
+
+.pdp-care-text {
+    font-size: 15px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    color: var(--color-black);
+}
+
 .pdp-selectors {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 52px; /* aire hacia el botón (rediseño PDP) */
     width: 100%;
     align-items: center;
 }
@@ -1678,18 +1794,223 @@ body.state-contact #account-contact {
 
 .add-to-cart-btn {
     width: 100%;
-    background-color: var(--color-black);
-    color: var(--color-white);
     padding: 20px;
-    border: none;
+    border: 1px solid var(--color-black);
+    background-color: var(--color-white);
+    color: var(--color-black);
     font-size: 1.2rem;
     cursor: pointer;
-    transition: background-color 0.3s;
+    position: relative;
+    overflow: hidden;
 }
 
-.add-to-cart-btn:hover {
-    background-color: #333;
+/* FEATURE 3 (Martine Rose): fill blanco inicial → hover fill NEGRO izq→der;
+   tras el click queda negro (.filled), no se vacía. */
+.add-to-cart-btn .btn-label {
+    position: relative;
+    z-index: 1;
+    transition: color 320ms var(--ease-expose);
 }
+
+.add-to-cart-btn .hover-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background-color: var(--color-black);
+    transition: width 320ms cubic-bezier(0.25, 0, 0, 1);
+    z-index: 0;
+}
+
+.add-to-cart-btn:hover .hover-fill,
+.add-to-cart-btn.filled .hover-fill {
+    width: 100%;
+}
+
+.add-to-cart-btn:hover .btn-label,
+.add-to-cart-btn.filled .btn-label {
+    color: var(--color-white);
+}
+
+.add-to-cart-btn.filled {
+    pointer-events: none;
+}
+
+/* =========================================================
+   FEATURE 1 — GUÍA DE TALLES (pop-up estilo Martine Rose)
+   Reveal de "cortina" (clip-path, --ease-expose) como firma GÜIDO.
+   ========================================================= */
+/* trigger arriba de los talles */
+.size-guide-trigger {
+    margin-bottom: 22px;
+    font-family: 'Univers 67 Condensed', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.8rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-black);
+    position: relative;
+    padding-bottom: 3px;
+}
+.size-guide-trigger::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--color-black);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 320ms var(--ease-expose);
+}
+.size-guide-trigger:hover::after { transform: scaleX(1); }
+
+.size-guide-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(26, 26, 26, 0);
+    visibility: hidden;
+    transition: background var(--dur-enter) ease, visibility 0s linear var(--dur-enter);
+}
+.size-guide-overlay.open {
+    background: rgba(26, 26, 26, 0.55);
+    visibility: visible;
+    transition: background var(--dur-enter) ease, visibility 0s;
+}
+.size-guide-panel {
+    background: var(--color-white);
+    width: 100%;
+    max-width: 780px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 22px 40px 40px;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 520ms var(--ease-expose);
+}
+.size-guide-overlay.open .size-guide-panel { clip-path: inset(0 0 0 0); }
+
+/* barra superior: "Tabla de Talles" (Univers Regular Bold) + cerrar */
+.sg-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 26px;
+}
+.sg-label {
+    font-family: 'Univers', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--color-black);
+}
+.size-guide-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-black);
+    padding: 0 2px;
+    transition: opacity 0.2s;
+}
+.size-guide-close:hover { opacity: 0.55; }
+
+/* título = nombre de la prenda (Univers Condensed mayúscula) */
+.size-guide-title {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    text-transform: uppercase;
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    color: var(--color-black);
+    margin-bottom: 22px;
+}
+
+/* descripción — Univers Regular, mayúsculas, #1A1A1A */
+.sg-desc {
+    font-family: 'Univers', sans-serif;
+    color: #1A1A1A;
+    text-transform: uppercase;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    max-width: 94%;
+    margin-bottom: 30px;
+}
+.sg-desc p { margin-bottom: 14px; }
+.sg-desc p:last-child { margin-bottom: 0; }
+.sg-desc a { text-decoration: underline; }
+
+/* layout: tabla arriba (izquierda), diagrama debajo (2x, centrado) */
+.size-guide-body { display: block; }
+.sg-table-wrap { display: block; }
+
+/* toggle CM | IN — sutil, centrado sobre la tabla */
+.sg-units {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-family: 'Univers 67 Condensed', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.65rem;
+}
+.sg-units button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: rgba(26, 26, 26, 0.38);
+    transition: color 0.2s;
+}
+.sg-units button.active { color: var(--color-black); }
+.sg-units .sep { color: rgba(26, 26, 26, 0.25); }
+
+/* tabla estilo Martine Rose: grilla, talles en filas */
+.size-guide-table { width: 100%; border-collapse: collapse; }
+.size-guide-table th,
+.size-guide-table td {
+    text-align: center;
+    padding: 12px 6px;
+    font-family: 'Univers', sans-serif;
+    font-size: 0.82rem;
+    border: 1px solid rgba(26, 26, 26, 0.18);
+    transition: background-color 0.15s ease;
+}
+/* primera fila (encabezados) y primera columna (talles) en Univers Condensed */
+.size-guide-table thead th {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: 0.8rem;
+}
+.size-guide-table tbody th {
+    font-family: 'Univers 67 Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+}
+/* cross-highlight: al hover de una celda se enciende su fila y su columna */
+.size-guide-table td.sg-hl,
+.size-guide-table th.sg-hl { background-color: rgba(26, 26, 26, 0.08); }
+
+/* diagrama de la prenda: debajo de la tabla, al doble y centrado */
+.size-guide-diagram { width: 264px; max-width: 100%; margin: 34px auto 0; }
+.size-guide-diagram img { width: 100%; height: auto; display: block; }
 
 /* RELATED PRODUCTS */
 .related-section {
@@ -3924,14 +4245,15 @@ body.state-checkout #checkout {
 
 /* ─── BARRA DE PROGRESO ─── */
 /* Compartida por .login-actions button y .add-to-cart-btn */
-.login-actions button,
-.add-to-cart-btn {
+/* NOTA: .add-to-cart-btn ya NO usa esta barra roja — tiene su propio fill
+   negro (.hover-fill / .filled, ver sección PDP). Este sistema queda solo
+   para los botones de login/contacto/cuenta. */
+.login-actions button {
     position: relative;
     overflow: hidden;
 }
 
-.login-actions button::after,
-.add-to-cart-btn::after {
+.login-actions button::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -3940,43 +4262,27 @@ body.state-checkout #checkout {
     height: 2px;
     pointer-events: none;
     transition: none;
-}
-
-/* Color de barra — rojo GÜIDO en todos los contextos */
-.login-actions button::after {
-    background-color: var(--color-red);
-}
-.add-to-cart-btn::after {
     background-color: var(--color-red);
 }
 
 /* Estado loading: barra crece */
-.login-actions button.loading::after,
-.add-to-cart-btn.loading::after {
+.login-actions button.loading::after {
     width: 100%;
     transition: width 580ms var(--ease-expose);
 }
 
 /* Estado done: barra se retrae desde la derecha */
-.login-actions button.done::after,
-.add-to-cart-btn.done::after {
+.login-actions button.done::after {
     width: 0%;
     left: auto;
     right: 0;
     transition: width 220ms var(--ease-cut);
 }
 
-/* Bloquear interacción durante animación */
-.login-actions button.loading,
-.login-actions button.done,
-.add-to-cart-btn.loading,
-.add-to-cart-btn.done {
-    pointer-events: none;
-}
-
-/* Mantener apariencia activa durante la animación */
+/* Bloquear interacción + mantener apariencia activa durante la animación */
 .login-actions button.loading,
 .login-actions button.done {
+    pointer-events: none;
     background-color: var(--color-black) !important;
     color: var(--color-white) !important;
 }
@@ -6894,9 +7200,15 @@ body.mobile-menu-open #mobile-menu {
         position: static;
     }
 
-    /* Images SECOND — horizontal scroll carousel */
+    /* Images SECOND — columna: carrusel horizontal + miniaturas debajo */
     .pdp-visual {
         order: 2;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    /* El carrusel horizontal (swipe) vive ahora en .pdp-main-wrap */
+    .pdp-main-wrap {
         width: 100%;
         flex-direction: row;
         overflow-x: auto;
@@ -6906,7 +7218,7 @@ body.mobile-menu-open #mobile-menu {
         -ms-overflow-style: none;
     }
 
-    .pdp-visual::-webkit-scrollbar {
+    .pdp-main-wrap::-webkit-scrollbar {
         display: none;
     }
 
@@ -6915,6 +7227,38 @@ body.mobile-menu-open #mobile-menu {
         min-width: 100%;
         height: auto;
         scroll-snap-align: start;
+        flex-shrink: 0;
+    }
+
+    /* Miniaturas: fila horizontal debajo del carrusel, siempre visibles */
+    .pdp-thumbs-rail {
+        position: static;
+        height: auto;
+        width: 100%;
+        margin-top: 0 !important;
+        pointer-events: auto;
+        align-self: auto;
+    }
+
+    .pdp-thumbs {
+        position: static;
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 12px var(--padding-sides) 0;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        pointer-events: auto;
+    }
+
+    .pdp-thumbs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .pdp-thumb {
+        width: 72px;
+        height: 72px;
         flex-shrink: 0;
     }
 
@@ -6974,6 +7318,21 @@ body.mobile-menu-open #mobile-menu {
         display: block;
     }
 
+    .pdp-care {
+        margin-top: 28px;
+    }
+
+    .pdp-care-title {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .pdp-care-text {
+        font-family: 'Univers', sans-serif;
+        font-size: 12px;
+        line-height: 18px;
+    }
+
     .pdp-selectors {
         margin-bottom: 24px;
     }
@@ -6997,7 +7356,8 @@ body.mobile-menu-open #mobile-menu {
         font-size: 16px;
     }
 
-    /* Inline CTA: justo debajo de los talles, flujo normal */
+    /* Inline CTA: justo debajo de los talles, flujo normal.
+       (bg/color/border los define el bloque base — fill blanco + fill negro) */
     .add-to-cart-btn {
         position: relative;
         width: 100%;
@@ -7006,10 +7366,18 @@ body.mobile-menu-open #mobile-menu {
         padding: 0 16px;
         font-size: 16px;
         text-transform: uppercase;
-        background-color: var(--color-black);
-        color: var(--color-white);
         margin-top: 16px;
     }
+
+    /* Guía de talles (mobile) */
+    .size-guide-panel { padding: 18px 20px 30px; max-height: 90vh; }
+    .sg-topbar { padding-bottom: 16px; }
+    .size-guide-title { font-size: 1.5rem; margin-bottom: 16px; }
+    .sg-desc { font-size: 11px; max-width: 100%; margin-bottom: 22px; }
+    .size-guide-diagram { width: 200px; max-width: 80%; margin: 24px auto 0; }
+    .size-guide-table th, .size-guide-table td { padding: 8px 3px; font-size: 11px; }
+    .size-guide-table thead th { font-size: 10px; letter-spacing: 0; }
+    .size-guide-table tbody th { font-size: 13px; }
 
     /* Related products: horizontal scroll */
     .related-section {

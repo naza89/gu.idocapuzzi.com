@@ -137,11 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { slug: 'musculosa-negra', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
         { slug: 'musculosa-blanca', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
 
-        // JEANS (4)
-        { slug: 'jean-selvedge-suelto-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE SUELTO.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
-        { slug: 'jean-selvedge-suelto-negro', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE SUELTO.', images: ['assets/images/products/jean-negro-suelto-front.png', 'assets/images/products/jean-negro-suelto-back.png', 'assets/images/products/jean-negro-fold.png'] },
-        { slug: 'jean-selvedge-regular-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE REGULAR.', images: ['assets/images/products/jean-indigo-bootcut-front.png', 'assets/images/products/jean-indigo-bootcut-back.png', 'assets/images/products/jean-indigo-fold.png'] },
-        { slug: 'jean-selvedge-regular-negro', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN SELVEDGE<br>JAPONES', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM JAPONES 14OZ. CORTE REGULAR.', images: ['assets/images/products/jean-negro-bootcut-font.png', 'assets/images/products/jean-negro-bootcut-back.png', 'assets/images/products/jean-negro-fold.png'] },
+        // JEANS (3)
+        { slug: 'jean-selvedge-suelto-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN DE DENIM SELVEDGE JAPONES<br>FIT SUELTO', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT SUELTO: LA MISMA SILUETA SUTILMENTE BOOTCUT DEL CORTE REGULAR, EN UN CALCE MÁS AMPLIO Y RELAJADO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
+        { slug: 'jean-selvedge-regular-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE JAPONES<br>FIT REGULAR', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-indigo-bootcut-front.png', 'assets/images/products/jean-indigo-bootcut-back.png', 'assets/images/products/jean-indigo-fold.png'] },
+        { slug: 'jean-selvedge-regular-negro', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE ITALIANO FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE ITALIANO<br>FIT REGULAR', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM SELVEDGE ITALIANO DE CANDIANI, CRUDO DE 11 OZ. ESTE TEJIDO NACE EN LA PROVINCIA DE MILÁN, ITALIA. NEGRO PROFUNDO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-negro-bootcut-font.png', 'assets/images/products/jean-negro-bootcut-back.png', 'assets/images/products/jean-negro-fold.png'] },
 
         // BERMUDAS (2)
         { slug: 'bermuda-double-knee-negro', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE', title: 'BERMUDA SELVEDGE<br>DOUBLE KNEE', color: 'Negro', colorway: 'NEGRO', price: '$175.000', description: 'WORKWEAR ESTILO.', images: ['assets/images/products/bermuda-DK-front.png', 'assets/images/products/bermuda-DK-back.png'] },
@@ -160,6 +159,133 @@ document.addEventListener('DOMContentLoaded', () => {
         { slug: 'termal-negro', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA<br>TERMAL', color: 'Negro', colorway: 'NEGRO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-negra-front.png', 'assets/images/products/remera-termal-negra-back.png'] },
         { slug: 'termal-blanco', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA<br>TERMAL', color: 'Blanco', colorway: 'BLANCO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-blanca-front.png', 'assets/images/products/remera-termal-blanca-back.png'] },
     ];
+
+    // -------------------------------------------------------------------------
+    // GUÍA DE TALLES — config por tipo de prenda (Feature 1)
+    // Mapeo producto → calce → SVG (los 9 diagramas de public/assets/size-charts).
+    // NOTA: medidas y descripciones son PLACEHOLDERS razonables; se afinan en la
+    // pasada de descripciones por producto.
+    // -------------------------------------------------------------------------
+    const CONTACTO_TALLES = 'Ante cualquier consulta, escribinos a <a href="mailto:info@guidocapuzzi.com">info@guidocapuzzi.com</a>.';
+    const SIZE_CHARTS = {
+        oversize: {
+            svg: '/assets/size-charts/oversize_sc.svg',
+            desc: ['Nuestra remera oversize puede usarla cualquier persona y está diseñada para un calce holgado y amplio. Para un calce más regular, podés elegir un talle menos.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano.'],
+            cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
+            rows: { XS: [68, 54, 50, 22], S: [70, 57, 52, 23], M: [72, 60, 54, 24], L: [74, 63, 56, 25] }
+        },
+        boxy: {
+            svg: '/assets/size-charts/boxy_sc.svg',
+            desc: ['Remera de corte boxy con calce relajado. Para un calce más ajustado, podés elegir un talle menos.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
+            rows: { XS: [69, 55, 51, 22], S: [71, 58, 53, 23], M: [73, 61, 55, 24], L: [75, 64, 57, 25] }
+        },
+        bbyt: {
+            svg: '/assets/size-charts/bbyt_sc.svg',
+            desc: ['Remera baby tee de mujer, al cuerpo. Calce entallado y corto.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
+            rows: { XS: [54, 42, 36, 18], S: [56, 45, 38, 19], M: [58, 48, 40, 20], L: [60, 51, 42, 21] }
+        },
+        termal: {
+            svg: '/assets/size-charts/termal_sc.svg',
+            desc: ['Remera manga larga termal, pensada para un calce en capas con mangas extra largas.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
+            rows: { XS: [70, 54, 50, 62], S: [72, 57, 52, 63], M: [74, 60, 54, 64], L: [76, 63, 56, 65] }
+        },
+        musculosa: {
+            svg: '/assets/size-charts/musculosa_sc.svg',
+            desc: ['Musculosa oversize sin mangas, calce holgado. Para un calce más ajustado, podés elegir un talle menos.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Pecho', 'C. Hombro'],
+            rows: { XS: [70, 56, 40], S: [72, 59, 42], M: [74, 62, 44], L: [76, 65, 46] }
+        },
+        suelto: {
+            svg: '/assets/size-charts/suelto_sc.svg',
+            desc: ['Nuestro jean de corte suelto puede usarlo cualquier persona y está diseñado para un calce holgado y amplio. Para un calce más ajustado, podés elegir un talle menos.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano.'],
+            cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
+            rows: { XS: [102, 74, 100, 28, 22], S: [104, 78, 104, 29, 23], M: [106, 82, 108, 30, 24], L: [108, 86, 112, 31, 25] }
+        },
+        regular: {
+            svg: '/assets/size-charts/regular_sc.svg',
+            desc: ['Nuestro jean de corte regular está diseñado para un calce recto y cómodo. Para un calce más suelto, podés elegir un talle más.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano.'],
+            cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
+            rows: { XS: [100, 74, 98, 28, 22], S: [102, 78, 102, 29, 23], M: [104, 82, 106, 30, 24], L: [106, 86, 110, 31, 25] }
+        },
+        levis: {
+            svg: '/assets/size-charts/levis_sc.svg',
+            desc: ['Pieza única 1/1 intervenida a mano sobre un jean Levi\'s 517 de corte bootcut.', 'Las medidas corresponden a la prenda intervenida, tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
+            rows: { XS: [104, 76, 100, 29, 24], S: [106, 80, 104, 30, 25], M: [108, 84, 108, 31, 26], L: [110, 88, 112, 32, 27] }
+        },
+        bermudas: {
+            svg: '/assets/size-charts/bermudas_sc.svg',
+            desc: ['Bermuda de denim selvedge de inspiración workwear, calce holgado.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
+            rows: { XS: [52, 76, 100, 28, 30], S: [54, 80, 104, 29, 31], M: [56, 84, 108, 30, 32], L: [58, 88, 112, 31, 33] }
+        }
+    };
+
+    // Restricción temporal (opción B): estas categorías se muestran en el Shop como
+    // teaser (foto atenuada + badge) pero su PDP está bloqueada. Cuando estén listas
+    // para lanzarse, se quita la categoría de acá y se retocan sus descripciones.
+    const RESTRICTED_CATEGORIES = ['TOPS / MUSCULOSAS', 'BERMUDAS / SHORTS', 'ARCHIVO'];
+    function isRestricted(product) {
+        return !!product && RESTRICTED_CATEGORIES.includes(product.category);
+    }
+
+    // Resuelve producto → calce (por prefijo de slug, orden importa) → config
+    function getSizeChart(product) {
+        const slug = (product && product.slug) || '';
+        let fit = null;
+        if (slug.startsWith('remera-guido')) fit = 'oversize';
+        else if (slug.startsWith('remera-afligida')) fit = 'boxy';
+        else if (slug.startsWith('baby-tee')) fit = 'bbyt';
+        else if (slug.startsWith('termal')) fit = 'termal';
+        else if (slug.startsWith('musculosa')) fit = 'musculosa';
+        else if (slug.startsWith('jean-selvedge-suelto')) fit = 'suelto';
+        else if (slug.startsWith('jean-selvedge-regular')) fit = 'regular';
+        else if (slug.startsWith('jean-intervenido')) fit = 'levis';
+        else if (slug.startsWith('bermuda')) fit = 'bermudas';
+        return fit ? SIZE_CHARTS[fit] : null;
+    }
+
+    // Construye el markup del overlay del size chart para un producto.
+    // isArchive → tabla completa pero con la fila del talle de la pieza fijada.
+    function buildSizeGuide(product, cfg, isArchive, fixedSize) {
+        const title = (product.title || product.name).replace(/<br\s*\/?>/gi, ' ');
+        const descHTML = cfg.desc.map(p => `<p>${p}</p>`).join('') + `<p>${CONTACTO_TALLES}</p>`;
+        const headHTML = `<tr><th>Talle</th>${cfg.cols.map(c => `<th>${c}</th>`).join('')}</tr>`;
+        const bodyHTML = Object.keys(cfg.rows).map(size =>
+            `<tr data-size="${size}"><th>${size}</th>${cfg.rows[size].map(v => `<td data-cm="${v}">${v}</td>`).join('')}</tr>`
+        ).join('');
+        const archiveAttr = isArchive ? ` data-archive="1" data-fixed-size="${fixedSize || 'S'}"` : '';
+        return `
+                <div class="size-guide-overlay" id="size-guide-overlay" role="dialog" aria-modal="true" aria-labelledby="size-guide-title">
+                    <div class="size-guide-panel">
+                        <div class="sg-topbar">
+                            <span class="sg-label">Tabla de Talles</span>
+                            <button class="size-guide-close" id="size-guide-close" aria-label="Cerrar">&times;</button>
+                        </div>
+                        <h2 class="size-guide-title" id="size-guide-title">${title}</h2>
+                        <div class="sg-desc">${descHTML}</div>
+                        <div class="size-guide-body">
+                            <div class="sg-table-wrap">
+                                <div class="sg-units" id="sg-units">
+                                    <button data-unit="cm" class="active">CM</button>
+                                    <span class="sep">|</span>
+                                    <button data-unit="in">IN</button>
+                                </div>
+                                <table class="size-guide-table" id="sg-table"${archiveAttr}>
+                                    <thead>${headHTML}</thead>
+                                    <tbody>${bodyHTML}</tbody>
+                                </table>
+                            </div>
+                            <figure class="size-guide-diagram" aria-hidden="true">
+                                <img src="${cfg.svg}" alt="">
+                            </figure>
+                        </div>
+                    </div>
+                </div>`;
+    }
 
     // -------------------------------------------------------------------------
     // 2. HOME ANIMATION LOGIC (Avant-Garde Premium)
@@ -898,12 +1024,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (filtered.length > 0) {
                 grid.innerHTML = filtered.map(product => {
                     const idx = products.indexOf(product);
+                    const restricted = isRestricted(product);
                     const rawImgSrc = product.images && product.images.length > 0 ? product.images[0] : '';
                     const imageSrc = rawImgSrc && !rawImgSrc.startsWith('/') ? '/' + rawImgSrc : rawImgSrc;
                     const rawHoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
                     const hoverSrc = rawHoverSrc && !rawHoverSrc.startsWith('/') ? '/' + rawHoverSrc : rawHoverSrc;
                     return `
-                    <div class="product-card" data-index="${idx}">
+                    <div class="product-card${restricted ? ' product-card--restricted' : ''}" data-index="${idx}">
                         <div class="product-image">
                             ${imageSrc ? `
                                 <img
@@ -923,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="product-info">
                             <span class="product-name">${product.name}</span>
                             <span class="product-color">${product.color}</span>
-                            <span class="product-price">${product.price}</span>
+                            <span class="product-price">${restricted ? 'PRÓXIMAMENTE' : product.price}</span>
                         </div>
                     </div>
                 `}).join('');
@@ -1182,10 +1309,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- PDP LOGIC ---
     function enablePDPState(productIndex, skipHistory = false) {
-        currentProductIndex = productIndex;
-        if (!skipHistory) pushHistory({ state: 'pdp', productIndex: Number(productIndex) });
         const product = products[productIndex];
         if (!product) return;
+        // Restricción temporal (opción B): PDP bloqueada para estas categorías.
+        // Cualquier intento de entrar (related, URL directa, popstate) rebota al Shop.
+        if (isRestricted(product)) {
+            enableShopState(null, 'VER TODO', skipHistory);
+            return;
+        }
+        currentProductIndex = productIndex;
+        if (!skipHistory) pushHistory({ state: 'pdp', productIndex: Number(productIndex) });
 
         const exitEl = getActiveSection();
         const productPage = document.getElementById('product-page');
@@ -1195,13 +1328,16 @@ document.addEventListener('DOMContentLoaded', () => {
             productPage.style.pointerEvents = 'auto';
 
             const images = product.images && product.images.length > 0 ? product.images : [];
-            const imagesHTML = images.length > 0
-                ? images.map(src => {
-                    // Ensure absolute path (leading /)
-                    const absSrc = src.startsWith('/') ? src : '/' + src;
-                    return `<img src="${absSrc}" class="pdp-image" alt="${product.name}">`;
-                }).join('')
+            const absImg = src => (src.startsWith('/') ? src : '/' + src);
+            // Fotos apiladas dentro de .pdp-main-wrap (ids para scroll-to / scroll-spy)
+            const mainImagesHTML = images.length > 0
+                ? images.map((src, i) => `<img src="${absImg(src)}" id="pdp-img-${i}" class="pdp-image" alt="${product.name}">`).join('')
                 : '<div style="background:#f4f4f4; width:100%; height:100%; min-height:500px;"></div>';
+            // Rail de miniaturas (Feature 2) — solo si hay más de una imagen
+            const thumbsHTML = images.length > 1
+                ? `<div class="pdp-thumbs-rail" id="pdp-thumbs-rail"><div class="pdp-thumbs" id="pdp-thumbs">${images.map((src, i) => `<button class="pdp-thumb${i === 0 ? ' active' : ''}" data-target="pdp-img-${i}" aria-label="Vista ${i + 1}"><img src="${absImg(src)}" alt=""></button>`).join('')}</div></div>`
+                : '';
+            const imagesHTML = `<div class="pdp-main-wrap">${mainImagesHTML}</div>${thumbsHTML}`;
 
             // Set page title per product
             document.title = `${product.name} ${product.color} — GÜIDO CAPUZZI`;
@@ -1221,6 +1357,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const sizeOtherStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
             const qtyContainerStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
 
+            // Guía de talles (Feature 1) — trigger + overlay por producto.
+            // Archivo: fila del talle habilitado (S en el template) queda fijada.
+            const sizeChart = getSizeChart(product);
+            const sizeGuideTrigger = sizeChart ? '<button class="size-guide-trigger" id="size-guide-open">¿QUÉ TALLE COMPRAR?</button>' : '';
+            const sizeGuideOverlay = sizeChart ? buildSizeGuide(product, sizeChart, isArchive, 'S') : '';
+
+            // Bloque de cuidados (denim) — subtítulo CUIDADO + texto, debajo del botón AÑADIR.
+            const careHTML = product.care ? `
+                        <div class="pdp-care">
+                            <h4 class="pdp-care-title font-condensed">CUIDADO</h4>
+                            <p class="pdp-care-text">${product.care}</p>
+                        </div>` : '';
+
             productPage.innerHTML = `
                 <div class="pdp-container">
                     <div class="pdp-top-info">
@@ -1235,6 +1384,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="pdp-bottom-info">
                         <div class="pdp-selectors">
                             <div class="selector-group">
+                                ${sizeGuideTrigger}
                                 <div class="size-options">
                                     <button class="size-btn" ${sizeOtherStyle}>XS</button>
                                     <button class="size-btn active">S</button>
@@ -1243,8 +1393,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
                         </div>
-                        <button class="add-to-cart-btn font-condensed" id="pdp-add-btn">AÑADIR AL CARRITO</button>
+                        <button class="add-to-cart-btn font-condensed" id="pdp-add-btn"><span class="hover-fill"></span><span class="btn-label">AÑADIR AL CARRITO</span></button>
                         <p class="pdp-description pdp-description--mobile">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
+                        ${careHTML}
                     </div>
                 </div>
                 <div class="related-section">
@@ -1290,17 +1441,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </svg>
                     </div>
                 </footer>
+                ${sizeGuideOverlay}
             `;
 
-            // Resetear botón al entrar a cualquier PDP
-            const addBtnReset = document.getElementById('pdp-add-btn');
-            if (addBtnReset) {
-                addBtnReset.textContent = 'AÑADIR AL CARRITO';
-                addBtnReset.classList.remove('loading', 'done');
-                addBtnReset.style.opacity = '';
-                addBtnReset.style.transition = '';
-                delete addBtnReset.dataset.adding;
-            }
+            // (El botón se resetea solo: el template se reinyecta fresco en cada PDP.)
 
             initPDPInteractions();
             initPDPRelated();
@@ -1324,7 +1468,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const productPage = document.getElementById('product-page');
         if (!productPage) return;
 
-        let selectedSize = 'M';
+        // Talle por defecto: leer el que viene marcado .active en el template (S)
+        const activeSizeBtn = productPage.querySelector('.size-btn.active');
+        let selectedSize = activeSizeBtn ? activeSizeBtn.textContent : 'S';
         let selectedQty = 1;
 
         // 1. Size Selection
@@ -1337,23 +1483,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // 2. Quantity
-        const qtyVal = productPage.querySelector('.qty-val');
-        const minusBtn = productPage.querySelector('.minus');
-        const plusBtn = productPage.querySelector('.plus');
-        if (qtyVal) {
-            minusBtn.addEventListener('click', () => {
-                if (selectedQty > 1) { selectedQty--; qtyVal.textContent = selectedQty; }
-            });
-            plusBtn.addEventListener('click', () => {
-                selectedQty++;
-                qtyVal.textContent = selectedQty;
-            });
-        }
-
-        // 3. Add to Cart — C3: barra de carga → AÑADIDO → drawer
+        // 2. Add to Cart — fill NEGRO (Feature 3): AÑADIENDO → AÑADIDO → drawer.
+        //    El botón queda negro (.filled), no se vacía.
         const addBtn = document.getElementById('pdp-add-btn');
         if (addBtn) {
+            const label = addBtn.querySelector('.btn-label');
             addBtn.addEventListener('click', async () => {
                 if (addBtn.dataset.adding === '1') return;
                 addBtn.dataset.adding = '1';
@@ -1361,34 +1495,171 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Registrar en el carrito
                 addToCart(currentProductIndex, selectedSize, selectedQty);
 
-                // FASE 1: texto AÑADIENDO... + barra roja (580ms CSS)
-                addBtn.classList.add('loading');
-                addBtn.style.transition = 'opacity 120ms ease';
-                addBtn.style.opacity = '0';
+                // FASE 1: fill negro (izq→der, 320ms CSS) + texto AÑADIENDO...
+                addBtn.classList.add('filled');
+                label.style.transition = 'opacity 120ms ease';
+                label.style.opacity = '0';
 
-                await new Promise(r => setTimeout(r, 130));
-                addBtn.textContent = 'AÑADIENDO...';
-                addBtn.style.opacity = '0.6';
+                await new Promise(r => setTimeout(r, 200));
+                label.textContent = 'AÑADIENDO...';
+                label.style.opacity = '0.7';
 
-                // Esperar que la barra CSS complete
                 await new Promise(r => setTimeout(r, 620));
 
-                // FASE 2: confirmación AÑADIDO.
-                addBtn.style.opacity = '0';
+                // FASE 2: confirmación — AÑADIDO — (queda negro)
+                label.style.opacity = '0';
                 await new Promise(r => setTimeout(r, 130));
-                addBtn.textContent = '— AÑADIDO —';
-                addBtn.style.opacity = '0.75';
-                addBtn.classList.remove('loading');
-                addBtn.classList.add('done');
-                addBtn.style.transition = '';
+                label.textContent = '— AÑADIDO —';
+                label.style.opacity = '1';
 
                 // FASE 3: abrir drawer 400ms después
                 await new Promise(r => setTimeout(r, 400));
                 openCart();
 
-                // Botón queda en estado AÑADIDO (inactivo para este producto)
                 delete addBtn.dataset.adding;
             });
+        }
+
+        // 3. Miniaturas (Feature 2) — scroll-to + scroll-spy + anclado al fondo.
+        //    Desktop: fotos apiladas (scroll vertical de la página) + rail sticky.
+        //    Mobile: carrusel horizontal (scroll de .pdp-main-wrap) + miniaturas debajo.
+        const rail = document.getElementById('pdp-thumbs-rail');
+        const mainWrap = productPage.querySelector('.pdp-main-wrap');
+        if (rail && mainWrap) {
+            const thumbs = [...rail.querySelectorAll('.pdp-thumb')];
+            const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 80;
+            const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+            // Click → llevar a esa imagen (no reemplaza)
+            thumbs.forEach(t => {
+                t.addEventListener('click', () => {
+                    const img = document.getElementById(t.dataset.target);
+                    if (!img) return;
+                    if (isMobile()) {
+                        mainWrap.scrollTo({ left: img.offsetLeft, behavior: 'smooth' });
+                    } else {
+                        const y = img.getBoundingClientRect().top + window.scrollY - headerH;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Delay de aparición (solo desktop): margin-top = alto de la 1ª imagen.
+            // Reintenta vía rAF hasta que la imagen tenga altura medida (Fable G8:
+            // imagen complete pero aún sin layout mide 0 → margin-top quedaba en 0).
+            const setDelay = (retry) => {
+                if (isMobile()) { rail.style.marginTop = ''; return; }
+                const first = productPage.querySelector('.pdp-image');
+                if (!first) return;
+                const h = Math.round(first.getBoundingClientRect().height);
+                if (h > 0) { rail.style.marginTop = h + 'px'; return; }
+                if ((retry || 0) < 60) requestAnimationFrame(() => setDelay((retry || 0) + 1));
+            };
+
+            // Scroll-spy: marca la miniatura de la imagen en vista
+            const setActive = () => {
+                let best = 0, bestDist = Infinity;
+                if (isMobile()) {
+                    const mid = mainWrap.scrollLeft + mainWrap.clientWidth / 2;
+                    thumbs.forEach((t, i) => {
+                        const img = document.getElementById(t.dataset.target); if (!img) return;
+                        const d = Math.abs((img.offsetLeft + img.offsetWidth / 2) - mid);
+                        if (d < bestDist) { bestDist = d; best = i; }
+                    });
+                } else {
+                    const mid = window.scrollY + headerH + (window.innerHeight - headerH) / 2;
+                    thumbs.forEach((t, i) => {
+                        const img = document.getElementById(t.dataset.target); if (!img) return;
+                        const r = img.getBoundingClientRect();
+                        const d = Math.abs((r.top + window.scrollY + r.height / 2) - mid);
+                        if (d < bestDist) { bestDist = d; best = i; }
+                    });
+                }
+                thumbs.forEach((t, i) => t.classList.toggle('active', i === best));
+            };
+
+            // rAF-gate para el scroll-spy (evita jank con PNGs pesados)
+            let ticking = false;
+            const onScroll = () => {
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => { setActive(); ticking = false; });
+            };
+            const onResize = () => { setDelay(); setActive(); };
+
+            // Listeners de window: singleton (se reemplazan en cada PDP, no se acumulan)
+            if (window.__pdpSpyScroll) window.removeEventListener('scroll', window.__pdpSpyScroll);
+            window.__pdpSpyScroll = onScroll;
+            window.addEventListener('scroll', onScroll, { passive: true });
+            if (window.__pdpSpyResize) window.removeEventListener('resize', window.__pdpSpyResize);
+            window.__pdpSpyResize = onResize;
+            window.addEventListener('resize', onResize);
+            // Scroll del carrusel mobile (mainWrap muere con el innerHTML → sin leak)
+            mainWrap.addEventListener('scroll', onScroll, { passive: true });
+
+            // Recalcular margin-top cuando cargan las imágenes (o si ya están cacheadas)
+            productPage.querySelectorAll('.pdp-image').forEach(img => {
+                if (img.complete) setDelay(); else img.addEventListener('load', () => setDelay());
+            });
+            setDelay();
+            setActive();
+        } else if (window.__pdpSpyScroll) {
+            // PDP sin rail (1 imagen temporal): desactivar el spy previo
+            window.removeEventListener('scroll', window.__pdpSpyScroll);
+            window.__pdpSpyScroll = null;
+        }
+
+        // 4. Guía de talles (Feature 1) — abrir/cerrar + unidades + cross-highlight
+        const overlay = document.getElementById('size-guide-overlay');
+        if (overlay) {
+            const openBtn = document.getElementById('size-guide-open');
+            const closeBtn = document.getElementById('size-guide-close');
+            const openGuide = () => overlay.classList.add('open');
+            const closeGuide = () => overlay.classList.remove('open');
+            if (openBtn) openBtn.addEventListener('click', openGuide);
+            if (closeBtn) closeBtn.addEventListener('click', closeGuide);
+            overlay.addEventListener('click', e => { if (e.target === overlay) closeGuide(); });
+
+            // Escape: singleton a nivel document (no acumular entre PDPs)
+            if (window.__pdpEscClose) document.removeEventListener('keydown', window.__pdpEscClose);
+            window.__pdpEscClose = (e) => {
+                if (e.key === 'Escape') {
+                    const ov = document.getElementById('size-guide-overlay');
+                    if (ov) ov.classList.remove('open');
+                }
+            };
+            document.addEventListener('keydown', window.__pdpEscClose);
+
+            // Toggle CM / IN (pulgadas = cm / 2.54)
+            const table = document.getElementById('sg-table');
+            const unitBtns = [...overlay.querySelectorAll('#sg-units button')];
+            const setUnit = (u) => {
+                unitBtns.forEach(b => b.classList.toggle('active', b.dataset.unit === u));
+                table.querySelectorAll('td[data-cm]').forEach(td => {
+                    const cm = parseFloat(td.dataset.cm);
+                    td.textContent = u === 'in' ? (cm / 2.54).toFixed(1) : String(cm);
+                });
+            };
+            unitBtns.forEach(b => b.addEventListener('click', () => setUnit(b.dataset.unit)));
+
+            if (table.dataset.archive === '1') {
+                // ARCHIVO: pieza 1/1 — fila del talle de la prenda fijada, sin hover dinámico
+                const fixed = table.dataset.fixedSize;
+                const row = table.querySelector(`tbody tr[data-size="${fixed}"]`);
+                if (row) [...row.children].forEach(c => c.classList.add('sg-hl'));
+            } else {
+                // Cross-highlight: al hover de una celda se enciende su fila y su columna
+                const clearHl = () => table.querySelectorAll('.sg-hl').forEach(c => c.classList.remove('sg-hl'));
+                table.addEventListener('mouseover', e => {
+                    const cell = e.target.closest('th, td');
+                    if (!cell || !table.contains(cell)) return;
+                    clearHl();
+                    const col = cell.cellIndex;
+                    [...cell.parentElement.children].forEach(c => c.classList.add('sg-hl'));
+                    [...table.rows].forEach(r => { if (r.cells[col]) r.cells[col].classList.add('sg-hl'); });
+                });
+                table.addEventListener('mouseleave', clearHl);
+            }
         }
     }
 
@@ -1396,8 +1667,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const relatedContainer = document.getElementById('related-grid');
         if (!relatedContainer) return;
 
-        // Random Selection
-        const shuffled = [...products].sort(() => 0.5 - Math.random()).slice(0, 5);
+        // Random Selection (excluye prendas restringidas — no se sugieren)
+        const shuffled = [...products].filter(p => !isRestricted(p)).sort(() => 0.5 - Math.random()).slice(0, 5);
 
         relatedContainer.innerHTML = shuffled.map(p => {
             const idx = products.indexOf(p);
@@ -1437,7 +1708,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Clean slate assignment
             card.onclick = function () {
                 const index = card.dataset.index;
-                if (index !== undefined) enablePDPState(index);
+                if (index !== undefined && !isRestricted(products[index])) enablePDPState(index);
             };
         });
     }
@@ -1490,12 +1761,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (filteredProducts.length > 0) {
                 grid.innerHTML = filteredProducts.map(product => {
                     const idx = products.indexOf(product);
+                    const restricted = isRestricted(product);
                     const rawImgSrc = product.images && product.images.length > 0 ? product.images[0] : '';
                     const imageSrc = rawImgSrc && !rawImgSrc.startsWith('/') ? '/' + rawImgSrc : rawImgSrc;
                     const rawHoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
                     const hoverSrc = rawHoverSrc && !rawHoverSrc.startsWith('/') ? '/' + rawHoverSrc : rawHoverSrc;
                     return `
-                    <div class="product-card" data-index="${idx}">
+                    <div class="product-card${restricted ? ' product-card--restricted' : ''}" data-index="${idx}">
                         <div class="product-image">
                             ${imageSrc ? `
                                 <img
@@ -1515,7 +1787,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="product-info">
                             <span class="product-name">${product.name}</span>
                             <span class="product-color">${product.color}</span>
-                            <span class="product-price">${product.price}</span>
+                            <span class="product-price">${restricted ? 'PRÓXIMAMENTE' : product.price}</span>
                         </div>
                     </div>
                 `}).join('');
@@ -3262,6 +3534,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Botones del home → Shop por categoría (CAMPAÑA "VER TODO", SELVEDGE "COMPRAR AHORA")
+    document.querySelectorAll('[data-shop-cat]').forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            const category = el.getAttribute('data-shop-cat');
+            header.classList.remove('menu-open');
+            enableShopState(null, category);
+            setShopCategory(category);
+        });
+    });
+
+    // Botones pendientes (ARCHIVO / VER LOOKBOOK → futura página de fotos de campaña,
+    // aún no creada). No-op temporal para que no salten al top.
+    document.querySelectorAll('[data-pending]').forEach(el => {
+        el.addEventListener('click', (e) => e.preventDefault());
+    });
+
     // Mobile Menu (hamburger → categories only)
     if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMobileMenu);
     if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMobileMenu);
@@ -4686,6 +4975,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const slug = path.replace('/shop/', '');
             const idx = findProductBySlug(slug);
             if (idx !== -1) {
+                // Restricción temporal (opción B): PDP bloqueada → mandamos al Shop.
+                if (isRestricted(products[idx])) {
+                    enableShopState(null, 'VER TODO', /* skipHistory */ true);
+                    history.replaceState({ state: 'shop', category: 'VER TODO' }, '', '/shop');
+                    return;
+                }
                 enablePDPState(idx, /* skipHistory */ true);
                 history.replaceState({ state: 'pdp', productIndex: idx }, '', path);
                 return;
