@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="supported-color-schemes" content="light only" />
+  <title>Estado 7 — Disponible para retiro en sucursal</title>
+  <style>
+    @font-face {
+      font-family: 'UniversCn';
+      src: url('https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversCnBold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Univers';
+      src: url('https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversRegular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #efefef;
+      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      color: #1a1a1a;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper { max-width: 600px; margin: 0 auto; background-color: #fafafa; }
+    .header { padding: 48px 48px 36px; border-bottom: 1px solid #e0e0e0; }
+    .logo-img { display: block; width: 500px; max-width: 100%; height: auto; }
+    .body { padding: 48px 48px 40px; }
+    .eyebrow {
+      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 10px; font-weight: 400;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: #999; margin-bottom: 16px;
+    }
+    .heading {
+      font-family: 'UniversCn', 'Arial Narrow', Arial, sans-serif;
+      font-weight: 700; font-size: 56px;
+      letter-spacing: 0.02em; line-height: 1.0;
+      color: #1a1a1a; margin-bottom: 24px; text-transform: uppercase;
+    }
+    .copy {
+      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px; font-weight: 400;
+      line-height: 1.8; color: #555;
+      margin-bottom: 36px; max-width: 440px;
+    }
+    .copy strong { color: #1a1a1a; font-weight: 400; }
+    .divider { border: none; border-top: 1px solid #e0e0e0; margin: 36px 0 0; }
+    .footer { padding: 0 48px 48px; }
+    .footer-note {
+      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 11px; font-weight: 400; line-height: 1.8; color: #aaa;
+    }
+    .footer-note a { color: #1a1a1a; text-decoration: none; }
+    .footer-domain {
+      margin-top: 6px;
+      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 10px; color: #ccc;
+    }
+    .accent-bar { height: 4px; background-color: #ad1c1c; }
+
+    @media screen and (max-width: 480px) {
+      .wrapper { width: 100% !important; }
+      .header { padding: 28px 24px 24px !important; }
+      .logo-img { width: 100% !important; }
+      .body { padding: 28px 24px 24px !important; }
+      .eyebrow { font-size: 9px !important; }
+      .heading { font-size: 28px !important; line-height: 1.1 !important; margin-bottom: 16px !important; }
+      .copy { font-size: 12px !important; }
+      .footer { padding: 0 24px 28px !important; }
+      .footer-note { font-size: 10px !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+
+    <div class="header">
+      <img class="logo-img" src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png" alt="Güido Capuzzi" width="500" />
+    </div>
+
+    <div class="body">
+      <p class="eyebrow">Disponible para retiro</p>
+
+      <h1 class="heading">Llega a<br>sucursal.</h1>
+
+      <p class="copy">
+        Hola [Nombre], tu pedido llegó a la sucursal de OCA y está disponible para retiro.<br>
+        <br>
+        <strong>[Nombre de la sucursal]</strong><br>
+        [Domicilio]<br>
+        [CP] [Localidad], [Provincia]
+      </p>
+
+      <hr class="divider" />
+    </div>
+
+    <div class="footer">
+      <p class="footer-note">
+        Ante cualquier consulta respondé este email a
+        <a href="mailto:ventas@guidocapuzzi.com">ventas@guidocapuzzi.com</a>
+      </p>
+      <p class="footer-domain">GÜIDO CAPUZZI — güidocapuzzi.com</p>
+    </div>
+
+    <div class="accent-bar"></div>
+
+  </div>
+</body>
+</html>

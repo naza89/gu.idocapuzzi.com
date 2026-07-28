@@ -4,6 +4,149 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-07-20
+
+### Presupuesto de producción fotográfica registrado + plan semanal de lanzamiento
+- **Objetivo:** Activar la recta final del lanzamiento: registrar el presupuesto de la productora, planificar las intervenciones de prendas y definir el packaging.
+- **Solución adoptada:** Se creó `Marca/Producción Fotográfica.md` en el vault con el presupuesto completo: honorarios $400.000 (8 h × $50.000/h), locación ~$350.000, luces/equipo ~$100.000, modelos por fuera a $80.000/h c/u (5-6 h). Total fijo ~$850.000; validez 30 días desde el 15/7 (vence ~14/8). Entregables: fotos detalle por prenda, fotos de modelo por cambio, video estático por prenda, fashion film 1-2 min, video denim ≤1 min; entrega digital en máx. 20 días post-rodaje. Plan semanal 21–27/7 en Plan Activo: compras (pintura, strass, cera, gasa/barrilete) → test en retazo → intervención SUELA ROJA (salpicaduras rojas sutiles, ya no se pinta de rodilla para abajo) → pintado negro total del segundo jean → heat-set + strass → encerado + prototipo de packaging.
+- **Investigación de materiales:** pintura para denim en Argentina → Eterna Pintura para Tela / acrílico + Medium Eterna (local, volumen), Angelus + 2-Soft 1:1 (premium, importada vía ML). Encerado wax denim → cera de abeja + parafina 50/50 a baño maría aplicada en caliente + fundido con pistola de calor (opciones pro de importación: Otter Wax, Barbour Thornproof). Test previo en retazo pintado obligatorio. Packaging: la tela de la referencia es gasa de algodón de trama abierta (cheesecloth/"gasa para queso") + papel barrilete blanco.
+- **Archivo modificado:** Solo vault + este archivo (sesión operativa, sin código).
+- **Pendiente:** Naza define: cantidad de modelos, fecha de rodaje, contenido de etiquetas del packaging (propuesta: manifiesto + ficha de prenda + care card). Compras del lunes 21.
+
+## 2026-07-10
+
+### Página Archivo (`/archivo`) — réplica de la sección Archive de ERD
+- **Objetivo:** Crear el último eslabón de la web: una página de archivo/contenido de marca copiando la sección Archive de Enfants Riches Déprimés (la referencia original del sitio).
+- **Solución adoptada:** Consulté a Fable como advisor (mecánica de scroll, arquitectura SPA, estructura de datos) antes de codear. Índice (`/archivo`): fondo `#1A1A1A`, una tira horizontal por temporada (contact-sheet), dos colecciones (Primavera/Verano 2026, Lookbook 2026). Detalle (`/archivo?archive=<slug>`): overlay full-viewport con scroll vertical→horizontal (sticky+spacer+`translateX`, ambos ejes — el horizontal de trackpad se traduce a scroll vertical), título abajo-izq + CERRAR abajo-der + "SCROLL →" con fade. Modelado como un solo "state" que no usa body-class (se detecta por visibilidad del contenedor en `getActiveSection`, para no tocar las ~10 remove-lists). Datos en `public/js/archive-data.js` (`window.ARCHIVE_DATA`), rewrite `/archivo` en `next.config.ts`. Link "Archivo" en el header al lado de Shop.
+- **Archivo modificado:** `next.config.ts`, `public/js/archive-data.js` (nuevo), `public/js/start.js`, `src/app/page.tsx`, `src/app/globals.css`.
+- **Pendiente:** Fotos reales (hoy placeholders 4:5 numerados on-brand). Revisión visual de Naza + commit/push (nada shippeado todavía).
+
+### Réplica exacta de ERD (medida en su sitio) + carrusel infinito continuo
+- **Problema encontrado:** Primera versión de las tiras muy alta (200px) y con gaps; el carrusel se cortaba (hueco negro cuando una copia no cubría el viewport).
+- **Solución adoptada:** Medí los valores reales de ERD con chrome-devtools MCP (navegando a su sitio a 1600px): tile 102×128 (`aspect-ratio: 4/5`, `object-fit: cover`), gap 0 (contact-sheet), título 32px condensed, `padding-top` 288px, gap temporadas 64px, título→tira 16px. Verificado computed-vs-computed, coincide en las 9 métricas. Carrusel: JS duplica dinámicamente las copias necesarias (`ceil(viewport/copia)+1`) y el keyframe traslada exactamente una copia (`translateX(calc(-100% / var(--archivo-copies)))`) → flujo continuo sin corte.
+- **Archivo modificado:** `src/app/globals.css`, `public/js/start.js`.
+- **Pendiente:** Ninguno; afinar mobile del detalle en dispositivo real.
+
+### Rename Shop `ARCHIVO → INTERVENCIONES`
+- **Objetivo:** Evitar la colisión de nombre entre la categoría del Shop (piezas 1/1) y la nueva página Archivo.
+- **Solución adoptada:** Rename completo en todo el código: data de productos, `RESTRICTED_CATEGORIES`, `catMap` `'1/1'`, filtros de color, links del dropdown y del menú mobile, check `isArchive`. Los dos jeans 1/1 siguen restringidos igual.
+- **Archivo modificado:** `public/js/start.js`, `src/app/page.tsx`.
+- **Pendiente:** Ninguno.
+
+### Inversión de colores del header en home/archivo + fix del logo
+- **Objetivo:** En home y archivo (fondo oscuro), al activar el header que se invierta a esquema claro (header/dropdown `#FAFAFA` con tipografía `#1A1A1A`) y la marquee de anuncios a `#1A1A1A` — bisagra opuesta a la actual. El resto de las páginas (fondo blanco) sin cambios.
+- **Solución adoptada:** Clase `body.header-invert` toggleada por JS en el MutationObserver del header = header activo Y página oscura (home o archivo visible). CSS con `!important` para ganarle a las reglas existentes. Fix adicional: el logo del centro (`#header-logo`) sólo se mostraba al hover de Shop → ahora cualquier link del header lo muestra en home phase 0, y la regla `brightness(0)` lo invierte a negro. Verificado en shop que NO cambia (`header-invert: false`).
+- **Archivo modificado:** `src/app/globals.css`, `public/js/start.js`.
+- **Pendiente:** Ninguno.
+
+### Ajustes estéticos: marquee + header en bold
+- **Solución adoptada:** Marquee de anuncios (`.announcement-text`) de Univers 67 Condensed a Univers Regular Bold (`'Univers'` weight 700). Textos del header (Shop, Archivo, Buscar, Cuenta, Carrito) a bold, sin tocar el dropdown. Ambos aprobados por Naza tras verlos.
+- **Archivo modificado:** `src/app/globals.css`.
+- **Pendiente:** Ninguno.
+
+## 2026-07-08
+
+### PDP integrada al código real (con Fable como advisor)
+- **Problema encontrado:** Trasladar los 3 features aprobados en `pdp-preview.html` (botón fill negro, miniaturas ancladas al fondo, size chart estilo Martine Rose) al código de producción (`public/js/start.js` + `src/app/globals.css`) sin romper flujos existentes (barra roja de login/contacto, carrusel mobile de fotos).
+- **Solución adoptada:** Consulta previa a Fable como advisor (le pasé el standalone + código real) — devolvió 14 riesgos concretos (G1–G14), incorporados antes de codear. Integración en 3 etapas, cada una verificada en Chrome real antes de avanzar: (1) botón `.add-to-cart-btn` reescrito completo (base + mobile) con fill negro en hover que queda tras el click, separado del sistema de barra roja compartido con `.login-actions button` (verificado intacto). (2) Miniaturas: rail sticky anclado al fondo del viewport en desktop; en mobile, por decisión de Naza, se mantiene el carrusel horizontal existente y las miniaturas van en fila debajo (no el stack vertical del standalone). Scroll-to + scroll-spy + listeners singleton para evitar leaks entre navegaciones de PDP. (3) Size chart: nuevo `SIZE_CHARTS` mapea 9 calces (svg de `public/assets/size-charts/`) por prefijo de slug; overlay inyectado por producto dentro del template de la PDP; caso ARCHIVO (piezas 1/1) con la fila del talle fijada sin hover dinámico, por decisión de Naza.
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`.
+- **Pendiente:** Revisión visual de Naza en el navegador (solo se verificó con Chrome DevTools MCP). Descripciones y medidas de `SIZE_CHARTS` son placeholders — reemplazar por producto. Talle fijo de ARCHIVO hardcodeado en 'S', ajustar a las piezas reales.
+
+## 2026-07-08 (continuación)
+
+### Catálogo de jeans: poda + rename a italiano + descripciones
+- **Problema encontrado:** Quedaban 4 jeans en el catálogo (incluyendo un selvedge suelto negro que no se lanza) y el jean negro estaba mal etiquetado como "japonés" cuando en realidad es denim italiano de otro proveedor.
+- **Solución adoptada:** Eliminado `jean-selvedge-suelto-negro` del array de productos (verificado que no estaba referenciado en stock ni related products). Renombrado `jean-selvedge-regular-negro` de "japonés" a "italiano" en `name`/`title`/`description`. Escritas descripciones nuevas para los 3 jeans restantes en la voz de marca: japonés = Nihon Menpu, tejido en Kojima/Okayama (13 oz); italiano = Candiani, provincia de Milán (11 oz). Oz de bermudas (americano) confirmada en 11.5 para uso futuro. Título de la PDP ahora coincide textualmente con el de la card del Shop (antes divergían). Título del size chart pasa a una sola línea (se le saca el `<br>` a nivel de todos los productos, no solo jeans).
+- **Archivo modificado:** `public/js/start.js`.
+- **Pendiente:** Descripciones de remeras/musculosas/bermudas (mismo tratamiento). Medidas reales del size chart siguen siendo placeholders, esperan a la modista.
+
+### Bloque CUIDADO del denim, separado de la descripción
+- **Problema encontrado:** El texto de cuidado del denim (lavado a mano, secado en sombra, etc.) vivía mezclado dentro de la descripción del producto, sin jerarquía visual propia.
+- **Solución adoptada:** Nuevo campo `product.care` + bloque `.pdp-care` en el template de la PDP, renderizado debajo del botón AÑADIR, con subtítulo "CUIDADO" en Univers 67 Condensed. Iterado con Naza hasta: texto 15px desktop, subtítulo 23px desktop, separación botón→subtítulo 55px.
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`.
+- **Pendiente:** Ninguno para los 3 jeans; replicar cuando se escriban las demás descripciones.
+
+### Restricción de Bermudas/Musculosas/Archivo en el Shop (opción B)
+- **Objetivo:** Sacar Bermudas, Musculosas y Archivo de venta temporalmente (se lanzan más adelante) sin ocultarlas del todo del Shop.
+- **Solución adoptada:** Opción B elegida por Naza — las cards siguen navegables en el grid del Shop (teaser), pero el acceso a su PDP está bloqueado en las 4 vías posibles: click de card, related products, URL directa (`/shop/<slug>`), y `popstate`. Un único helper `isRestricted(product)` centraliza la lógica sobre una constante `RESTRICTED_CATEGORIES`. Visual: foto atenuada a 0.25 (iterado desde 0.5) y el precio de esas cards muestra "PRÓXIMAMENTE" en el mismo highlight negro del precio normal (se descartó un badge centrado sobre la foto — pedido explícito de Naza tras verlo mal ubicado).
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`.
+- **Pendiente:** Cuando se lance cada categoría, sacarla de `RESTRICTED_CATEGORIES` y retocar su descripción.
+
+### Highlight negro en el precio del Shop
+- **Objetivo:** Reemplazar el precio en texto plano por un badge con fondo negro `#1A1A1A` y font `#FAFAFA`, al ras del texto.
+- **Solución adoptada:** `.product-price` pasa a `display:inline-block` con background sólido; iterado el padding (de `4px 10px` a `2px 6px` + `line-height:1`) hasta que la caja quedara ceñida al texto, según referencia visual que mandó Naza.
+- **Archivo modificado:** `src/app/globals.css`.
+
+### CTAs del home conectados + footer social real
+- **Problema encontrado:** Los botones de las secciones CAMPAÑA ("VER TODO"/"ARCHIVO") y SELVEDGE ("COMPRAR AHORA"/"VER LOOKBOOK") del home eran `href="#"` sin ningún handler. Los links de Instagram/TikTok del footer apuntaban a los dominios genéricos, sin usuario.
+- **Solución adoptada:** Nuevo atributo `data-shop-cat` en los botones que sí tienen destino (VER TODO, COMPRAR AHORA, VER JEANS) — reutiliza `enableShopState`+`setShopCategory`, el mismo patrón que el dropdown de categorías del header. Los que apuntan a una página de fotos de campaña que todavía no existe (ARCHIVO del home, VER LOOKBOOK) quedaron marcados `data-pending="campana"` con un listener no-op, para no saltar al top mientras no exista el destino. Footer: Instagram → `instagram.com/gu.idocapuzzi/`, TikTok → `tiktok.com/@gu.idocapuzzi`.
+- **Archivo modificado:** `src/app/page.tsx`, `public/js/start.js`.
+- **Pendiente:** Crear la página de fotos de campaña y conectar ARCHIVO/LOOKBOOK.
+
+### Deploy a producción
+- **Solución adoptada:** Commit `e4ec2da` en `main`, pusheado y deployado por Vercel. Incluye los 9 SVGs de `public/assets/size-charts/` que estaban sin trackear en git (necesarios: sin ellos el size chart daría 404 en producción). Quedaron fuera del commit los archivos de tooling de sesión (`.claude/`), docs, scripts de test OCA y HTMLs standalone de preview, ajenos a este ship.
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`, `src/app/page.tsx`, `public/assets/size-charts/*.svg`.
+- **Pendiente:** El teaser/blackout de la home (`NEXT_PUBLIC_SHOW_TEASER`) se mantiene activo — no tocar sin indicación explícita de Naza.
+
+## 2026-07-07
+
+### PDP replicada de Martine Rose en standalone (`pdp-preview.html`)
+- **Objetivo:** Replicar 3 features de la PDP de Martine Rose adaptados a la identidad GÜIDO, sobre un standalone que extrae la PDP real de la web (grid 60/40, foto a la izquierda) y modifica solo lo necesario.
+- **Solución adoptada:** (1) Botón AÑADIR AL CARRITO con fill blanco inicial → hover fill negro izq→der (texto blanco); queda negro tras el click. (2) Miniaturas ancladas al fondo del viewport (mecánica MR: wrapper sticky alto viewport + hijo `bottom:0` + `margin-top`=alto 1ª imagen): no se ven en el primer viewport, suben desde abajo tras pasar las primeras fotos y quedan ancladas hasta el final; se mantiene el scroll vertical de imágenes; clic = scroll-to; scroll-spy marca la activa (sin rojo). (3) Miniaturas 120px cuadradas; hover: la hovereada se achica, las otras en gris.
+- **Archivo modificado:** `pdp-preview.html` (raíz, referencia no committeable).
+- **Pendiente:** Trasladar 1 a 1 al código real (`start.js`/`page.tsx`/`globals.css`).
+
+### Size chart estilo Martine Rose + diagramas de calce
+- **Objetivo:** Rediseñar la guía de talles al estilo MR, con diagrama por producto.
+- **Solución adoptada:** Label "Tabla de Talles" (Univers Regular Bold) + cerrar; título = nombre de la prenda en Univers Condensed mayúscula (conectado por JS al `h1`); descripción Univers Regular mayúsculas `#1A1A1A` (texto base traducido de MR, contacto `info@guidocapuzzi.com`); toggle CM|IN funcional (0.65rem, centrado sobre la tabla); tabla con grilla, talles en filas, primera fila y columna en Univers Condensed; cross-highlight fila×columna gris claro al hover; reveal de "cortina" (`clip-path`) como firma GÜIDO. El SVG del diagrama va debajo de la tabla, al doble (264px), centrado, con scroll vertical del panel.
+- **Archivo modificado:** `pdp-preview.html`; 9 SVGs de calce trazados por Naza movidos a `public/assets/size-charts/` (boxy, oversize, bbyt, termal, musculosa, regular, suelto, levis, bermudas). Traen los marcadores A–E incorporados. Jean = A.Largo/B.Cintura/C.Cadera/D.Tiro/E.Botamanga.
+- **Pendiente:** Descripción + tabla propias por producto/tipo de prenda al integrar.
+
+### Decisiones de catálogo (para próxima sesión)
+- **Problema encontrado:** Definir qué productos y secciones entran al lanzamiento.
+- **Solución adoptada:** (1) Restringir bermudas + musculosas + archivo (salen meses después; idea: opacidad de fotos a la mitad + texto en cada card, restringiendo acceso a esas PDP). (2) Eliminar el jean selvedge suelto negro: quedan solo suelto + regular del indigo japonés y regular del negro italiano.
+- **Pendiente:** Implementar ambas al trasladar el PDP al código real.
+
+## 2026-06-09
+
+### Webhook de novedades OCA — validación e2e + fixes
+- **Problema encontrado:** Cross-check del código contra el doc oficial (`docs/external/Webhook OCA.pdf`) reveló que OCA manda `idEstado` como string (`"7"`) o número según el evento, y el objeto `sucursal` usa `descripcion/calle/numero/localidad/provincia` (no `nombre/domicilio/codigo_postal`). Las comparaciones estrictas (`[7,10,11].includes(idEstado)`, `switch(idEstado)`) daban false con strings → los emails de cambio de estado nunca se enviaban.
+- **Solución adoptada:** Coerción `Number(idEstado)` en el receptor y en `sendShippingStatusEmail`. Mapeo de los campos reales de sucursal en email y cronograma. Tipos + JSDoc alineados al doc.
+- **Archivo modificado:** `src/app/api/webhooks/oca/route.ts`, `src/lib/email.ts`, `public/js/start.js` (commit `b66e1d0`).
+- **Pendiente:** Validación final con soporte OCA sobre el envío real.
+
+### Bug timezone en el cronograma
+- **Problema encontrado:** OCA manda `fecha` en hora local Argentina (UTC-3) sin timezone. Se guardaba en `TIMESTAMPTZ` interpretándose como UTC → el display en el browser se corría -3h, cruzando la medianoche (un evento de 00:00 se veía como 21:00 del día anterior).
+- **Solución adoptada:** Helper `normalizarFechaOCA()` que anexa `-03:00` antes de persistir. Argentina no observa DST → offset fijo.
+- **Archivo modificado:** `src/app/api/webhooks/oca/route.ts` (commit `1bbcfb5`).
+
+### Bug checkout pegado debajo de /cuenta + número de orden unificado
+- **Problema encontrado:** (1) Al añadir al carrito estando logueado en `/cuenta`, el checkout se renderizaba debajo del panel en vez de reemplazarlo (`enableCheckoutState` no escondía `#account-dashboard`). (2) El mismo pedido se mostraba como `#A30EC511` (fragmento de UUID) en la confirmación y `#00061` (`numero_orden`) en el panel y emails.
+- **Solución adoptada:** Agregar `#account-dashboard` a `sectionsToHide`. Unificar todo en `numero_orden`: la confirmación lo lee de `sessionStorage` y lo confirma vía API (se sumó `numero_orden` al select de `/api/ordenes/[id]`).
+- **Archivo modificado:** `public/js/start.js`, `src/app/api/ordenes/[id]/route.ts` (commit `360b973`).
+
+### Envío duplicado en ePak — diagnóstico
+- **Problema encontrado:** La orden 61 creó DOS drafts en ePak (`IdOrdenRetiro` 138739522 y 138739520). Causa: el guard de idempotencia en el webhook NAVE es check-then-act no atómico, y NAVE entrega la notificación más de una vez.
+- **Solución adoptada:** Diagnóstico confirmado (no fixeado aún). Naza se quedó con un draft y eliminó el otro. Fix propuesto: claim atómico (replicar patrón de email/stock del commit `219d4b7`).
+- **Pendiente:** Implementar claim atómico + logging de auditoría NAVE en `webhook_logs`.
+
+### Self-test del webhook (sin soporte)
+- **Solución adoptada:** Script `oca-fire-step.mjs` que dispara un evento con hora real AR. Se corrió la secuencia idEstado 4→8→10 contra el webhook de producción con datos reales de la orden 61. Cronograma avanzó paso a paso con fechas correctas, y llegó el email de entrega. Validación de nuestro lado: completa.
+- **Pendiente:** Validación del lado de OCA con soporte (en TEST no disparan solo; en producción con paquete real es automático).
+
+---
+
+## 2026-05-27 — Claude Code automations setup completo
+
+### Setup de automations
+
+- **Problema encontrado:** El setup de Claude Code carecía de protecciones automáticas y herramientas de workflow para el proyecto.
+- **Solución adoptada:** Implementación completa de 6 automations: hooks PreToolUse/PostToolUse, skills /crear-migracion y /test-endpoint, subagent guido-security, plugin security-guidance (Anthropic oficial), MCP context7.
+- **Archivos modificados:** `.claude/settings.local.json`, `.claude/settings.json` (nuevo), `.mcp.json`, `.claude/hooks/block-env.js` (nuevo), `.claude/hooks/check-ts.js` (nuevo), `.claude/commands/crear-migracion.md` (nuevo), `.claude/commands/test-endpoint.md` (nuevo), `.claude/agents/guido-security.md` (nuevo), `.claude/claude-security-guidance.md` (nuevo), `.claude/security-patterns.yaml` (nuevo).
+- **Pendiente:** Test e2e A.3 (OCA+NAVE producción).
+
+---
+
 ## 2026-05-25 — Cronograma de Envío vertical (Sub-fase A + B)
 
 ### Diseño del componente (standalone HTML)

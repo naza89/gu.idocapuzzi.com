@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cronograma de Envío — Preview</title>
+  <style>
+    /* ── Fuentes del proyecto ── */
+    @font-face {
+      font-family: 'UniversCondensed';
+      src: url('public/assets/fonts/UniversCnBold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'UniversRegular';
+      src: url('public/assets/fonts/UniversRegular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    /* ── Variables de marca ── */
+    :root {
+      --color-white:  #FAFAFA;
+      --color-red:    #AD1C1C;
+      --color-brown:  #442517;
+      --color-black:  #1A1A1A;
+      --color-green:  #2A5C3F; /* único color fuera de la paleta principal — exclusivo para cronograma de envío */
+    }
+
+    /* ── Reset / Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'UniversRegular', Helvetica, Arial, sans-serif;
+      background: #E8E8E8;
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    /* ── Selector de estado ── */
+    .preview-controls {
+      background: var(--color-white);
+      border: 1px solid #D5D5D5;
+      padding: 20px 24px;
+      width: 100%;
+      max-width: 600px;
+    }
+    .preview-controls h2 {
+      font-family: 'UniversCondensed', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--color-black);
+      margin-bottom: 12px;
+    }
+    .preview-controls .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .preview-controls button {
+      font-family: 'UniversCondensed', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      background: none;
+      border: 1px solid #D5D5D5;
+      color: var(--color-black);
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .preview-controls button:hover,
+    .preview-controls button.active {
+      background: var(--color-black);
+      color: var(--color-white);
+      border-color: var(--color-black);
+    }
+
+    /* ══════════════════════════════════════
+       CRONOGRAMA CARD
+    ══════════════════════════════════════ */
+    .cronograma-card {
+      background: var(--color-white);
+      width: 100%;
+      max-width: 600px;
+      padding: 18px 28px 24px;
+      border-radius: 4px;
+    }
+
+    /* ── Header ── */
+    .cronograma-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .cronograma-title {
+      font-family: 'UniversCondensed', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      color: var(--color-black);
+    }
+
+    /* ── Badge global de estado ── */
+    .cronograma-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'UniversRegular', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.07em;
+      color: var(--color-white);
+      background: var(--color-brown);
+      padding: 3px 8px 3px 6px;
+      border-radius: 20px;
+    }
+    .cronograma-badge--transito  { background: var(--color-brown); }
+    .cronograma-badge--sucursal  { background: var(--color-brown); }
+    .cronograma-badge--entregado { background: var(--color-green); }
+    .cronograma-badge--alerta    { background: var(--color-red); }
+    .cronograma-badge--cancelado { background: var(--color-red); }
+
+    .cronograma-badge-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--color-white);
+      opacity: 0.8;
+      flex-shrink: 0;
+    }
+
+    /* ── Separador ── */
+    .cronograma-divider {
+      height: 1px;
+      background: var(--color-black);
+      opacity: 0.15;
+      margin-bottom: 14px;
+    }
+
+    /* ── Lista de pasos ── */
+    .cronograma-steps {
+      list-style: none;
+      position: relative;
+    }
+
+    .cronograma-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+      padding-bottom: 20px;
+    }
+    .cronograma-step:last-child {
+      padding-bottom: 0;
+    }
+
+    /* Línea vertical entre dots */
+    .cronograma-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 11px; /* center of 24px marker */
+      top: 24px;
+      bottom: 0;
+      width: 1px;
+      background: var(--color-black);
+      opacity: 0.2;
+    }
+    .cronograma-step--done:not(:last-child)::after {
+      background: var(--color-green);
+      opacity: 0.35;
+    }
+    .cronograma-step--active:not(:last-child)::after {
+      background: var(--color-black);
+      opacity: 0.15;
+      border-left: 1px dashed rgba(26,26,26,0.3);
+      background: none;
+    }
+    /* dashed line for active→pending connector */
+    .cronograma-step--active:not(:last-child)::after {
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(26,26,26,0.25) 0px,
+        rgba(26,26,26,0.25) 3px,
+        transparent 3px,
+        transparent 7px
+      );
+    }
+
+    /* ── Marcador (dot area) ── */
+    .cronograma-step-marker {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Dot DONE — verde sólido + checkmark */
+    .cronograma-dot-done {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cronograma-dot-done svg {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: var(--color-white);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Dot ACTIVE — spinner dashed + dot interior verde */
+    .cronograma-dot-active {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cronograma-dot-active::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px dashed var(--color-brown);
+      animation: cronograma-spin 2.4s linear infinite;
+    }
+    .cronograma-dot-active-inner {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-green);
+    }
+
+    /* Dot PENDING — negro semiopaco + número */
+    .cronograma-dot-pending {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-black);
+      opacity: 0.4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cronograma-dot-pending span {
+      font-family: 'UniversCondensed', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      color: var(--color-white);
+      opacity: 1; /* el opacity está en el wrapper */
+      line-height: 1;
+    }
+
+    /* Dot ALERT — rojo + ⚠ */
+    .cronograma-dot-alert {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cronograma-dot-alert span {
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    /* ── Body del paso ── */
+    .cronograma-step-body {
+      flex: 1;
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .cronograma-step-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .cronograma-step-label {
+      font-family: 'UniversCondensed', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--color-black);
+      letter-spacing: 0.01em;
+      flex-shrink: 0;
+    }
+    .cronograma-step--pending .cronograma-step-label {
+      opacity: 0.45;
+    }
+
+    /* Pills */
+    .cronograma-pill {
+      font-family: 'UniversRegular', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 8.5px;
+      letter-spacing: 0.07em;
+      padding: 2px 7px;
+      border-radius: 20px;
+      color: var(--color-white);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cronograma-pill--hecho    { background: var(--color-green); }
+    .cronograma-pill--activo   { background: var(--color-brown); }
+    .cronograma-pill--pendiente {
+      background: var(--color-black);
+      opacity: 0.4;
+    }
+    .cronograma-pill--alerta   { background: var(--color-red); }
+
+    /* Timestamp */
+    .cronograma-step-time {
+      font-family: 'UniversRegular', Helvetica, Arial, sans-serif;
+      font-size: 10px;
+      color: var(--color-black);
+      opacity: 0.45;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* Descripción */
+    .cronograma-step-desc {
+      font-family: 'UniversRegular', Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      color: var(--color-black);
+      opacity: 0.75;
+      line-height: 1.45;
+    }
+    .cronograma-step--pending .cronograma-step-desc {
+      opacity: 0.38;
+    }
+
+    /* Motivo de error */
+    .cronograma-step-motivo {
+      font-family: 'UniversCondensed', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--color-red);
+      margin-top: 4px;
+    }
+
+    /* ── Barra de progreso ── */
+    .cronograma-progress {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(26,26,26,0.12);
+    }
+    .cronograma-progress-track {
+      height: 5px;
+      background: rgba(26,26,26,0.18);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .cronograma-progress-fill {
+      height: 100%;
+      background: var(--color-green);
+      border-radius: 3px;
+      transition: width 800ms ease;
+    }
+    .cronograma-progress-fill--alert {
+      background: var(--color-red);
+    }
+    .cronograma-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cronograma-progress-labels span {
+      font-family: 'UniversRegular', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 9.5px;
+      letter-spacing: 0.05em;
+      color: var(--color-black);
+    }
+
+    /* ── Animación spinner ── */
+    @keyframes cronograma-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ── Wrapper del preview ── */
+    #cronograma-container {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 480px) {
+      .cronograma-title { font-size: 12px; }
+      .cronograma-step-label { font-size: 12px; }
+      .cronograma-step-desc { font-size: 10.5px; }
+      .cronograma-step-time { font-size: 9px; }
+      .cronograma-step-row { gap: 5px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Selector de estado ── -->
+  <div class="preview-controls">
+    <h2>VISTA PREVIA — SELECCIONÁ UN ESTADO</h2>
+    <div class="btn-group">
+      <button onclick="setEstado('en_camino')" class="active">EN CAMINO (domicilio)</button>
+      <button onclick="setEstado('en_sucursal')">EN SUCURSAL</button>
+      <button onclick="setEstado('entregado')">ENTREGADO completo</button>
+      <button onclick="setEstado('incidente')">INCIDENTE / ALERTA</button>
+      <button onclick="setEstado('cancelado')">CANCELADO</button>
+    </div>
+  </div>
+
+  <!-- ── Cronograma card ── -->
+  <div id="cronograma-container"></div>
+
+  <script>
+    // ── Mock data por estado ─────────────────────────────────────────
+    const ESTADOS = {
+      en_camino: {
+        badge: { label: 'EN TRANSITO', variant: 'transito' },
+        pasos: [
+          {
+            estado: 'done',
+            label: 'Orden confirmada',
+            desc: 'Pago recibido — orden #4821 confirmada',
+            timestamp: '17 Jul, 13:45',
+          },
+          {
+            estado: 'done',
+            label: 'Procesando',
+            desc: 'Pedido preparado y despachado',
+            timestamp: '18 Jul, 09:15',
+          },
+          {
+            estado: 'active',
+            label: 'En camino',
+            desc: 'El pedido se dirige hacia tu domicilio',
+            timestamp: '18 Jul, 14:30',
+          },
+          {
+            estado: 'pending',
+            label: 'Entregado',
+            desc: 'El paquete será entregado en tu domicilio',
+            timestamp: null,
+            numero: 4,
+          },
+        ],
+        progreso: 65,
+        estimada: '22 JUL',
+        alertFill: false,
+      },
+
+      en_sucursal: {
+        badge: { label: 'EN SUCURSAL', variant: 'sucursal' },
+        pasos: [
+          {
+            estado: 'done',
+            label: 'Orden confirmada',
+            desc: 'Pago recibido — orden #4821 confirmada',
+            timestamp: '17 Jul, 13:45',
+          },
+          {
+            estado: 'done',
+            label: 'Procesando',
+            desc: 'Preparado para despacho a sucursal',
+            timestamp: '18 Jul, 09:15',
+          },
+          {
+            estado: 'active',
+            label: 'Disponible en sucursal',
+            desc: 'Disponible en sucursal OCA — Av. Corrientes 1234, CABA',
+            timestamp: '18 Jul, 16:00',
+          },
+          {
+            estado: 'pending',
+            label: 'Retirado',
+            desc: 'Pedido retirado en sucursal',
+            timestamp: null,
+            numero: 4,
+          },
+        ],
+        progreso: 75,
+        estimada: '22 JUL',
+        alertFill: false,
+      },
+
+      entregado: {
+        badge: { label: 'ENTREGADO', variant: 'entregado' },
+        pasos: [
+          {
+            estado: 'done',
+            label: 'Orden confirmada',
+            desc: 'Pago recibido — orden #4821 confirmada',
+            timestamp: '17 Jul, 13:45',
+          },
+          {
+            estado: 'done',
+            label: 'Procesando',
+            desc: 'Pedido preparado y despachado',
+            timestamp: '18 Jul, 09:15',
+          },
+          {
+            estado: 'done',
+            label: 'En camino',
+            desc: 'El pedido se dirigió hacia tu domicilio',
+            timestamp: '18 Jul, 14:30',
+          },
+          {
+            estado: 'done',
+            label: 'Entregado',
+            desc: 'El paquete fue entregado en tu domicilio',
+            timestamp: '22 Jul, 11:20',
+          },
+        ],
+        progreso: 100,
+        estimada: null,
+        entregadoFecha: '22 JUL',
+        alertFill: false,
+      },
+
+      incidente: {
+        badge: { label: 'NO ENTREGADO', variant: 'alerta' },
+        pasos: [
+          {
+            estado: 'done',
+            label: 'Orden confirmada',
+            desc: 'Pago recibido — orden #4821 confirmada',
+            timestamp: '17 Jul, 13:45',
+          },
+          {
+            estado: 'done',
+            label: 'Procesando',
+            desc: 'Pedido preparado y despachado',
+            timestamp: '18 Jul, 09:15',
+          },
+          {
+            estado: 'alert',
+            label: 'En camino',
+            desc: 'El pedido se dirigió hacia tu domicilio',
+            timestamp: '22 Jul, 10:00',
+            motivo: 'DESTINATARIO AUSENTE — se realizó un intento de entrega sin éxito',
+          },
+          {
+            estado: 'pending',
+            label: 'Entregado',
+            desc: 'El paquete será entregado en tu domicilio',
+            timestamp: null,
+            numero: 4,
+          },
+        ],
+        progreso: 75,
+        estimada: null,
+        alertFill: true,
+      },
+
+      cancelado: {
+        badge: { label: 'CANCELADO', variant: 'cancelado' },
+        pasos: [
+          {
+            estado: 'done',
+            label: 'Orden confirmada',
+            desc: 'Pago recibido — orden #4821 confirmada',
+            timestamp: '17 Jul, 13:45',
+          },
+          {
+            estado: 'pending',
+            label: 'Procesando',
+            desc: 'Preparando tu pedido',
+            timestamp: null,
+            numero: 2,
+          },
+          {
+            estado: 'pending',
+            label: 'En camino',
+            desc: 'El pedido se dirige hacia tu domicilio',
+            timestamp: null,
+            numero: 3,
+          },
+          {
+            estado: 'pending',
+            label: 'Entregado',
+            desc: 'El paquete será entregado en tu domicilio',
+            timestamp: null,
+            numero: 4,
+          },
+        ],
+        progreso: 100,
+        estimada: null,
+        alertFill: true,
+      },
+    };
+
+    // ── Render ───────────────────────────────────────────────────────
+    function renderMarker(paso) {
+      if (paso.estado === 'done') {
+        return `
+          <div class="cronograma-dot-done">
+            <svg viewBox="0 0 12 12" aria-hidden="true">
+              <polyline points="2,6.5 5,9.5 10,3"/>
+            </svg>
+          </div>`;
+      }
+      if (paso.estado === 'active') {
+        return `
+          <div class="cronograma-dot-active">
+            <div class="cronograma-dot-active-inner"></div>
+          </div>`;
+      }
+      if (paso.estado === 'alert') {
+        return `
+          <div class="cronograma-dot-alert">
+            <span>⚠</span>
+          </div>`;
+      }
+      // pending
+      return `
+        <div class="cronograma-dot-pending">
+          <span>${paso.numero || ''}</span>
+        </div>`;
+    }
+
+    function renderPill(estado) {
+      const map = {
+        done:    { label: 'HECHO',    cls: 'hecho' },
+        active:  { label: 'ACTIVO',   cls: 'activo' },
+        pending: { label: 'PENDIENTE',cls: 'pendiente' },
+        alert:   { label: 'ALERTA',   cls: 'alerta' },
+      };
+      const p = map[estado] || map.pending;
+      return `<span class="cronograma-pill cronograma-pill--${p.cls}">${p.label}</span>`;
+    }
+
+    function renderCronograma(key) {
+      const data = ESTADOS[key];
+
+      const stepsHTML = data.pasos.map(paso => {
+        const motivoHTML = paso.motivo
+          ? `<p class="cronograma-step-motivo">MOTIVO: ${paso.motivo}</p>`
+          : '';
+        const timeHTML = paso.timestamp
+          ? `<time class="cronograma-step-time">${paso.timestamp}</time>`
+          : '';
+
+        return `
+          <li class="cronograma-step cronograma-step--${paso.estado}">
+            <div class="cronograma-step-marker">${renderMarker(paso)}</div>
+            <div class="cronograma-step-body">
+              <div class="cronograma-step-row">
+                <span class="cronograma-step-label">${paso.label}</span>
+                ${renderPill(paso.estado)}
+                ${timeHTML}
+              </div>
+              <p class="cronograma-step-desc">${paso.desc}</p>
+              ${motivoHTML}
+            </div>
+          </li>`;
+      }).join('');
+
+      const fillClass = data.alertFill ? ' cronograma-progress-fill--alert' : '';
+      const fillWidth = data.progreso;
+
+      let progressLabel;
+      if (data.entregadoFecha) {
+        progressLabel = `ENTREGADO el ${data.entregadoFecha}`;
+      } else if (data.estimada) {
+        progressLabel = `ENTREGA ESTIMADA: ${data.estimada}`;
+      } else {
+        progressLabel = '—';
+      }
+
+      return `
+        <div class="cronograma-card">
+          <div class="cronograma-header">
+            <h3 class="cronograma-title">CRONOGRAMA DE ENVIO</h3>
+            <span class="cronograma-badge cronograma-badge--${data.badge.variant}">
+              <span class="cronograma-badge-dot"></span>
+              ${data.badge.label}
+            </span>
+          </div>
+          <div class="cronograma-divider"></div>
+          <ol class="cronograma-steps">
+            ${stepsHTML}
+          </ol>
+          <div class="cronograma-progress">
+            <div class="cronograma-progress-track">
+              <div class="cronograma-progress-fill${fillClass}" style="width: ${fillWidth}%"></div>
+            </div>
+            <div class="cronograma-progress-labels">
+              <span>${progressLabel}</span>
+              <span>${fillWidth} % COMPLETADO</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // ── Estado inicial y control ──────────────────────────────────────
+    let estadoActual = 'en_camino';
+
+    function setEstado(key) {
+      estadoActual = key;
+      document.getElementById('cronograma-container').innerHTML = renderCronograma(key);
+
+      // Animar barra con pequeño delay
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const fill = document.querySelector('.cronograma-progress-fill');
+          if (fill) fill.style.width = ESTADOS[key].progreso + '%';
+        });
+      });
+
+      // Actualizar botones activos
+      document.querySelectorAll('.preview-controls button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('onclick') === `setEstado('${key}')`) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    // Render inicial
+    setEstado('en_camino');
+  </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GÜIDO CAPUZZI</title>
+  <style>
+    /* ─── FONTS ──────────────────────────────────────────── */
+    @font-face {
+      font-family: 'UniversCnRg';
+      src: url('public/assets/fonts/UniversCnRg.ttf') format('truetype');
+      font-weight: 100 400;   /* permite síntesis delgada hasta 100 */
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'UniversCn';
+      src: url('public/assets/fonts/UniversCnBold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f0f0f;
+    }
+
+    /* ─── GRAIN ──────────────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.022;
+      pointer-events: none;
+      animation: grain 0.38s steps(1) infinite;
+      z-index: 99;
+    }
+    @keyframes grain {
+      0%  { transform: translate(0%,  0%); }  14% { transform: translate(-3%, 1%); }
+      28% { transform: translate(2%, -3%); }  42% { transform: translate(-1%, 3%); }
+      57% { transform: translate(3%, -1%); }  71% { transform: translate(-2%, 2%); }
+      85% { transform: translate(1%, -2%); } 100% { transform: translate(-3%, 1%); }
+    }
+
+    /* ─── SCREEN ─────────────────────────────────────────── */
+    .teaser {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 50% 46%, #1e1e1e 0%, #0d0d0d 78%);
+    }
+
+    /*
+      Vignette breathing — pseudo-elemento que oscurece los bordes en sincronía
+      con el pulso del logo. Se activa via JS (.breathing) cuando el logo reveal termina.
+      El gradiente va de transparente en el centro → negro puro en los bordes,
+      lo que contrae visualmente la "luz" del centro sin cambiar el fondo.
+    */
+    .teaser::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 46%, transparent 28%, rgba(0,0,0,0.82) 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .teaser.breathing::before {
+      animation: vignettePulse 8s ease-in-out infinite;
+    }
+    @keyframes vignettePulse {
+      0%, 100% { opacity: 0;    }
+      50%       { opacity: 0.6; }
+    }
+
+    /* ─── LOGO ───────────────────────────────────────────── */
+    /*
+      viewBox = offset del translate de Inkscape (2652.6561, 545.72168)
+      → los paths con coords absolutas ~2698,545 caen dentro del área visible.
+      position: relative + z-index: 2 para quedar sobre el vignette (::before z-index: 1).
+    */
+    .logo-svg {
+      position: relative;
+      z-index: 1;
+      width: min(96vw, 1100px);
+      display: block;
+      opacity: 0;
+      transform: scale(1.015);
+      will-change: opacity, transform;
+      animation: logoReveal 2600ms cubic-bezier(0.16, 1, 0.3, 1) 1000ms 1 forwards;
+    }
+    .logo-svg.pulsing {
+      /*
+        animation-delay: -4s arranca el ciclo ya en su punto medio (50% = 0.8),
+        evitando el salto brusco desde el opacity: 1 del reveal.
+      */
+      animation: logoPulse 8s ease-in-out -4s infinite;
+      opacity: 1;
+      transform: none;
+    }
+    @keyframes logoReveal {
+      from { opacity: 0; transform: scale(1.015); }
+      to   { opacity: 1; transform: scale(1);     }
+    }
+    @keyframes logoPulse {
+      0%, 100% { opacity: 0;   }
+      50%       { opacity: 0.8; }
+    }
+
+    /* ─── TEXTO ──────────────────────────────────────────── */
+    /*
+      Bloque HTML puro (no SVG) — mucho más controlable para alineación.
+      Su borde derecho se alinea dinámicamente con el borde derecho del logo
+      via JS (getBoundingClientRect). text-align: right garantiza que las 3
+      líneas terminen en el mismo punto.
+    */
+    .texto-block {
+      display: none;   /* oculto temporalmente — approach pendiente de definir */
+      position: fixed;
+      bottom: clamp(24px, 3.8vh, 48px);
+      text-align: right;
+      line-height: 1.25;
+      pointer-events: none;
+    }
+
+    .t-line {
+      display: block;
+      font-size: clamp(15px, 1.24vw, 19px);
+      letter-spacing: 0.055em;
+      color: #fafafa;
+      text-transform: uppercase;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    /* Líneas 1 y 2: Univers Condensed Regular — peso visual reducido */
+    .t-reg  {
+      font-family: 'UniversCnRg', 'Arial Narrow', sans-serif;
+      font-weight: 200;
+      font-style: normal;
+    }
+    /* Línea 3 (URL): Univers Condensed Bold */
+    .t-bold {
+      font-family: 'UniversCn', 'Arial Narrow', sans-serif;
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    @keyframes textFadeLight {
+      from { opacity: 0; }
+      to   { opacity: 0.38; }
+    }
+    @keyframes textFadeBold {
+      from { opacity: 0; }
+      to   { opacity: 0.58; }
+    }
+    /* Stagger: orden visual top → bottom. Regular más tenue, bold más presente */
+    .t-line:nth-child(1) { animation: textFadeLight 1000ms ease-out 3400ms forwards; }
+    .t-line:nth-child(2) { animation: textFadeLight 1000ms ease-out 3720ms forwards; }
+    .t-line:nth-child(3) { animation: textFadeBold  1000ms ease-out 4040ms forwards; }
+
+    /* ─── MOBILE ─────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .logo-svg { width: 96vw; }
+      .t-line   { font-size: 14px; letter-spacing: 0.04em; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="teaser">
+    <svg id="logo" class="logo-svg"
+         viewBox="2652.6561 545.72168 457.11447 55.101227"
+         xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="GÜIDO CAPUZZI">
+      <path fill="#fafafa" d="
+        m 2698.4161,545.87827 v 6.38315 h 6.5601 v -6.38315 z
+        m 10.4608,0 v 6.38315 h 6.5608 v -6.38315 z
+        m -40.9337,10.69782 c -14.5986,0 -15.1307,10.93379 -15.1307,21.69042
+          0,16.19412 1.7137,22.39982 16.7259,22.39982 3.5462,0 9.634,-0.94538
+          12.0571,-1.41821 v -21.63163 h -13.7711 v 6.56034 h 4.8468 v 9.45632
+          c -1.3593,0.4727 -2.9552,0.82747 -4.4327,0.82747 -5.0826,0
+          -6.3833,-2.36419 -6.3833,-15.72127 0,-8.27423 0,-15.78055 5.5556,-15.78055
+          4.7284,0 5.3782,3.48703 5.3193,7.44676 h 8.8654
+          c 0.5321,-8.92453 -4.9053,-13.82947 -13.6523,-13.82947 z
+        m 138.173,0 c -14.7167,0 -14.7167,10.75648 -14.7167,22.04507
+          0,11.17034 0,22.04517 14.7167,22.04517 14.7165,0 14.7165,-10.87483
+          14.7165,-22.04517 0,-11.28859 0,-22.04507 -14.7165,-22.04507 z
+        m 44.7914,0 c -14.7167,0 -14.7167,10.75648 -14.7167,22.04507
+          0,11.17034 0,22.04517 14.7167,22.04517 8.3332,0 12.8839,-3.66434
+          12.8839,-15.07128 h -8.8061 c -0.1169,3.36882 0.061,8.68855
+          -4.0778,8.68855 -5.0239,0 -5.674,-4.72838 -5.674,-15.66245
+          0,-10.93396 0.6501,-15.66235 5.674,-15.66235 2.6595,0 3.6645,2.12761
+          3.6645,7.80169 h 8.7466 c 0.3547,-9.16094 -3.3094,-14.1844 -12.4111,-14.1844 z
+        m -158.52,0.7088 v 30.26077 c 0,8.0378 4.7284,13.12067 14.5391,13.12067
+          10.8752,0 14.4803,-6.73765 14.4803,-13.12067 v -30.26077 h -8.9244
+          v 29.66972 c 0,4.72809 -1.773,7.32899 -5.6738,7.32899
+          -3.2507,0 -5.497,-2.06895 -5.497,-7.32899 v -29.66972 z
+        m 39.7756,0 v 42.67202 h 8.9247 v -42.67202 z
+        m 19.6811,0 v 42.67202 h 14.5396 c 15.2484,0 14.2439,-15.01187
+          14.2439,-21.57219 0,-13.29814 -2.187,-21.09983 -13.8894,-21.09983 z
+        m 161.8725,0 v 42.67202 h 8.9246 v -17.37576 h 6.619
+          c 10.4615,0 11.8795,-7.68332 11.8795,-12.52962
+          0,-7.80154 -3.1908,-12.76664 -11.3473,-12.76664 z
+        m 34.8027,0 v 30.26077 c 0,8.0378 4.7281,13.12067 14.5391,13.12067
+          10.875,0 14.4802,-6.73765 14.4802,-13.12067 v -30.26077 h -8.9245
+          v 29.66972 c 0,4.72809 -1.7727,7.32899 -5.6733,7.32899
+          -3.2509,0 -5.497,-2.06895 -5.497,-7.32899 v -29.66972 z
+        m 37.2261,0 v 6.56034 h 17.0804 l -17.9076,28.31016 v 7.80152
+          h 26.9499 v -6.56017 h -18.3803 l 17.9671,-28.36926 v -7.74258 z
+        m 34.3304,0 v 6.56034 h 17.0805 l -17.9083,28.31016 v 7.80152
+          h 26.9506 v -6.56017 h -18.3809 l 17.9671,-28.36926 v -7.74258 z
+        m 33.5023,0 v 42.67202 h 8.9244 v -42.67202 z
+        m -182.4075,0.7094 11.8206,42.67204 h 11.7617 l 11.5841,-42.67202
+          h -9.3974 l -2.364,9.4566 h -12.1753 l -2.4229,-9.4566 z
+        m 219.0607,1.13963 c -10.8145,0 -19.4873,8.62039 -19.4873,19.43492
+          0,10.81436 8.6728,19.5395 19.4873,19.5395 10.7622,0 19.3824,-8.72514
+          19.3824,-19.5395 0,-10.81453 -8.6202,-19.43492 -19.3824,-19.43492 z
+        m 0,3.65724 c 8.6201,0 15.7253,7.05282 15.7253,15.77768
+          0,8.72484 -7.1052,15.88243 -15.7253,15.88243
+          -8.7769,0 -15.8301,-7.15759 -15.8301,-15.88243
+          0,-8.72484 7.0532,-15.77767 15.8301,-15.77768 z
+        m -284.1153,0.16759 c 5.0236,0 5.6735,4.72838 5.6735,15.66232
+          0,10.93412 -0.6499,15.66248 -5.6735,15.66248
+          -5.0237,0 -5.6741,-4.72838 -5.6741,-15.66248
+          0,-10.93394 0.6504,-15.66232 5.6741,-15.66232 z
+        m -45.3474,0.88643 h 4.6104 c 6.2057,0 6.2057,6.9154 6.2057,14.77589
+          0,10.69769 -1.0642,14.77562 -6.5015,14.77562 h -4.3146 z
+        m 161.8726,0 h 4.4913 c 4.019,0 4.9646,2.95568 4.9646,6.44272
+          0,2.83688 -1.832,5.73286 -4.4916,5.73286 h -4.9643 z
+        m 160.0146,3.33465 v 22.62159 h 5.12 v -9.35186 h 1.3061
+          c 3.971,0 3.5526,2.29903 3.5526,4.96344 0,1.51526 0,3.02992
+          0.679,4.38842 h 5.0156 c -0.4699,-0.94039 -0.5748,-5.1722
+          -0.5748,-6.63516 0,-4.07507 -3.3434,-4.33598 -4.4408,-4.38828
+          v -0.10429 c 3.3438,-0.52242 4.5461,-2.66411 4.5461,-5.53757
+          0,-3.866 -2.2473,-5.95584 -5.7475,-5.95584 z
+        m 5.12,3.76158 h 2.2989 c 1.6195,0 2.6646,0.83591 2.6646,2.97789
+          0,1.4628 -0.6272,3.34357 -2.6646,3.34357 h -2.2989 z
+        m -203.6028,3.06979 h 8.511 l -4.3145,18.44011 h -0.1171 z
+      "/>
+    </svg>
+  </div>
+
+  <!--
+    Texto fuera del .teaser para poder posicionarlo con fixed
+    independientemente del flex container del logo.
+    JS alinea su borde derecho al borde derecho del logo en runtime.
+  -->
+  <div class="texto-block" id="texto">
+    <span class="t-line t-reg">BUENOS AIRES, ARG</span>
+    <span class="t-line t-reg">F/W 2026 &copy; GÜIDO CAPUZZI</span>
+    <span class="t-line t-bold">WWW.GÜIDOCAPUZZI.COM</span>
+  </div>
+
+  <script>
+    const logo   = document.getElementById('logo');
+    const texto  = document.getElementById('texto');
+    const teaser = document.querySelector('.teaser');
+
+    /* ── Alinea borde derecho del texto con borde derecho del logo ── */
+    function alignText() {
+      const rect = logo.getBoundingClientRect();
+      texto.style.right = (window.innerWidth - rect.right) + 'px';
+    }
+
+    /* ── Al terminar el reveal: activar pulso + vignette ── */
+    logo.addEventListener('animationend', function handler(e) {
+      if (e.animationName !== 'logoReveal') return;
+      logo.removeEventListener('animationend', handler);
+      requestAnimationFrame(() => {
+        logo.classList.add('pulsing');
+        teaser.classList.add('breathing');
+      });
+    });
+
+    /* ── Alinear al cargar y al redimensionar ── */
+    window.addEventListener('load',   alignText);
+    window.addEventListener('resize', alignText);
+  </script>
+</body>
+</html>
