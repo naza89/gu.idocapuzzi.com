@@ -114,7 +114,7 @@ Archivos clave:
 - `_Claude Instructions.md` — Cómo interpretar el vault y convenciones
 - `Ejecución/Plan Activo.md` — Tareas con dependencias (qué está bloqueado y por qué)
 - `Ejecución/Handoff Notes.md` — Notas de continuidad entre sesiones
-- `Bitácora/Página Web.md` — Log de avances (espejo de `docs/BITACORA.md`)
+- `Bitácora.md` — Log de avances (espejo de `docs/BITACORA.md`)
 - `Memoria.md` — Diario de conversaciones (decisiones, Q&A, insights)
 - `Diario/Notas.md` — Documentación personal de Naza (template, no tocar entries)
 - `Contraseñas.md` — Credenciales y accesos (vault privado)
@@ -124,7 +124,7 @@ Archivos clave:
 
 Cada sesión DEBE actualizar al cerrar (`/wrap-up`):
 
-1. **Bitácora** (vault `Bitácora/Página Web.md` + repo `docs/BITACORA.md`) — Qué se hizo técnicamente. Tono factual, tercera persona.
+1. **Bitácora** (vault `Bitácora.md` + repo `docs/BITACORA.md`) — Qué se hizo técnicamente. Tono factual, tercera persona.
 2. **Memoria** (vault `Memoria.md`) — Qué se discutió y decidió. Tono personal, primera persona (como si escribiera Naza).
 3. **Handoff Notes** (vault `Ejecución/Handoff Notes.md`) — Contexto para la próxima sesión.
 4. **Plan Activo** (vault `Ejecución/Plan Activo.md`) — Marcar tareas completadas, agregar nuevas.

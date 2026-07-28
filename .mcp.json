@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "obsidian-vault": {
+      "command": "mcpvault",
+      "args": ["C:\\Users\\LAUTA\\ObsidianVaults\\GÜIDO"]
+    },
+    "pixa": {
+      "transport": "http",
+      "url": "https://mcp.pixa.com/mcp"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    }
+  }
+}

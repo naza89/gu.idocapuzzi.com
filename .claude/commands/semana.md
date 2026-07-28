@@ -2,7 +2,7 @@ Revisión semanal. Generá un resumen ejecutivo de la última semana de trabajo.
 
 Leé los siguientes archivos:
 
-1. **Bitácora** (`C:\Users\LAUTA\ObsidianVaults\GÜIDO\Bitácora\Página Web.md`) — últimas 7 entries
+1. **Bitácora** (`C:\Users\LAUTA\ObsidianVaults\GÜIDO\Bitácora.md`) — últimas 7 entries
 2. **Plan Activo** (`C:\Users\LAUTA\ObsidianVaults\GÜIDO\Ejecución\Plan Activo.md`) — tareas completadas vs pendientes
 3. **Memoria** (`C:\Users\LAUTA\ObsidianVaults\GÜIDO\Memoria.md`) — últimas entries de la semana
 4. **Diario** (`C:\Users\LAUTA\ObsidianVaults\GÜIDO\Diario\Notas.md`) — notas recientes de Naza

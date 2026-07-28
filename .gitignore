@@ -35,6 +35,10 @@ yarn-error.log*
 # Snapshot de trabajo anterior (referencia local, no subir)
 .antigravity/
 
+# Artefactos de test de webhooks OCA (marcados NO COMMITEAR en su header)
+oca-fire-step.mjs
+oca-webhook-sim.mjs
+
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts

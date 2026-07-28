@@ -1,0 +1,33 @@
+# Patrones de seguridad personalizados para GÜIDO CAPUZZI
+# Estos patrones complementan los built-in del plugin security-guidance.
+# Se ejecutan como string match determinístico en cada edición de archivo.
+
+patterns:
+  - rule_name: next_public_secret
+    regex: "NEXT_PUBLIC_(SERVICE_ROLE|SECRET|TOKEN|PASSWORD|PSW|CLAVE|KEY(?!.*ANON|.*URL))"
+    reminder: "Variable con prefijo NEXT_PUBLIC_ podría exponer un secreto al browser. Solo NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY son seguras con ese prefijo."
+
+  - rule_name: hardcoded_api_key
+    substrings: ["sk_live_", "sk_test_", "AKIA", "re_", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"]
+    reminder: "Posible API key o JWT hardcodeado. Moverlo a variables de entorno."
+
+  - rule_name: oca_credentials_in_log
+    regex: "console\\.(log|error|warn).*(?:psw=|usr=|password|contraseña)"
+    paths: ["**/src/**", "**/public/js/**"]
+    reminder: "No loguear credenciales de OCA. Las URLs del webservice OCA contienen usuario y contraseña como query params."
+
+  - rule_name: admin_client_in_public
+    substrings: ["createAdminClient"]
+    paths: ["**/public/**"]
+    reminder: "createAdminClient() usa service_role key — nunca debe ejecutarse en el browser. Solo en src/app/api/."
+
+  - rule_name: nave_token_in_log
+    regex: "console\\.(log|error|warn).*(?:access_token|Bearer|token_cache)"
+    paths: ["**/src/lib/nave/**"]
+    reminder: "No loguear tokens OAuth2 de NAVE. Puede exponer credenciales en logs de Vercel."
+
+  - rule_name: webhook_sync_processing
+    regex: "(?:nave|oca).*webhook.*await.*(?:update|insert|email|stock)"
+    paths: ["**/api/webhooks/**"]
+    exclude_paths: ["**/*.test.*", "**/*.spec.*"]
+    reminder: "Los webhooks deben responder 200 inmediato y procesar async con after(). No hacer awaits pesados antes de la respuesta."
