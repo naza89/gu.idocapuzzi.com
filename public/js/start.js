@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const URL_CONTACT = '/contacto';
     const URL_LEGALES = '/legales';
     const URL_CONFIRMATION = '/checkout/confirmacion';
+    const URL_ARCHIVE = '/archivo';
 
     // Animation Constants
     const LOGO_TRANSITION_START = 0;
@@ -146,9 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { slug: 'bermuda-double-knee-negro', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE', title: 'BERMUDA SELVEDGE<br>DOUBLE KNEE', color: 'Negro', colorway: 'NEGRO', price: '$175.000', description: 'WORKWEAR ESTILO.', images: ['assets/images/products/bermuda-DK-front.png', 'assets/images/products/bermuda-DK-back.png'] },
         { slug: 'bermuda-patchwork-indigo', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE<br>PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$160.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-front.png', 'assets/images/products/bermuda-patchwork-back.png'] },
 
-        // ARCHIVO (2)
-        { slug: 'jean-intervenido-suela-roja', category: 'ARCHIVO', name: 'JEAN INTERVENIDO "SUELA ROJA" BOOTCUT', title: 'JEAN INTERVENIDO<br>"SUELA ROJA"<br>FIT BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-archivo-1-front.png', 'assets/images/products/jean-archivo-1-back.png'] },
-        { slug: 'jean-intervenido-encerado', category: 'ARCHIVO', name: 'JEAN INTERVENIDO "ENCERADO" BOOTCUT', title: 'JEAN INTERVENIDO<br>"ENCERADO"<br>FIT BOOTCUT', color: 'Negro Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-archivo-2-front.png', 'assets/images/products/jean-archivo-2-back.png'] },
+        // INTERVENCIONES (2) — piezas 1/1
+        { slug: 'jean-intervenido-suela-roja', category: 'INTERVENCIONES', name: 'JEAN INTERVENIDO "SUELA ROJA" BOOTCUT', title: 'JEAN INTERVENIDO<br>"SUELA ROJA"<br>FIT BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-archivo-1-front.png', 'assets/images/products/jean-archivo-1-back.png'] },
+        { slug: 'jean-intervenido-encerado', category: 'INTERVENCIONES', name: 'JEAN INTERVENIDO "ENCERADO" BOOTCUT', title: 'JEAN INTERVENIDO<br>"ENCERADO"<br>FIT BOOTCUT', color: 'Negro Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-archivo-2-front.png', 'assets/images/products/jean-archivo-2-back.png'] },
 
         // REMERA BABY TEE (3 colorways - mujer)
         { slug: 'baby-tee-negro', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-negra-front.png'] },
@@ -227,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Restricción temporal (opción B): estas categorías se muestran en el Shop como
     // teaser (foto atenuada + badge) pero su PDP está bloqueada. Cuando estén listas
     // para lanzarse, se quita la categoría de acá y se retocan sus descripciones.
-    const RESTRICTED_CATEGORIES = ['TOPS / MUSCULOSAS', 'BERMUDAS / SHORTS', 'ARCHIVO'];
+    const RESTRICTED_CATEGORIES = ['TOPS / MUSCULOSAS', 'BERMUDAS / SHORTS', 'INTERVENCIONES'];
     function isRestricted(product) {
         return !!product && RESTRICTED_CATEGORIES.includes(product.category);
     }
@@ -262,16 +263,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="size-guide-overlay" id="size-guide-overlay" role="dialog" aria-modal="true" aria-labelledby="size-guide-title">
                     <div class="size-guide-panel">
                         <div class="sg-topbar">
-                            <span class="sg-label">Tabla de Talles</span>
+                            <span class="sg-label">Tabla de talles</span>
                             <button class="size-guide-close" id="size-guide-close" aria-label="Cerrar">&times;</button>
                         </div>
                         <h2 class="size-guide-title" id="size-guide-title">${title}</h2>
                         <div class="sg-desc">${descHTML}</div>
                         <div class="size-guide-body">
                             <div class="sg-table-wrap">
-                                <div class="sg-units" id="sg-units">
+                                <div class="sg-units" id="sg-units" role="group" aria-label="Unidades de medida">
                                     <button data-unit="cm" class="active">CM</button>
-                                    <span class="sep">|</span>
                                     <button data-unit="in">IN</button>
                                 </div>
                                 <table class="size-guide-table" id="sg-table"${archiveAttr}>
@@ -551,6 +551,11 @@ document.addEventListener('DOMContentLoaded', () => {
         [...headerRightItems, ...headerLeftItems].forEach(item => {
             item.addEventListener('mouseenter', () => {
                 header.classList.add('header-hover');
+                // Home phase 0: mostrar el logo del centro con CUALQUIER link (no solo
+                // Shop) para que se invierta de forma consistente cuando el header se activa.
+                if (body.classList.contains(STATE_HOME) && scrollPhase === 0) {
+                    if (headerLogo) headerLogo.classList.add('visible');
+                }
             });
         });
 
@@ -982,7 +987,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'MUSCULOSAS': 'TOPS / MUSCULOSAS',
                 'UNISEX': null,  // tag-based, not a category
                 'MUJER': null,   // tag-based, not a category
-                '1/1': 'ARCHIVO'
+                '1/1': 'INTERVENCIONES'
             };
             // Resolve mapped categories
             const mappedCats = categories.map(c => catMap[c]).filter(Boolean);
@@ -1112,7 +1117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { value: 'NEGRO', label: 'NEGRO', dataColor: null }
         ],
         'BERMUDAS / SHORTS': null, // No color filter in BERMUDAS
-        'ARCHIVO': null // No color filter in ARCHIVO
+        'INTERVENCIONES': null // No color filter in INTERVENCIONES
     };
 
     function updateFiltersForCategory(category) {
@@ -1249,6 +1254,11 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'legales':
                 url = URL_LEGALES;
                 break;
+            case 'archive':
+                url = stateObj.archiveSlug
+                    ? `${URL_ARCHIVE}?archive=${encodeURIComponent(stateObj.archiveSlug)}`
+                    : URL_ARCHIVE;
+                break;
             default:
                 url = URL_HOME;
         }
@@ -1256,6 +1266,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getActiveSection() {
+        // Archivo no usa una body-class de estado propia: se detecta por visibilidad
+        // del contenedor. Debe evaluarse primero para que salir del índice lo oculte.
+        const archivoEl = document.getElementById('archivo-container');
+        if (archivoEl && archivoEl.style.display && archivoEl.style.display !== 'none') return archivoEl;
         if (body.classList.contains(STATE_HOME)) return document.getElementById('home-container');
         if (body.classList.contains(STATE_SHOP)) return document.getElementById('shop');
         if (body.classList.contains(STATE_PDP)) return document.getElementById('product-page');
@@ -1341,7 +1355,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Set page title per product
             document.title = `${product.name} ${product.color} — GÜIDO CAPUZZI`;
-            const isArchive = product.category === 'ARCHIVO';
+            const isArchive = product.category === 'INTERVENCIONES';
 
             // Meta Pixel — ViewContent
             if (window.fbq) {
@@ -1643,7 +1657,7 @@ document.addEventListener('DOMContentLoaded', () => {
             unitBtns.forEach(b => b.addEventListener('click', () => setUnit(b.dataset.unit)));
 
             if (table.dataset.archive === '1') {
-                // ARCHIVO: pieza 1/1 — fila del talle de la prenda fijada, sin hover dinámico
+                // INTERVENCIONES: pieza 1/1 — fila del talle de la prenda fijada, sin hover dinámico
                 const fixed = table.dataset.fixedSize;
                 const row = table.querySelector(`tbody tr[data-size="${fixed}"]`);
                 if (row) [...row.children].forEach(c => c.classList.add('sg-hl'));
@@ -3441,6 +3455,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (homeTrigger) homeTrigger.addEventListener('click', enableHomeState);
     if (accountTrigger) accountTrigger.addEventListener('click', enableAccountState);
 
+    // --- ARCHIVO: wiring ---
+    const archivoTrigger = document.getElementById('archivo-trigger');
+    if (archivoTrigger) archivoTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (archiveDetailOpen) closeArchiveDetail(/* skipHistory */ true);
+        showArchiveIndex(false);
+    });
+    const mobileArchivoLink = document.querySelector('.mobile-archivo-link');
+    if (mobileArchivoLink) mobileArchivoLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeMobileMenu();
+        if (archiveDetailOpen) closeArchiveDetail(/* skipHistory */ true);
+        showArchiveIndex(false);
+    });
+    // Abrir el detalle al clickear una foto o el título de una temporada (delegado).
+    document.addEventListener('click', (e) => {
+        const opener = e.target.closest('[data-archive-open]');
+        if (!opener) return;
+        e.preventDefault();
+        openArchiveDetail(opener.getAttribute('data-archive-open'), false);
+    });
+    // CERRAR (delegado, el botón vive en el overlay).
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.archive-detail-close')) {
+            e.preventDefault();
+            closeArchiveDetail(false);
+        }
+    });
+    // Escape cierra el detalle.
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && archiveDetailOpen) closeArchiveDetail(false);
+    });
+
     // Login Validation
     if (inputEmail) inputEmail.addEventListener('input', checkLoginInputs);
     if (inputPassword) inputPassword.addEventListener('input', checkLoginInputs);
@@ -4855,7 +4902,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const content = document.getElementById('announcement-content');
         if (!track || !content) return;
 
-        const BASE_TEXT = 'GÜIDO CAPUZZI • HASTA 6 CUOTAS SIN INTERÉS • ENVÍOS A TODO EL PAÍS • DENIM ÚNICO SIN RE-STOCK • PRENDAS ÚNICAS 1/1 • HECHO EN ARGENTINA • ';
+        const BASE_TEXT = 'HASTA 6 CUOTAS SIN INTERÉS • ENVÍOS A TODO EL PAÍS • DENIM ÚNICO SIN RE-STOCK • PRENDAS ÚNICAS 1/1 • HECHO EN ARGENTINA • ';
 
         // Render una copia para medir su ancho real
         content.textContent = BASE_TEXT;
@@ -4901,6 +4948,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const isActive = header.classList.contains('header-hover') ||
                 header.classList.contains('menu-open');
             body.classList.toggle('header-active', isActive);
+            // Home y Archivo (fondo oscuro): al activar el header, invertir a esquema
+            // claro (header/dropdown #FAFAFA, tipografía #1A1A1A, marquee #1A1A1A).
+            const archivoEl = document.getElementById('archivo-container');
+            const isDarkPage = body.classList.contains(STATE_HOME) ||
+                (archivoEl && archivoEl.style.display && archivoEl.style.display !== 'none');
+            body.classList.toggle('header-invert', isActive && isDarkPage);
         });
         headerClassObserver.observe(header, { attributes: true, attributeFilter: ['class'] });
     }
@@ -4912,6 +4965,270 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
 
     // Restore state from a history state object (called by popstate)
+    // =========================================================================
+    // --- ARCHIVO ---
+    // Índice (/archivo): una tira horizontal por temporada.
+    // Detalle (/archivo?archive=slug): overlay full-viewport; el scroll vertical
+    //   del usuario se traduce en scroll horizontal de la tira (sticky + spacer).
+    // No usa una body-class de estado propia (getActiveSection lo detecta por
+    //   visibilidad del contenedor), así no hay que tocar las remove-lists.
+    // =========================================================================
+    const ARCHIVE = (typeof window !== 'undefined' && Array.isArray(window.ARCHIVE_DATA))
+        ? window.ARCHIVE_DATA : [];
+
+    function findArchiveCollection(slug) {
+        return ARCHIVE.find(c => c.slug === slug) || null;
+    }
+
+    // Tile placeholder on-brand (fondo #1A1A1A, marco rojo, número) mientras no
+    // haya fotos reales. Se reemplaza poniendo `src` en cada imagen de archive-data.js.
+    function archivePlaceholderSrc(n) {
+        // Aspecto 4:5 fijo (igual que las tiles de ERD) para que el marco entre completo.
+        const W = 800, H = 1000;
+        const num = String(n).padStart(2, '0');
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`
+            + `<rect width="100%" height="100%" fill="#1A1A1A"/>`
+            + `<rect x="16" y="16" width="${W - 32}" height="${H - 32}" fill="none" stroke="#AD1C1C" stroke-width="3"/>`
+            + `<text x="50%" y="50%" fill="#FAFAFA" font-family="Arial, Helvetica, sans-serif" font-size="${Math.round(W * 0.2)}" font-weight="bold" text-anchor="middle" dominant-baseline="central" opacity="0.8">${num}</text>`
+            + `</svg>`;
+        return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    function archiveImgSrc(img, i) {
+        if (img && img.src) return img.src;
+        return archivePlaceholderSrc(i + 1);
+    }
+
+    // Título con año en superíndice (ej: "LOOKBOOK" + sup "2026").
+    function archiveTitleHTML(col) {
+        const base = (col.titulo || '').toUpperCase();
+        const sup = col.tituloSup ? `<sup class="archivo-sup">${col.tituloSup}</sup>` : '';
+        return `${base}${sup}`;
+    }
+
+    const ARCHIVE_MARQUEE_SPEED = 55; // px por segundo (velocidad del carrusel)
+    let archiveResizeBound = false;
+    const archiveStripBase = {}; // slug -> { main, dup } HTML de una copia
+
+    let archiveIndexRendered = false;
+    function renderArchiveIndex() {
+        if (archiveIndexRendered) return;
+        const host = document.getElementById('archivo-index');
+        if (!host) return;
+        const buildItem = (col, img, i, dup) => {
+            const src = archiveImgSrc(img, i);
+            const loading = (!dup && i < 3) ? 'eager' : 'lazy';
+            const w = (img && img.w) || 1200, h = (img && img.h) || 1600;
+            const extra = dup ? ' aria-hidden="true" tabindex="-1"' : ` aria-label="Abrir ${col.titulo} ${col.tituloSup || ''}"`;
+            return `<button type="button" class="archivo-strip-item" data-archive-open="${col.slug}"${extra}>`
+                + `<img src="${src}" alt="${dup ? '' : ((img && img.alt) || '')}" width="${w}" height="${h}" loading="${loading}" decoding="async" draggable="false">`
+                + `</button>`;
+        };
+        host.innerHTML = ARCHIVE.map(col => {
+            const main = col.imagenes.map((img, i) => buildItem(col, img, i, false)).join('');
+            const dup = col.imagenes.map((img, i) => buildItem(col, img, i, true)).join('');
+            archiveStripBase[col.slug] = { main, dup };
+            // Arranca con 1 copia; setupArchiveMarquees agrega las que hagan falta.
+            return `<div class="archivo-season">`
+                + `<button type="button" class="archivo-season-title font-condensed" data-archive-open="${col.slug}">${archiveTitleHTML(col)}</button>`
+                + `<div class="archivo-strip"><div class="archivo-strip-track" data-slug="${col.slug}">${main}</div></div>`
+                + `</div>`;
+        }).join('');
+        archiveIndexRendered = true;
+    }
+
+    // Duplica el contenido las veces necesarias para que UNA copia supere el ancho
+    // del viewport (carrusel continuo sin cortes) y setea velocidad constante.
+    function setupArchiveMarquees() {
+        const vw = window.innerWidth;
+        document.querySelectorAll('#archivo-index .archivo-strip-track').forEach(track => {
+            const slug = track.getAttribute('data-slug');
+            const base = archiveStripBase[slug];
+            if (!base) return;
+            // Medir el ancho de una copia (el transform no afecta scrollWidth).
+            track.innerHTML = base.main;
+            const oneCopy = track.scrollWidth;
+            if (oneCopy <= 0) return;
+            // Copias: cubrir el viewport + 1 extra para que el loop nunca deje hueco.
+            const copies = Math.max(2, Math.ceil(vw / oneCopy) + 1);
+            let html = base.main;
+            for (let k = 1; k < copies; k++) html += base.dup;
+            track.innerHTML = html;
+            track.style.setProperty('--archivo-copies', copies);
+            track.style.animationDuration = (oneCopy / ARCHIVE_MARQUEE_SPEED) + 's';
+        });
+    }
+
+    function showArchiveIndex(skipHistory) {
+        document.title = 'Archivo — GÜIDO CAPUZZI';
+        const container = document.getElementById('archivo-container');
+        if (!container) return;
+        renderArchiveIndex();
+        const active = container.style.display && container.style.display !== 'none';
+
+        const enter = () => {
+            body.classList.remove(STATE_HOME, STATE_SHOP, STATE_PDP, STATE_ACCOUNT, STATE_CONTACT, STATE_LEGALES, STATE_CHECKOUT, STATE_CONFIRMATION);
+            [
+                document.getElementById('home-container'),
+                document.getElementById('shop'),
+                document.getElementById('product-page'),
+                document.getElementById('checkout'),
+                document.getElementById('legales-container'),
+                document.getElementById('confirmation-container'),
+                accountLoginSection, accountCreateSection, accountContactSection,
+                accountRecoverSection, accountNewPasswordSection
+            ].forEach(sec => {
+                if (sec && sec !== container) { sec.style.display = 'none'; sec.style.opacity = '0'; }
+            });
+            // Fondo oscuro (#1A1A1A) → header en modo claro: logo blanco + links #FAFAFA
+            header.style.backgroundColor = 'transparent';
+            header.style.color = 'var(--color-white)';
+            if (headerLogo) headerLogo.classList.add('visible');
+            window.scrollTo(0, 0);
+            // Medir anchos y setear velocidad del carrusel una vez visible el contenedor.
+            requestAnimationFrame(() => requestAnimationFrame(setupArchiveMarquees));
+            if (!archiveResizeBound) {
+                window.addEventListener('resize', setupArchiveMarquees);
+                archiveResizeBound = true;
+            }
+        };
+
+        if (!active) {
+            transitionState(getActiveSection(), container, 'flex', enter);
+        }
+        if (!skipHistory) pushHistory({ state: 'archive', archiveSlug: null });
+    }
+
+    // --- Detalle (overlay) + mecánica scroll vertical→horizontal ---
+    let archiveDetailOpen = false;
+    let archiveScrollRAF = null;
+    let archiveHintDismissed = false;
+
+    function renderArchiveDetail(col) {
+        const track = document.querySelector('#archive-detail .archive-detail-track');
+        const titleEl = document.querySelector('#archive-detail .archive-detail-title');
+        if (!track) return;
+        track.innerHTML = col.imagenes.map((img, i) => {
+            const src = archiveImgSrc(img, i);
+            const loading = i < 3 ? 'eager' : 'lazy';
+            const w = (img && img.w) || 1200, h = (img && img.h) || 1600;
+            return `<figure class="archive-detail-figure">`
+                + `<img src="${src}" alt="${(img && img.alt) || ''}" width="${w}" height="${h}" loading="${loading}" decoding="async" draggable="false">`
+                + `</figure>`;
+        }).join('');
+        if (titleEl) titleEl.innerHTML = archiveTitleHTML(col);
+    }
+
+    function archiveLayout() {
+        const detail = document.getElementById('archive-detail');
+        if (!detail || detail.style.display === 'none') return;
+        const track = detail.querySelector('.archive-detail-track');
+        const spacer = detail.querySelector('.archive-detail-spacer');
+        const pin = detail.querySelector('.archive-detail-pin');
+        if (!track || !spacer || !pin) return;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const maxX = Math.max(0, track.scrollWidth - vw);
+        detail.__archiveMaxX = maxX;
+        spacer.style.height = (maxX + vh) + 'px';
+        pin.style.height = vh + 'px';
+        archiveApplyTransform();
+    }
+
+    function archiveApplyTransform() {
+        const detail = document.getElementById('archive-detail');
+        if (!detail) return;
+        const scroller = detail.querySelector('.archive-detail-scroller');
+        const track = detail.querySelector('.archive-detail-track');
+        if (!scroller || !track) return;
+        const maxX = detail.__archiveMaxX || 0;
+        const x = Math.min(Math.max(0, scroller.scrollTop), maxX);
+        track.style.transform = `translate3d(${-x}px,0,0)`;
+    }
+
+    function archiveDismissHint() {
+        if (archiveHintDismissed) return;
+        archiveHintDismissed = true;
+        const hint = document.querySelector('#archive-detail .archive-detail-hint');
+        if (hint) hint.classList.add('is-hidden');
+    }
+
+    function archiveOnScroll() {
+        if (archiveScrollRAF) return;
+        archiveScrollRAF = requestAnimationFrame(() => {
+            archiveScrollRAF = null;
+            archiveApplyTransform();
+            archiveDismissHint();
+        });
+    }
+
+    // Scroll horizontal (trackpad/rueda con deltaX, o shift+rueda): lo traducimos
+    // al scroll vertical del scroller, que es el que mueve la tira. Así funcionan
+    // AMBOS ejes. El scroll vertical puro se maneja nativo (mantiene la inercia).
+    function archiveOnWheel(e) {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+            const detail = document.getElementById('archive-detail');
+            const scroller = detail && detail.querySelector('.archive-detail-scroller');
+            if (scroller) {
+                scroller.scrollTop += e.deltaX;
+                e.preventDefault();
+            }
+        }
+    }
+
+    function openArchiveDetail(slug, skipHistory) {
+        const col = findArchiveCollection(slug);
+        const detail = document.getElementById('archive-detail');
+        if (!col || !detail) { showArchiveIndex(false); return; }
+
+        renderArchiveDetail(col);
+        document.title = `${col.titulo} ${col.tituloSup || ''} — Archivo — GÜIDO CAPUZZI`.replace(/\s+/g, ' ').trim();
+
+        detail.style.display = 'block';
+        detail.setAttribute('aria-hidden', 'false');
+        body.classList.add('archive-detail-open');
+
+        const scroller = detail.querySelector('.archive-detail-scroller');
+        const hint = detail.querySelector('.archive-detail-hint');
+        archiveHintDismissed = false;
+        if (hint) hint.classList.remove('is-hidden');
+        if (scroller) scroller.scrollTop = 0;
+
+        archiveLayout();
+        requestAnimationFrame(archiveLayout);
+        // Recalcular cuando cargan las imágenes (scrollWidth puede cambiar).
+        detail.querySelectorAll('img').forEach(img => {
+            if (!img.complete) img.addEventListener('load', archiveLayout, { once: true });
+        });
+
+        if (scroller) {
+            scroller.addEventListener('scroll', archiveOnScroll, { passive: true });
+            scroller.addEventListener('wheel', archiveOnWheel, { passive: false });
+        }
+        window.addEventListener('resize', archiveLayout);
+        archiveDetailOpen = true;
+
+        if (!skipHistory) pushHistory({ state: 'archive', archiveSlug: slug });
+    }
+
+    function closeArchiveDetail(skipHistory) {
+        const detail = document.getElementById('archive-detail');
+        if (!detail) return;
+        const wasOpen = archiveDetailOpen;
+        const scroller = detail.querySelector('.archive-detail-scroller');
+        if (scroller) {
+            scroller.removeEventListener('scroll', archiveOnScroll);
+            scroller.removeEventListener('wheel', archiveOnWheel);
+        }
+        window.removeEventListener('resize', archiveLayout);
+        detail.style.display = 'none';
+        detail.setAttribute('aria-hidden', 'true');
+        body.classList.remove('archive-detail-open');
+        archiveDetailOpen = false;
+        document.title = 'Archivo — GÜIDO CAPUZZI';
+        if (!skipHistory && wasOpen) history.back();
+    }
+
     function restoreState(stateObj) {
         switch (stateObj.state) {
             case 'home':
@@ -4938,6 +5255,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'confirmation':
                 enableConfirmationState(stateObj.ordenId || '', /* skipHistory */ true);
+                break;
+            case 'archive':
+                if (stateObj.archiveSlug) {
+                    showArchiveIndex(/* skipHistory */ true);
+                    openArchiveDetail(stateObj.archiveSlug, /* skipHistory */ true);
+                } else {
+                    closeArchiveDetail(/* skipHistory */ true);
+                    showArchiveIndex(/* skipHistory */ true);
+                }
                 break;
             default:
                 enableHomeState(null, true);
@@ -5005,6 +5331,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (path.startsWith('/legales')) {
             enableLegalesState(null, /* skipHistory */ true);
             history.replaceState({ state: 'legales' }, '', window.location.href);
+            return;
+        }
+        if (path === '/archivo' || path === '/archivo/') {
+            const archiveSlug = params.get('archive');
+            showArchiveIndex(/* skipHistory */ true);
+            // Dejamos el índice como entrada base para que CERRAR/back siempre vuelva a él.
+            history.replaceState({ state: 'archive', archiveSlug: null }, '', URL_ARCHIVE);
+            if (archiveSlug && findArchiveCollection(archiveSlug)) {
+                openArchiveDetail(archiveSlug, /* skipHistory */ false);
+            }
             return;
         }
         if (path.startsWith('/checkout/confirmacion')) {

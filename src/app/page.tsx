@@ -254,11 +254,12 @@ const siteHTML = `
                             </li>
                             <li><a href="#" class="category-link" data-cat="BERMUDAS / SHORTS">BERMUDAS / SHORTS</a>
                             </li>
-                            <li><a href="#" class="category-link" data-cat="ARCHIVO">ARCHIVO</a></li>
+                            <li><a href="#" class="category-link" data-cat="INTERVENCIONES">INTERVENCIONES</a></li>
                             <li><a href="#" class="category-link" data-cat="VER TODO">VER TODO</a></li>
                         </ul>
                     </nav>
                 </div>
+                <a href="/archivo" id="archivo-trigger" class="shop-trigger header-archivo-link">Archivo</a>
             </div>
 
             <div class="header-center">
@@ -1350,7 +1351,38 @@ const siteHTML = `
         </section>
         <!-- /legales-container -->
 
+        <!-- ═══════════════════════════════════════
+             ARCHIVO — Índice (tiras horizontales)
+             ═══════════════════════════════════════ -->
+        <section id="archivo-container" style="display:none;">
+            <div class="archivo-index" id="archivo-index">
+                <!-- Tiras inyectadas por JS desde window.ARCHIVE_DATA -->
+            </div>
+        </section>
+        <!-- /archivo-container -->
+
     </div><!-- END SITE WRAPPER -->
+
+    <!-- ═══════════════════════════════════════
+         ARCHIVO — Detalle (overlay full-viewport, scroll vertical→horizontal)
+         ═══════════════════════════════════════ -->
+    <div id="archive-detail" class="archive-detail" style="display:none;" aria-hidden="true">
+        <div class="archive-detail-scroller">
+            <div class="archive-detail-spacer">
+                <div class="archive-detail-pin">
+                    <div class="archive-detail-track">
+                        <!-- Imágenes inyectadas por JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="archive-detail-ui">
+            <span class="archive-detail-title font-condensed"></span>
+            <div class="archive-detail-hint font-condensed">SCROLL <span class="archive-detail-arrow">&rarr;</span></div>
+            <button type="button" class="archive-detail-close font-condensed">CERRAR</button>
+        </div>
+    </div>
+    <!-- /archive-detail -->
 
     <!-- ═══════════════════════════════════════
          COOKIE CONSENT BANNER
@@ -1525,8 +1557,9 @@ const siteHTML = `
             <a href="#" class="mobile-cat-link font-condensed" data-cat="TOPS / MUSCULOSAS">TOPS / MUSCULOSAS</a>
             <a href="#" class="mobile-cat-link font-condensed" data-cat="PANTALONES / JEANS">PANTALONES / JEANS</a>
             <a href="#" class="mobile-cat-link font-condensed" data-cat="BERMUDAS / SHORTS">BERMUDAS / SHORTS</a>
-            <a href="#" class="mobile-cat-link font-condensed" data-cat="ARCHIVO">ARCHIVO</a>
+            <a href="#" class="mobile-cat-link font-condensed" data-cat="INTERVENCIONES">INTERVENCIONES</a>
             <a href="#" class="mobile-cat-link font-condensed" data-cat="VER TODO">VER TODO</a>
+            <a href="/archivo" class="mobile-archivo-link font-condensed">ARCHIVO</a>
         </div>
     </nav>
 
@@ -1537,6 +1570,8 @@ const siteHTML = `
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Módulo de pago NAVE — Step 3 -->
     <script src="/js/checkout-payment.js"></script>
+    <!-- Datos de la página Archivo -->
+    <script src="/js/archive-data.js"></script>
     <script src="/js/start.js"></script>
 `;
 

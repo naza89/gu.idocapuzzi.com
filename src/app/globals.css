@@ -150,7 +150,7 @@ body.state-home.header-active #announcement-bar {
 }
 
 .announcement-text {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Univers', sans-serif;
     font-size: 0.8rem;
     font-weight: bold;
     letter-spacing: 0.12em;
@@ -784,7 +784,7 @@ header.menu-open #dropdown-menu ul li {
 /* Left: Trigger */
 .header-left .shop-trigger {
     font-size: 0.9rem;
-    font-weight: normal;
+    font-weight: bold;
     position: relative;
     z-index: 10;
 }
@@ -798,6 +798,7 @@ header.menu-open #dropdown-menu ul li {
     position: relative;
     display: inline-block;
     padding-bottom: 2px;
+    font-weight: bold;
 }
 
 .header-right a::after,
@@ -1844,7 +1845,8 @@ body.state-contact #account-contact {
 /* trigger arriba de los talles */
 .size-guide-trigger {
     margin-bottom: 22px;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Univers', sans-serif;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     font-size: 0.8rem;
@@ -1953,31 +1955,40 @@ body.state-contact #account-contact {
 .size-guide-body { display: block; }
 .sg-table-wrap { display: block; }
 
-/* toggle CM | IN — sutil, centrado sobre la tabla */
+/* toggle CM / IN — control segmentado on/off, centrado sobre la tabla */
 .sg-units {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    width: fit-content;
+    margin: 0 auto 16px;
+    border: 1px solid var(--color-black);
+    overflow: hidden;
+    font-family: 'Univers', sans-serif;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
 }
 .sg-units button {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 2px 0;
+    padding: 5px 15px;
     font: inherit;
     letter-spacing: inherit;
     text-transform: inherit;
-    color: rgba(26, 26, 26, 0.38);
-    transition: color 0.2s;
+    color: var(--color-black);
+    transition: background-color 0.22s var(--ease-expose), color 0.22s var(--ease-expose);
 }
-.sg-units button.active { color: var(--color-black); }
-.sg-units .sep { color: rgba(26, 26, 26, 0.25); }
+.sg-units button:first-child {
+    border-right: 1px solid var(--color-black);
+}
+.sg-units button.active {
+    background-color: var(--color-black);
+    color: var(--color-white);
+}
+.sg-units button:not(.active):hover {
+    background-color: rgba(26, 26, 26, 0.06);
+}
 
 /* tabla estilo Martine Rose: grilla, talles en filas */
 .size-guide-table { width: 100%; border-collapse: collapse; }
@@ -1990,16 +2001,16 @@ body.state-contact #account-contact {
     border: 1px solid rgba(26, 26, 26, 0.18);
     transition: background-color 0.15s ease;
 }
-/* primera fila (encabezados) y primera columna (talles) en Univers Condensed */
+/* primera fila (encabezados) y primera columna (talles) en Univers Regular Bold */
 .size-guide-table thead th {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Univers', sans-serif;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     font-size: 0.8rem;
 }
 .size-guide-table tbody th {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Univers', sans-serif;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.95rem;
@@ -7414,4 +7425,319 @@ body.mobile-menu-open #mobile-menu {
         flex: 0 0 45%;
         scroll-snap-align: start;
     }
+}
+
+/* ══════════════════════════════════════════
+   ARCHIVO — Índice (/archivo) + Detalle (?archive=slug)
+   Ref: enfantsrichesdeprimes.com/archive
+   ══════════════════════════════════════════ */
+
+/* Link "Archivo" en el header (al lado de Shop, solo desktop) */
+.header-left {
+    display: flex;
+    align-items: center;
+}
+/* El wrapper de Shop tenía font-size 16px → su line-box (22px) bajaba el texto
+   1px respecto a Archivo. Lo hacemos flex para colapsar su alto al del trigger
+   y que ambos queden alineados. (El dropdown es position:fixed, no se afecta.) */
+.shop-interaction-wrapper {
+    display: flex;
+    align-items: center;
+}
+.header-archivo-link {
+    margin-left: 1.5rem;
+}
+
+/* Superíndice del año (2026) en títulos condensados */
+.archivo-sup {
+    font-size: 0.5em;
+    vertical-align: super;
+    line-height: 0;
+    margin-left: 0.12em;
+    font-weight: 700;
+}
+
+/* ── Índice ── */
+#archivo-container {
+    display: none;
+    min-height: 100vh;
+    background: #1A1A1A;
+    color: #FAFAFA;
+    /* Alto de las tiras — valor exacto de ERD (tiles 4:5 → 102×128) */
+    --archivo-strip-h: 128px;
+}
+
+.archivo-index {
+    /* Valor exacto ERD: pt-[288px] (su header es 88px; el nuestro marquee+header ≈ 92px) */
+    padding: 288px 0 120px;
+}
+
+.archivo-season {
+    margin-bottom: 64px;
+}
+.archivo-season:last-child {
+    margin-bottom: 0;
+}
+
+.archivo-season-title {
+    display: inline-block;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 0 16px 32px;
+    color: #FAFAFA;
+    /* Valor exacto ERD: 32px, condensed bold, line-height 32px */
+    font-size: 32px;
+    line-height: 32px;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: left;
+}
+
+.archivo-strip {
+    overflow: hidden;
+    padding: 0;
+}
+/* Carrusel infinito: el track lleva el contenido DUPLICADO y se anima de
+   translateX(0) a translateX(-50%) → loop perfecto. La duración la setea JS
+   según el ancho para que la velocidad sea constante entre tiras. */
+.archivo-strip-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: archivo-marquee 40s linear infinite;
+}
+.archivo-strip:hover .archivo-strip-track {
+    animation-play-state: paused;
+}
+/* Traslada exactamente UNA copia (el track lleva N copias, seteadas por JS según
+   el viewport) → el caudal de imágenes es continuo y nunca se corta. */
+@keyframes archivo-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(calc(-100% / var(--archivo-copies, 2))); }
+}
+
+.archivo-strip-item {
+    flex: 0 0 auto;
+    height: var(--archivo-strip-h, 128px);
+    /* Aspecto 4:5 fijo (como ERD) → tiles uniformes sin importar la foto. Gap 0. */
+    aspect-ratio: 4 / 5;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+}
+.archivo-strip-item img {
+    height: 100%;
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    transition: opacity 240ms ease;
+}
+.archivo-strip-item:hover img {
+    opacity: 0.82;
+}
+
+/* Accesibilidad: sin animación, tira scrolleable a mano */
+@media (prefers-reduced-motion: reduce) {
+    .archivo-strip {
+        overflow-x: auto;
+    }
+    .archivo-strip-track {
+        animation: none;
+    }
+}
+
+/* ── Detalle (overlay full-viewport, scroll vertical→horizontal) ── */
+.archive-detail {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: #1A1A1A;
+}
+
+body.archive-detail-open {
+    overflow: hidden;
+}
+body.archive-detail-open #main-header {
+    display: none;
+}
+
+.archive-detail-scroller {
+    position: absolute;
+    inset: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.archive-detail-scroller::-webkit-scrollbar {
+    display: none;
+}
+
+.archive-detail-spacer {
+    position: relative;
+    width: 100%;
+}
+
+.archive-detail-pin {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+.archive-detail-track {
+    display: flex;
+    height: 100%;
+    will-change: transform;
+}
+
+.archive-detail-figure {
+    flex: 0 0 auto;
+    height: 100%;
+    margin: 0;
+}
+.archive-detail-figure img {
+    height: 100%;
+    width: auto;
+    display: block;
+    object-fit: cover;
+}
+
+/* UI fija del detalle: título, CERRAR, hint de scroll */
+.archive-detail-ui {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.archive-detail-title,
+.archive-detail-close {
+    position: absolute;
+    bottom: 28px;
+    color: #FAFAFA;
+    font-size: clamp(1.1rem, 2.4vw, 1.7rem);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    line-height: 1;
+}
+.archive-detail-title {
+    left: 32px;
+}
+.archive-detail-close {
+    right: 32px;
+    pointer-events: auto;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: color 200ms ease;
+}
+.archive-detail-close:hover {
+    color: #AD1C1C;
+}
+
+.archive-detail-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #FAFAFA;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: opacity 400ms ease;
+}
+.archive-detail-hint.is-hidden {
+    opacity: 0;
+}
+.archive-detail-arrow {
+    display: inline-block;
+    margin-left: 0.5em;
+}
+
+/* Mobile: tiras más bajas + UI más compacta */
+@media (max-width: 768px) {
+    .archivo-index {
+        padding: 120px 0 64px;
+    }
+    .archivo-season-title {
+        font-size: 22px;
+        line-height: 22px;
+        margin-left: 20px;
+        margin-bottom: 12px;
+    }
+    #archivo-container {
+        --archivo-strip-h: 96px;
+    }
+    .archivo-strip {
+        padding: 0;
+    }
+    .archive-detail-title,
+    .archive-detail-close {
+        bottom: 20px;
+        font-size: 1.05rem;
+    }
+    .archive-detail-title {
+        left: 20px;
+    }
+    .archive-detail-close {
+        right: 20px;
+    }
+    /* Link Archivo dentro del menú mobile (visible por default, sin stagger) */
+    .mobile-archivo-link {
+        display: block;
+        font-family: 'Univers 67 Condensed', 'Arial Narrow', Arial, sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--color-white);
+        text-decoration: none;
+        line-height: 1;
+        margin-top: 8px;
+    }
+}
+
+/* ══════════════════════════════════════════
+   HEADER INVERTIDO — solo HOME y ARCHIVO (fondo oscuro)
+   Al activar el header (hover en cualquier link / dropdown abierto), en vez de
+   ponerse negro, se invierte a esquema claro: header + dropdown #FAFAFA con
+   tipografía #1A1A1A, y la marquee de anuncios pasa a #1A1A1A (bisagra opuesta).
+   El resto de las páginas (fondo #FAFAFA) mantienen su esquema negro sin cambios.
+   `body.header-invert` lo togglea JS = header activo Y (home || archivo).
+   ══════════════════════════════════════════ */
+
+/* Header y sus links → fondo claro, tipografía oscura */
+body.header-invert header.header-hover,
+body.header-invert header.menu-open {
+    background-color: var(--color-white) !important;
+    color: var(--color-black) !important;
+}
+
+/* Logo → negro sobre header claro */
+body.header-invert header.header-hover .header-logo,
+body.header-invert header.menu-open .header-logo {
+    filter: brightness(0) !important;
+}
+
+/* Dropdown → fondo claro con texto oscuro */
+body.header-invert #dropdown-menu {
+    background-color: var(--color-white);
+}
+body.header-invert #dropdown-menu .category-link {
+    color: var(--color-black);
+}
+
+/* Marquee de anuncios → fondo oscuro, texto claro (bisagra invertida) */
+body.header-invert #announcement-bar {
+    background-color: var(--color-black) !important;
+    color: var(--color-white) !important;
 }
