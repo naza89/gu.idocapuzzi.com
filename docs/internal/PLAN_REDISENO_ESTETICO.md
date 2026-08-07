@@ -21,6 +21,28 @@
 
 ---
 
+## 1b. Ratio de imagen — decisión y PENDIENTE ABIERTO
+
+**Decisión (2026-08-05):** se implementa primero el **ratio de Helmut Lang, 4:5** (w:h = 1 : 1.25) en **todas** las superficies.
+
+> ⚠️ **RECORDATORIO EXPLÍCITO PEDIDO POR NAZA:** si el 4:5 no lo convence al verlo implementado, **hay que recordarle probar SU ratio** (el que dibujó en los SVG, más alto y angosto). No dar el 4:5 por cerrado hasta que lo apruebe mirándolo en el navegador.
+
+Los SVG entregados usan cuatro ratios distintos para la misma foto. Tabla de conversión a 4:5:
+
+| Superficie | Ancho | Alto dibujado (ratio) | **Alto a 4:5** |
+|-|-|-|-|
+| Galería PDP desktop | 744 | 773.9 (recortado por el fold) | **930** |
+| Galería PDP mobile | 390 | — | **487** |
+| Card Shop desktop | 445 | 638.5 (1.435) | **556** |
+| Card Shop mobile | 173 | 337.2 (**1.949**) | **216** |
+| Card relacionados | 370 | 503.6 (1.360) | **462** |
+
+**Impacto visible:** la card mobile se acorta de 337 → 216 (−36%). Es el cambio más notorio del 4:5; mirar esa pantalla primero al evaluar.
+
+**Consecuencia de producción:** la sesión de fotos se encuadra en **4:5**. Cada superficie recorta con `object-fit: cover`, así que hay que definir la **zona segura** de la prenda dentro del encuadre.
+
+---
+
 ## 2. Prerequisito técnico (ANTES de todo cambio estético)
 
 ### 2.1 Bug crítico ya existente: descuento de stock del producto equivocado

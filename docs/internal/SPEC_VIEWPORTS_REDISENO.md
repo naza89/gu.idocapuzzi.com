@@ -169,6 +169,90 @@ El grid colapsa a **columna única** (aunque `grid-template-columns` siga dicien
 
 ---
 
+## 2b. REFERENCIA — PDP de Helmut Lang, medida en vivo
+
+> Medido sobre `helmutlang.com/wardrobe-jeans/Q02DM203_RLD.html`, ventana 1440×900.
+> **Su layout mide 1425 igual que el nuestro** (mismo descuento de scrollbar) → las coordenadas se mapean 1:1 al canvas.
+
+### Hecho clave: la PDP de HL es FULL-BLEED, no tiene contenedor
+
+`.product-wrapper` = **1425 de ancho arrancando en x=0**. La galería toca el borde izquierdo. **No hay caja contenedora tipo 1350.** El bloque de info se posiciona por coordenadas propias, no por un container.
+
+| Elemento | x | ancho | y | alto |
+|-|-|-|-|-|
+| Header | 0 | 1440 | 0 | **109** |
+| **Galería (slide)** | **0** | **713** | 109 | **891** |
+| Contador `1/8` | 15 | — | 124 | 17 (font 12px) |
+| Flecha `‹` (32×32) | 5 | 32 | 538.6 | 32 |
+| Flecha `›` (32×32) | 683 | 32 | 538.6 | 32 |
+| **Columna de info** | **740** | **345** | — | — |
+| ├ Nombre + precio (space-between) | 740 | 345 | 169 | 17 |
+| ├ Label "Color: classic blue" | 740 | 345 | 220 | 17 |
+| ├ Fila de swatches | 740 | 345 | 251.5 | 15 |
+| ├ Label "Size:" + SIZE GUIDE | 740 | 345 | 300.5 | 17 |
+| ├ Fila de talles (9 botones) | 740 | 345 | ~320 | 27 |
+| ├ **ADD TO BAG** | 740 | **345** | 382 | **34** |
+| └ Acordeones | 740 | 345 | 500+ | — |
+
+**Proporciones derivadas:**
+- Galería = **exactamente 50%** del ancho de layout (712.5 → renderiza 713).
+- Ratio de la galería = **4:5 exacto** (imagen nativa 1800×2250, `object-fit: fill`).
+- Separación galería → info = **27px** (713 → 740).
+- **Espacio vacío a la derecha = 340px** (info termina en 1085, layout en 1425). La columna NO está centrada en la mitad derecha: está pegada a la galería con un margen derecho enorme. Es intencional y muy HL.
+- Flechas: verticalmente **centradas** en la galería (centro 554.6 = centro exacto de 109→1000), inset 5px de cada borde.
+- Contador: inset **15px** de la esquina superior izquierda de la imagen.
+
+**Swatches de color (el detalle que confirma la idea del borde):** cada swatch mide **36.4 × 15** y contiene un elemento interno de **34.4 × 13** — es decir, **1px de borde alrededor de un fill**. Separación entre swatches: **15px** (paso de 51.5). O sea: HL ya separa borde de relleno, exactamente lo que hace falta para codificar el color de la estampa en el borde.
+
+**Mecánica:** es un **Swiper** (`swiper-button-prev` / `swiper-button-next`), no un stack con scroll. La página no scrollea (`scrollHeight` = 900 = viewport); el alto de la galería (891) excede el fold y la imagen se recorta abajo.
+
+### HL en MOBILE (medido a 390×844)
+
+Acá **sí aparece un contenedor**, pero solo para el texto — la galería sigue full-bleed.
+
+| Elemento | x | ancho | y | alto |
+|-|-|-|-|-|
+| Header | 0 | 390 | 0 | **79** |
+| **Galería** | **0** | **390** (full-bleed) | 114 | **487.5** |
+| Flecha `‹` | 5 | 32 | 341.8 | 32 |
+| Flecha `›` | 353 | 32 | 341.8 | 32 |
+| **Bloque de info** | **10** | **370** | — | — |
+| ├ Nombre + precio | 10 | 370 | 613 | 16 |
+| ├ Fila de color + swatches | 10 | 370 | 654 | 47.5 |
+| ├ Fila de talles | 10 | 370 | 714 | 76 |
+| └ **ADD TO BAG** | 10 | **370** | 815 | **34** |
+
+**Estructura mobile:**
+- Galería **full-bleed 390 × 487.5**, mismo ratio **4:5** que desktop. Arranca en y=114 (debajo del header de 79).
+- Flechas **32×32**, inset 5px de cada borde, **verticalmente centradas** en la galería (centro 357.8 = centro exacto de 114→601.5).
+- Todo el texto y los controles viven en un contenedor de **370** con **márgenes de 10px**.
+- Swatches mobile: **44.3 × 15** (más anchos que en desktop), interno 42.3 × 13, gap **10**.
+- La página **sí scrollea** en mobile (`scrollHeight` 2611): la columna de info va apilada debajo de la galería, no al costado.
+
+**Offsets verticales desde el borde inferior de la galería** (portables al header de 60px de GÜIDO):
+
+| | Distancia bajo la galería |
+|-|-|
+| Nombre + precio | **+11.5** |
+| Fila de color | **+52.5** |
+| Fila de talles | **+112.5** |
+| ADD TO BAG | **+213.5** |
+
+⚠️ HL usa **10px** de margen lateral en mobile; GÜIDO usa **`--padding-sides: 20px`** (contenido 350) en Shop y footer. **Recomendación: mantener 20/350** por consistencia con el resto del sitio — la diferencia de 10px no se percibe, pero una PDP con márgenes distintos al resto sí.
+
+### ⚠️ Implicancia de producción para GÜIDO
+
+Las fotos actuales de GÜIDO son **2:3** (medido: 721 × 1074.7 = ratio 1.49). Las de HL son **4:5** (1.25). Con el mismo ancho de 713:
+
+| Ratio | Alto de la galería | ¿Entra en el fold de 900 con header 80? |
+|-|-|-|
+| **4:5** (HL) | **891** | No — sobra 71px |
+| **2:3** (fotos actuales de GÜIDO) | **1069** | No — sobra 249px |
+
+Hay que decidir el ratio **antes** de la sesión de fotos.
+
+---
+
 ## 3. GUÍA DE TALLES (overlay)
 
 ### Desktop (canvas 1425 × 900)

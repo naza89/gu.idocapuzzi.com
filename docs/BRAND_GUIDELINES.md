@@ -11,17 +11,28 @@
 
 ## Tipografía
 
-- **Univers 67 Condensed Bold** (`UniversCnBold.ttf`) — Títulos, headings, CTAs, textos condensados
-- **Univers Regular** (`UniversRegular.ttf`) — Body text, descripciones, formularios
+> **Cambio de marca (2026-08-06):** la tipografía pasó de Univers a **Helvetica**.
+> Motivo: Univers Condensed Bold, por debajo de ~14px, cerraba las contraformas y
+> dejaba de leerse como la misma tipografía (hinting pobre del TTF). Helvetica Neue
+> LT Std 77 Bold Condensed es la posición equivalente (67 ↔ 77) y resuelve limpio
+> en todos los cuerpos. Los `.ttf` de Univers quedan en `public/assets/fonts/` como
+> archivo histórico — no usar en UI nueva.
+
+- **Helvetica Neue LT Std 77 Bold Condensed** (`HelveticaNeueLTStd-BdCn.otf`, familia CSS `'Helvetica Neue Condensed'`) — Títulos, headings, CTAs, header, marquee, textos condensados
+- **Helvetica** (`Helvetica.ttf` 400 + `Helvetica-Bold.ttf` 700, familia CSS `'Helvetica'`) — Body text, descripciones, formularios
 
 Archivos en: `public/assets/fonts/`
 
+Pendiente técnico: convertir `Helvetica.ttf`/`Helvetica-Bold.ttf` a WOFF2 (hoy ~300KB c/u) y verificar licencia web de Monotype antes del lanzamiento.
+
 ## Assets de marca
+
+Regenerados en Helvetica (2026-08-06):
 
 - `public/assets/brand/logo-guido-negro.svg` — Logo negro (para fondos claros)
 - `public/assets/brand/logo-guido-blanco.svg` — Logo blanco (para fondos oscuros, header)
-- `public/assets/brand/logo-guido-footer.svg` — Logo footer
-- `public/assets/brand/logo-guido-footer-negro.svg` — Logo footer variante negra
+- `public/assets/brand/logo-guido-registrado.svg` — Logo con ® (footer)
+- `public/assets/brand/logo-teaser.svg` — Teaser
 
 ## Tono de voz
 

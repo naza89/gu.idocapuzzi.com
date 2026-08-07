@@ -4,6 +4,28 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-08-06
+
+### Cambio de tipografía de marca: Univers → Helvetica (FUNDAMENTAL)
+- **Problema encontrado:** Univers 67 Condensed Bold se degradaba en cuerpos chicos (≤14px): el hinting pobre del TTF cerraba las contraformas y el texto dejaba de leerse como la misma tipografía (visible comparando el copyright del footer contra los links). Helmut Lang no tiene el problema porque usa Helvetica Neue.
+- **Solución adoptada:** Cambio definitivo de la tipografía de marca a **Helvetica**, aprobado por Naza tras probarla en vivo (vía `@font-face src: local()` — dato técnico: Chrome solo matchea el PostScript name `HelveticaNeueLTStd-BdCn`). Migración: `'Univers 67 Condensed'` → `'Helvetica Neue Condensed'` (65 usos) y `'Univers'` → `'Helvetica'` (110 usos); 3 caras copiadas a `public/assets/fonts/` (77 Bold Cn .otf 29KB, Regular 400 y Bold 700 .ttf ~300KB c/u); marquee y nav del header pasados a la condensada con `text-transform: uppercase`; logos SVG de marca regenerados por Naza en Helvetica (`logo-guido-registrado.svg` con ® reemplaza al SVG inline del footer en los 3 lugares). Hallazgo lateral: Univers Condensed es duplexada (57 y 67 miden idéntico, la regular usa 30% menos tinta).
+- **Archivo modificado:** `src/app/globals.css`, `src/app/page.tsx`, `public/js/start.js`, `public/assets/fonts/` (3 nuevos), `public/assets/brand/`, `docs/BRAND_GUIDELINES.md` + vault `Marca/Brand Guidelines.md` y `Marca/Identidad Visual.md`.
+- **Pendiente:** Commit. WOFF2 para las dos caras regular/bold (~300KB c/u hoy). Verificar licencia web de Monotype antes del lanzamiento. Univers queda en el repo como histórico.
+
+### Footer 2026 implementado (primera fase del rediseño estético)
+- **Objetivo:** Implementar el footer nuevo desde los SVG de Inkscape de `frontend_nuevo/` (`footer_nuevo_1/2/mobile.svg`) — primera fase del plan de rediseño (`docs/internal/PLAN_REDISENO_ESTETICO.md`). Única herencia del footer viejo: la animación de reveal del logo por clip-path.
+- **Solución adoptada:** Markup nuevo unificado (`.site-footer` + `.sf-*`) en los 3 footers (home, shop, PDP inyectado por `start.js`): copyright arriba-izquierda, 3 columnas de nav flush a la derecha (1385), newsletter desplegable (form nombre/apellido/email/consentimiento con validación, sin proveedor conectado aún), logo gigante al pie. Mobile simplificado por decisión de Naza: solo acordeones SOPORTE/LEGALES/SOCIALES + copyright (392.5px exactos de spec). Hover de links recuperado: highlight negro que invade de izquierda a derecha con el texto invirtiendo a blanco. Ajustes post-review de Naza: links a 13.5px (= newsletter), gap entre columnas 100, paso entre links 23. Se neutralizaron 3 `!important` del CSS viejo y una regla `#account-* .shop-footer` que rompía el flex.
+- **Verificación:** medición JS en preview contra la spec del SVG — desktop: copyright y=96, nav flush 1385, newsletter 210, logo 420; mobile: acordeones 207/244/281, alto 392.5 exacto. Build limpio. El reveal del logo quedó verificado solo a nivel CSS (el preview headless no compone frames) — falta verlo en browser real.
+- **Archivo modificado:** `src/app/globals.css`, `src/app/page.tsx`, `public/js/start.js` (nuevo `initFooterInteractions()`, idempotente por `data-sf-init`).
+- **Pendiente:** URL de Twitter (placeholder con `data-pending-url`), proveedor de email del newsletter.
+
+### Sesión 2026-08-05 (misma conversación): spec de viewports + plan maestro + 3 commits
+- **Objetivo:** Preparar el rediseño estético: dimensiones exactas para que Naza replique los viewports en Inkscape, análisis de referencias, y commit del trabajo acumulado.
+- **Solución adoptada:** (1) `docs/internal/SPEC_VIEWPORTS_REDISENO.md` — medición en vivo del sitio: canvas de trabajo **1425×900** desktop (la scrollbar clásica come 15px de los 1440) y **390×844** mobile; grid del Shop, PDP, guía de talles y footer con todos los px. (2) Medición en vivo de la PDP de Helmut Lang (su layout también da 1425): galería 713×891 = 50% exacto del layout, ratio **4:5**, columna de info 345px en x=740, swatches 36×15 con estructura borde+fill. En mobile HL: galería full-bleed, texto en contenedor — regla "la imagen nunca se contiene, el texto siempre". (3) `docs/internal/PLAN_REDISENO_ESTETICO.md` — plan maestro de 6 fases con decisiones cerradas: card por producto con swatches hover borde-codificados (borde rojo = estampa roja), galería PDP horizontal con flechas y contador, ratio 4:5 para todo (con recordatorio explícito de probar el ratio de Naza si no convence), colorways como capa frontend sin migración de DB, URLs `/shop/{producto}/{colorway}` con 301s. (4) Review de los 13 SVG de `frontend_nuevo/`: canvas exactos, 4 inconsistencias detectadas y resueltas con Naza. (5) 3 commits: `58ef12a` (página Archivo + inversión header), `550a8db` (tooling Claude), `07d56d1` (docs) — artefactos de test OCA al `.gitignore` por marca "NO COMMITEAR" en su header.
+- **Hallazgo crítico del advisor:** bug preexistente en `public/js/checkout-logic.js:297` — el lookup de `variante_id` filtra solo por colorway+talle sin producto, puede descontar stock del producto equivocado ("NEGRO" existe en 5 productos). Fix por SKU es la Fase 0 del plan, prerequisito de la consolidación.
+- **Archivo modificado:** `docs/internal/` (2 nuevos), `.gitignore`, y los 3 commits mencionados.
+- **Pendiente:** Replicar SVG del Shop y PDP (próxima sesión). Archivo/Raf Simons diferido — la referencia se re-verifica con Naza cuando llegue el momento.
+
 ## 2026-07-20
 
 ### Presupuesto de producción fotográfica registrado + plan semanal de lanzamiento
