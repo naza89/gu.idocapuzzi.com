@@ -52,18 +52,39 @@
 }
 
 /* Font Faces */
+/* ─── TIPOGRAFÍA DE MARCA ──────────────────────────────────────────────
+   Agosto 2026: la marca pasa de Univers a Helvetica.
+   · 'Helvetica Neue Condensed' → Helvetica Neue LT Std 77 Bold Condensed.
+     Reemplaza a Helvetica Neue Condensed (títulos, header, marquee, CTAs).
+     Motivo del cambio: Univers Condensed Bold, al bajar de ~14px, cerraba
+     las contraformas y dejaba de leerse como la misma tipografía.
+   · 'Helvetica' → Helvetica Regular (400) + Bold (700). Reemplaza a
+     Univers Regular en body, descripciones y formularios.
+   Los .ttf de Univers quedan en /assets/fonts por si hay que volver.
+   ────────────────────────────────────────────────────────────────────── */
 @font-face {
-    font-family: 'Univers 67 Condensed';
-    src: url('/assets/fonts/UniversCnBold.ttf') format('truetype');
+    font-family: 'Helvetica Neue Condensed';
+    src: url('/assets/fonts/HelveticaNeueLTStd-BdCn.otf') format('opentype');
     font-weight: bold;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-    font-family: 'Univers';
-    src: url('/assets/fonts/UniversRegular.ttf') format('truetype');
+    font-family: 'Helvetica';
+    src: url('/assets/fonts/Helvetica.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
+}
+
+/* Declarada para que el navegador no sintetice la negrita del body */
+@font-face {
+    font-family: 'Helvetica';
+    src: url('/assets/fonts/Helvetica-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* Reset & Base */
@@ -78,7 +99,7 @@ html {
 }
 
 body {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     color: var(--color-black);
     background-color: var(--color-white);
     overflow-x: hidden;
@@ -87,7 +108,7 @@ body {
 
 /* Utility Classes */
 .font-condensed {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     letter-spacing: 0.02em;
     text-transform: uppercase;
 }
@@ -150,7 +171,7 @@ body.state-home.header-active #announcement-bar {
 }
 
 .announcement-text {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.8rem;
     font-weight: bold;
     letter-spacing: 0.12em;
@@ -338,7 +359,7 @@ body.announcement-hidden #search-overlay {
     background: transparent;
     border: none;
     color: var(--color-white);
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 1rem;
     outline: none;
 }
@@ -463,7 +484,7 @@ body.state-contact.search-open .header-logo {
 }
 
 .section-subtitle {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.9rem;
     margin-bottom: 10px;
     letter-spacing: 0.02em;
@@ -515,7 +536,7 @@ body.state-contact.search-open .header-logo {
 
 .btn-rect.btn-rect-mobile span {
     color: var(--color-black) !important;
-    font-family: 'Univers', sans-serif !important;
+    font-family: 'Helvetica', sans-serif !important;
     font-weight: 400;
 }
 
@@ -526,7 +547,7 @@ body.state-contact.search-open .header-logo {
     padding: 10px 20px;
     border: 1px solid var(--color-white);
     border-radius: 0;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -731,7 +752,7 @@ header.menu-open #dropdown-menu {
     /* Ensures padding expands the hit area */
     padding: 4px 0;
     /* Visual spacing (replaces gap) */
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 1.5rem;
     color: var(--color-white);
     /* Always white in dropdown */
@@ -787,6 +808,16 @@ header.menu-open #dropdown-menu ul li {
     font-weight: bold;
     position: relative;
     z-index: 10;
+}
+
+/* Nav del header en Helvetica condensada y mayúsculas (agosto 2026):
+   SHOP, ARCHIVO, BUSCAR, CUENTA, CARRITO.
+   El menú mobile ya hereda la condensada por .font-condensed. */
+.header-left .shop-trigger,
+.header-right a,
+.header-archivo-link {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    text-transform: uppercase;
 }
 
 /* ─── C5: HEADER NAV LINKS — Underline #FAFAFA izquierda a derecha ─── */
@@ -930,7 +961,7 @@ header.menu-open #dropdown-menu ul li {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: 80px !important;
+    padding-top: 80px;
     padding-bottom: 40px;
     padding-left: var(--padding-sides, 40px);
     padding-right: var(--padding-sides, 40px);
@@ -983,7 +1014,7 @@ header.menu-open #dropdown-menu ul li {
 }
 
 .footer-nav-list li a {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.02em;
     color: var(--color-white);
@@ -1002,7 +1033,7 @@ header.menu-open #dropdown-menu ul li {
 }
 
 .footer-copyright p {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.7rem;
     letter-spacing: 0.04em;
     line-height: 1.6;
@@ -1082,7 +1113,7 @@ header.menu-open #dropdown-menu ul li {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: 80px !important;
+    padding-top: 80px;
     padding-bottom: 40px;
     padding-left: var(--padding-sides, 40px);
     padding-right: var(--padding-sides, 40px);
@@ -1161,7 +1192,7 @@ body.state-shop #shop {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     /* Standard font for controls */
     font-size: 0.9rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -1259,7 +1290,7 @@ body.state-shop #shop {
 }
 
 .product-name {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 1.05rem;
     text-transform: uppercase;
     font-weight: bold;
@@ -1268,7 +1299,7 @@ body.state-shop #shop {
 
 .product-color,
 .product-price {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     color: var(--color-black);
     opacity: 0.8;
 }
@@ -1458,7 +1489,7 @@ body.state-contact #account-contact {
 }
 
 .forgot-pwd {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.8rem;
     /* XS */
     text-decoration: underline;
@@ -1482,7 +1513,7 @@ body.state-contact #account-contact {
 }
 
 .input-group label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.75rem;
     /* XXS */
     letter-spacing: 0.1em;
@@ -1494,7 +1525,7 @@ body.state-contact #account-contact {
     border: none;
     border-bottom: 1px dashed var(--color-black);
     padding: 10px 0;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 1rem;
     background: transparent;
     outline: none;
@@ -1757,7 +1788,7 @@ body.state-contact #account-contact {
     background: none;
     border: 1px solid transparent;
     padding: 10px 15px;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     cursor: pointer;
     font-size: 1.1rem;
     transition: all 0.2s;
@@ -1845,7 +1876,7 @@ body.state-contact #account-contact {
 /* trigger arriba de los talles */
 .size-guide-trigger {
     margin-bottom: 22px;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -1908,7 +1939,7 @@ body.state-contact #account-contact {
     padding-bottom: 26px;
 }
 .sg-label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     font-size: 0.82rem;
     letter-spacing: 0.02em;
@@ -1928,7 +1959,7 @@ body.state-contact #account-contact {
 
 /* título = nombre de la prenda (Univers Condensed mayúscula) */
 .size-guide-title {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     text-transform: uppercase;
     font-size: 2rem;
     line-height: 1;
@@ -1939,7 +1970,7 @@ body.state-contact #account-contact {
 
 /* descripción — Univers Regular, mayúsculas, #1A1A1A */
 .sg-desc {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     color: #1A1A1A;
     text-transform: uppercase;
     font-size: 0.82rem;
@@ -1962,7 +1993,7 @@ body.state-contact #account-contact {
     margin: 0 auto 16px;
     border: 1px solid var(--color-black);
     overflow: hidden;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -1996,21 +2027,21 @@ body.state-contact #account-contact {
 .size-guide-table td {
     text-align: center;
     padding: 12px 6px;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.82rem;
     border: 1px solid rgba(26, 26, 26, 0.18);
     transition: background-color 0.15s ease;
 }
 /* primera fila (encabezados) y primera columna (talles) en Univers Regular Bold */
 .size-guide-table thead th {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     font-size: 0.8rem;
 }
 .size-guide-table tbody th {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.95rem;
@@ -2153,7 +2184,7 @@ body.cart-open #cart-drawer {
     cursor: pointer;
     line-height: 1;
     padding: 0;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     /* Clean sans */
     opacity: 0.5;
     transition: opacity 0.2s;
@@ -2236,7 +2267,7 @@ body.cart-open #cart-drawer {
     text-transform: uppercase;
     line-height: 1.2;
     margin-bottom: 5px;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
 }
 
 .item-color {
@@ -2244,13 +2275,13 @@ body.cart-open #cart-drawer {
     color: #666;
     text-transform: uppercase;
     margin-bottom: 5px;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
 }
 
 .item-price {
     font-size: 0.9rem;
     margin-bottom: 20px;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
 }
 
 /* Qty Selector (Compact) */
@@ -2400,7 +2431,7 @@ body.state-account #account-contact {
 }
 
 .forgot-pwd {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.75rem;
     /* Slightly smaller to prevent wrapping */
     text-decoration: underline;
@@ -2469,7 +2500,7 @@ body.state-contact #account-contact {
 
 /* Contact confirmation message — single line */
 .contact-confirmation {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.85rem;
     line-height: 1.5;
     color: var(--color-black);
@@ -2510,7 +2541,7 @@ body.state-contact #account-contact {
     height: 125px;
     width: 100%;
     resize: none;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 1rem;
     padding: 10px;
     background: transparent;
@@ -2609,7 +2640,7 @@ body.state-account .shop-footer {
 }
 
 .input-group label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -2620,7 +2651,7 @@ body.state-account .shop-footer {
     border: none;
     border-bottom: 1px dashed var(--color-black);
     padding: 10px 0;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 1rem;
     background: transparent;
     outline: none;
@@ -2647,7 +2678,7 @@ body.state-account .shop-footer {
     width: 100%;
     padding: 15px;
     /* Reduced air inside buttons */
-    font-family: 'Univers 67 Condensed', 'Univers', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Helvetica', sans-serif;
     /* Requested Font */
     font-weight: bold;
     /* Bold */
@@ -2911,7 +2942,7 @@ body.filters-open #ui-overlay {
 }
 
 .radio-label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.02em;
 }
@@ -2973,7 +3004,7 @@ body.filters-open #ui-overlay {
 }
 
 .checkbox-label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.02em;
 }
@@ -3153,7 +3184,7 @@ body.state-checkout #checkout {
     gap: 10px;
     margin-bottom: 55px;
     /* Increased vertical space between breadcrumb and CONTACTO */
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     /* 14px for breadcrumb */
 }
@@ -3187,18 +3218,18 @@ body.state-checkout #checkout {
 }
 
 .checkout-section-title {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 25px;
     /* Increased to 25px as requested */
     letter-spacing: 0;
-    /* NO letter-spacing for Univers 67 Condensed */
+    /* NO letter-spacing for Helvetica Neue Condensed */
     text-transform: uppercase;
     margin: 0;
     color: #1A1A1A;
 }
 
 .checkout-login-link {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 13px;
     /* 13px for login link */
     color: rgba(26, 26, 26, 0.6);
@@ -3236,7 +3267,7 @@ body.state-checkout #checkout {
     border: 1px solid #1A1A1A;
     border-radius: 5px;
     background-color: transparent;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     /* 14px for input text */
     color: #1A1A1A;
@@ -3260,7 +3291,7 @@ body.state-checkout #checkout {
     gap: 10px;
     cursor: pointer;
     margin-top: 15px;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 13px;
     /* 13px for checkbox labels */
     color: #1A1A1A;
@@ -3315,7 +3346,7 @@ body.state-checkout #checkout {
     color: #FAFAFA;
     border: none;
     border-radius: 8px;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 17px;
     /* 17pt as specified */
     letter-spacing: 0.02em;
@@ -3346,7 +3377,7 @@ body.state-checkout #checkout {
     background-color: rgba(194, 59, 34, 0.06);
     border: 1px solid rgba(194, 59, 34, 0.3);
     border-radius: 5px;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 13px;
     color: #c23b22;
     display: none;
@@ -3374,14 +3405,14 @@ body.state-checkout #checkout {
 }
 
 .resumen-label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     color: rgba(26, 26, 26, 0.5);
     white-space: nowrap;
 }
 
 .resumen-value {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     color: #1A1A1A;
     overflow: hidden;
@@ -3390,7 +3421,7 @@ body.state-checkout #checkout {
 }
 
 .resumen-cambiar {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 13px;
     color: rgba(26, 26, 26, 0.5);
     text-decoration: none;
@@ -3471,21 +3502,21 @@ body.state-checkout #checkout {
 }
 
 .envio-opcion-nombre {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     font-weight: 500;
     color: #1A1A1A;
 }
 
 .envio-opcion-precio {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     font-weight: 500;
     color: #1A1A1A;
 }
 
 .envio-opcion-plazo {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     color: #8a8a8a;
 }
@@ -3498,7 +3529,7 @@ body.state-checkout #checkout {
     padding: 0;
     margin-top: 8px;
     margin-left: 32px;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     color: rgba(26, 26, 26, 0.1);
     cursor: default;
@@ -3529,7 +3560,7 @@ body.state-checkout #checkout {
 }
 
 .envio-sucursales-titulo {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     font-weight: 500;
     color: #1A1A1A;
@@ -3547,7 +3578,7 @@ body.state-checkout #checkout {
     position: relative;
     padding-left: 28px;
     cursor: pointer;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     color: rgba(26, 26, 26, 0.5);
     transition: color 0.2s ease;
@@ -3594,7 +3625,7 @@ body.state-checkout #checkout {
 
 /* =========== BACK LINK =========== */
 .checkout-back-link {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 13px;
     color: rgba(26, 26, 26, 0.6);
     text-decoration: none;
@@ -3708,7 +3739,7 @@ body.state-checkout #checkout {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 11px;
     /* 11px for badge */
     font-weight: 500;
@@ -3723,7 +3754,7 @@ body.state-checkout #checkout {
 }
 
 .checkout-item-name {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 13px;
     /* 13px for item name */
     text-transform: uppercase;
@@ -3733,7 +3764,7 @@ body.state-checkout #checkout {
 }
 
 .checkout-item-variant {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 11px;
     /* 11px for variant */
     color: rgba(26, 26, 26, 0.6);
@@ -3741,7 +3772,7 @@ body.state-checkout #checkout {
 }
 
 .checkout-item-price {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     /* 14px for price */
     color: #1A1A1A;
@@ -3760,7 +3791,7 @@ body.state-checkout #checkout {
     border: 1px solid rgba(26, 26, 26, 0.3);
     border-radius: 5px;
     background-color: transparent;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     /* 14px for discount input */
     color: #1A1A1A;
@@ -3790,21 +3821,21 @@ body.state-checkout #checkout {
 }
 
 .checkout-total-label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     /* 14px for labels */
     color: #1A1A1A;
 }
 
 .checkout-total-value {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     /* 14px for values */
     color: #1A1A1A;
 }
 
 .checkout-total-note {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 12px;
     /* 12px for note */
     color: rgba(26, 26, 26, 0.5);
@@ -3822,7 +3853,7 @@ body.state-checkout #checkout {
 }
 
 .checkout-total-final .checkout-total-label {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 22px;
     /* Same size as total amount */
     font-weight: bold;
@@ -3830,7 +3861,7 @@ body.state-checkout #checkout {
 }
 
 .checkout-total-currency {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 12px;
     /* 12px for currency */
     color: rgba(26, 26, 26, 0.5);
@@ -3838,7 +3869,7 @@ body.state-checkout #checkout {
 }
 
 .checkout-total-amount {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 22px;
     /* 22px for total amount - larger and bold condensed */
     letter-spacing: 0;
@@ -3916,7 +3947,7 @@ body.state-checkout #checkout {
     }
 
     .checkout-summary-label {
-        font-family: 'Univers', 'Univers Regular', sans-serif;
+        font-family: 'Helvetica', sans-serif;
         font-size: 12px;
         font-weight: 400;
         text-transform: none;
@@ -3934,7 +3965,7 @@ body.state-checkout #checkout {
     }
 
     .checkout-summary-total-preview {
-        font-family: 'Univers 67 Condensed', 'Univers Condensed', sans-serif;
+        font-family: 'Helvetica Neue Condensed', sans-serif;
         font-size: 14px;
         font-weight: bold;
         text-transform: uppercase;
@@ -4307,7 +4338,7 @@ body.state-checkout #checkout {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 12px;
     color: rgba(26, 26, 26, 0.5);
 }
@@ -4377,7 +4408,7 @@ body.state-checkout #checkout {
 }
 
 .pago-metodo-nombre {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     font-weight: 500;
     color: #1A1A1A;
@@ -4391,7 +4422,7 @@ body.state-checkout #checkout {
 }
 
 .pago-card-badge {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -4448,7 +4479,7 @@ body.state-checkout #checkout {
     gap: 14px;
     padding: 28px 0;
     color: rgba(26, 26, 26, 0.5);
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 13px;
 }
 
@@ -4469,7 +4500,7 @@ body.state-checkout #checkout {
 /* ── DISCLAIMER NAVE ── */
 .pago-nave-disclaimer {
     margin-top: 14px;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 11px;
     color: #bbbbbb;
     text-align: center;
@@ -4486,7 +4517,7 @@ body.state-checkout #checkout {
 }
 
 .pago-qr-instruccion {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 13px;
     color: rgba(26, 26, 26, 0.6);
     line-height: 1.6;
@@ -4511,7 +4542,7 @@ body.state-checkout #checkout {
     align-items: center;
     gap: 12px;
     color: rgba(26, 26, 26, 0.4);
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 12px;
 }
 
@@ -4527,7 +4558,7 @@ body.state-checkout #checkout {
 }
 
 .pago-qr-expiry {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 11px;
     color: #bbbbbb;
 }
@@ -4543,7 +4574,7 @@ body.state-checkout #checkout {
     border-radius: 5px;
     margin-top: 16px;
     color: #c23b22;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 13px;
     line-height: 1.5;
     animation: pagoFadeIn 0.25s ease forwards;
@@ -4563,7 +4594,7 @@ body.state-checkout #checkout {
     color: #FAFAFA;
     border: none;
     border-radius: 8px;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 17px;
     letter-spacing: 0.02em;
     text-transform: uppercase;
@@ -4706,7 +4737,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .confirmacion-titulo {
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 2.4rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -4727,7 +4758,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .confirmacion-orden {
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 1rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -4793,13 +4824,13 @@ body.state-confirmation #confirmation-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 0.6rem;
     line-height: 1;
 }
 
 .producto-confirm-nombre {
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 0.92rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -4807,7 +4838,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .producto-confirm-detalle {
-    font-family: 'Univers', 'Helvetica Neue', sans-serif;
+    font-family: 'Helvetica', 'Helvetica Neue', sans-serif;
     font-size: 0.78rem;
     text-transform: uppercase;
     color: #1A1A1A;
@@ -4816,7 +4847,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .producto-confirm-precio {
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 0.95rem;
     letter-spacing: 0.04em;
     color: #1A1A1A;
@@ -4844,7 +4875,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .confirmacion-label {
-    font-family: 'Univers', 'Helvetica Neue', sans-serif;
+    font-family: 'Helvetica', 'Helvetica Neue', sans-serif;
     font-size: 0.78rem;
     font-weight: 200;
     letter-spacing: 0.1em;
@@ -4854,7 +4885,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .confirmacion-value {
-    font-family: 'Univers', 'Helvetica Neue', sans-serif;
+    font-family: 'Helvetica', 'Helvetica Neue', sans-serif;
     font-size: 0.88rem;
     color: #1A1A1A;
     text-align: right;
@@ -4879,7 +4910,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .total-label {
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 1.3rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -4887,7 +4918,7 @@ body.state-confirmation #confirmation-container {
 }
 
 .total-value {
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 1.3rem;
     letter-spacing: 0.04em;
     color: #1A1A1A;
@@ -4912,7 +4943,7 @@ body.state-confirmation #confirmation-container {
     padding: 18px 42px;
     background-color: #1A1A1A;
     color: #FAFAFA;
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 0.95rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -4952,7 +4983,7 @@ body.state-confirmation #confirmation-container {
 
 .confirmacion-nota {
     margin-top: 20px;
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
     font-size: 0.65rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -5050,7 +5081,7 @@ body.state-legales #legales-container {
 }
 
 .legales-title {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: clamp(3rem, 5vw, 4.5rem);
     font-weight: bold;
     letter-spacing: 0.02em;
@@ -5067,7 +5098,7 @@ body.state-legales #legales-container {
 }
 
 .legales-nav-link {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -5116,7 +5147,7 @@ body.state-legales #legales-container {
 
 /* ── TÍTULO DE SECCIÓN ── */
 .legales-section-title {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 1.45rem;
     font-weight: bold;
     letter-spacing: 0.04em;
@@ -5128,7 +5159,7 @@ body.state-legales #legales-container {
 
 /* Fecha de actualización */
 .legales-update-date {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -5139,7 +5170,7 @@ body.state-legales #legales-container {
 
 /* ── CUERPO — uppercase justified, como ERD ── */
 .legales-body {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.88rem;
     line-height: 1.75;
     text-transform: uppercase;
@@ -5155,13 +5186,13 @@ body.state-legales #legales-container {
 
 .legales-body strong,
 .legales-body b {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: bold;
 }
 
 /* Subtítulo de subsección — bold, margen arriba como separador visual */
 .legales-block-title {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: bold;
     font-size: 0.78rem;
     letter-spacing: 0.08em;
@@ -5185,7 +5216,7 @@ body.state-legales #legales-container {
 }
 
 .legales-list li {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.78rem;
     line-height: 1.75;
     text-transform: uppercase;
@@ -5269,7 +5300,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-title {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: clamp(3rem, 5vw, 4.5rem);
     font-weight: bold;
     letter-spacing: 0.02em;
@@ -5287,7 +5318,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-nav-link {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -5329,7 +5360,7 @@ body.state-legales #legales-container {
     padding: 18px 36px;
     background-color: var(--color-black);
     color: var(--color-white);
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 1rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -5379,7 +5410,7 @@ body.state-legales #legales-container {
 
 /* ── SECTION TITLE ── */
 .cuenta-section-title {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 3rem;
     font-weight: bold;
     letter-spacing: 0.02em;
@@ -5391,7 +5422,7 @@ body.state-legales #legales-container {
 
 /* ── GREETING ── */
 .cuenta-greeting {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -5412,7 +5443,7 @@ body.state-legales #legales-container {
 .cuenta-field:last-of-type { border-bottom: none; }
 
 .cuenta-field-label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -5422,7 +5453,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-field-value {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.82rem;
     letter-spacing: 0.04em;
     color: var(--color-black);
@@ -5431,7 +5462,7 @@ body.state-legales #legales-container {
 
 /* ── MIS PEDIDOS — empty + order rows ── */
 .cuenta-pedidos-empty {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.78rem;
     line-height: 1.75;
     text-transform: uppercase;
@@ -5462,7 +5493,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-order-id {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.82rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -5470,7 +5501,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-order-date {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.68rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -5484,7 +5515,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-order-items {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.72rem;
     letter-spacing: 0.04em;
     color: rgba(26, 26, 26, 0.6);
@@ -5492,7 +5523,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-order-total {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.78rem;
     letter-spacing: 0.04em;
     color: var(--color-black);
@@ -5501,7 +5532,7 @@ body.state-legales #legales-container {
 /* ── ORDER STATUS BADGE ── */
 .cuenta-order-status {
     display: inline-block;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.62rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -5590,7 +5621,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-order-id {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 1rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -5598,7 +5629,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-order-date {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.68rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -5607,7 +5638,7 @@ body.state-legales #legales-container {
 
 .cuenta-order-status {
     display: inline-block;
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.62rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -5623,7 +5654,7 @@ body.state-legales #legales-container {
 .cuenta-order-status.status-cancelado { background: rgba(26,26,26,0.04); color: rgba(26,26,26,0.35); }
 
 .cuenta-pedido-chevron {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 1.1rem;
     color: rgba(26,26,26,0.4);
     transition: transform 240ms cubic-bezier(0.25, 0, 0, 1);
@@ -5672,7 +5703,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pedido-item-name {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.82rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -5683,7 +5714,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pedido-item-detail {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.68rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -5691,7 +5722,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pedido-item-price {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.03em;
     color: var(--color-black);
@@ -5750,7 +5781,7 @@ body.state-legales #legales-container {
     margin-bottom: 10px;
 }
 .cronograma-title {
-    font-family: 'UniversCondensed', 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-weight: 700;
     font-size: 13px;
     letter-spacing: 0.05em;
@@ -5762,7 +5793,7 @@ body.state-legales #legales-container {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     font-size: 9px;
     letter-spacing: 0.07em;
@@ -5896,7 +5927,7 @@ body.state-legales #legales-container {
     justify-content: center;
 }
 .cronograma-dot-pending span {
-    font-family: 'UniversCondensed', 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-weight: 700;
     font-size: 10px;
     color: var(--color-white);
@@ -5925,7 +5956,7 @@ body.state-legales #legales-container {
     margin-bottom: 4px;
 }
 .cronograma-step-label {
-    font-family: 'UniversCondensed', 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-weight: 700;
     font-size: 13px;
     color: var(--color-black);
@@ -5937,7 +5968,7 @@ body.state-legales #legales-container {
 
 /* Pills */
 .cronograma-pill {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     font-size: 8.5px;
     letter-spacing: 0.07em;
@@ -5954,7 +5985,7 @@ body.state-legales #legales-container {
 
 /* Timestamp */
 .cronograma-step-time {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 10px;
     color: var(--color-black);
     opacity: 0.42;
@@ -5964,7 +5995,7 @@ body.state-legales #legales-container {
 
 /* Descripción */
 .cronograma-step-desc {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 11px;
     color: var(--color-black);
     opacity: 0.72;
@@ -5973,7 +6004,7 @@ body.state-legales #legales-container {
 
 /* Motivo de error */
 .cronograma-step-motivo {
-    font-family: 'UniversCondensed', 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-weight: 700;
     font-size: 10px;
     letter-spacing: 0.04em;
@@ -5993,7 +6024,7 @@ body.state-legales #legales-container {
     align-items: center;
 }
 .cronograma-progress-labels span {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     font-size: 9.5px;
     letter-spacing: 0.05em;
@@ -6023,7 +6054,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pedido-total-label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.62rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -6031,7 +6062,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pedido-total-value {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 1rem;
     letter-spacing: 0.04em;
     color: var(--color-black);
@@ -6039,7 +6070,7 @@ body.state-legales #legales-container {
 
 /* Alert message */
 .cuenta-pedido-alert {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.68rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -6065,7 +6096,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pedido-detail-label {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.62rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -6075,7 +6106,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pedido-detail-value {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.72rem;
     letter-spacing: 0.03em;
     color: var(--color-black);
@@ -6099,7 +6130,7 @@ body.state-legales #legales-container {
 }
 
 .evento-fecha {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.62rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -6109,7 +6140,7 @@ body.state-legales #legales-container {
 }
 
 .evento-estado {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -6117,7 +6148,7 @@ body.state-legales #legales-container {
 }
 
 .evento-motivo {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.65rem;
     text-transform: uppercase;
     color: rgba(26,26,26,0.5);
@@ -6135,7 +6166,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-datos-block-title {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.65rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -6143,7 +6174,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-edit-link {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -6223,7 +6254,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-direccion-calle {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.82rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -6231,7 +6262,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-direccion-detail {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.68rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -6239,7 +6270,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-direccion-principal {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.6rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -6254,7 +6285,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-direccion-action {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.65rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -6294,7 +6325,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pref-label {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.82rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -6302,7 +6333,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-pref-desc {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.68rem;
     letter-spacing: 0.03em;
     color: rgba(26,26,26,0.4);
@@ -6421,7 +6452,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-modal-title {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 1.2rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -6461,7 +6492,7 @@ body.state-legales #legales-container {
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.68rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -6483,7 +6514,7 @@ body.state-legales #legales-container {
 }
 
 .cuenta-modal-confirm-text {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.78rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -6499,7 +6530,7 @@ body.state-legales #legales-container {
     padding: 14px 28px;
     background: transparent;
     color: var(--color-black);
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.9rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -6590,7 +6621,7 @@ body.state-legales #legales-container {
 }
 
 .cookie-text {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.82rem;
     line-height: 1.5;
     letter-spacing: 0.01em;
@@ -6618,7 +6649,7 @@ body.state-legales #legales-container {
 
 /* ─── ACEPTAR: fill horizontal izq→der (como btn-rect del home) ─── */
 .cookie-btn-accept {
-    font-family: 'Univers 67 Condensed', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-size: 0.78rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -6660,7 +6691,7 @@ body.state-legales #legales-container {
 
 /* ─── RECHAZAR: hover rojo GÜIDO ─── */
 .cookie-btn-decline {
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.78rem;
     letter-spacing: 0.04em;
     color: var(--color-black);
@@ -6718,7 +6749,7 @@ body.state-legales #legales-container {
     position: absolute;
     top: 2px;
     right: 0;
-    font-family: 'Univers', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 0.6rem;
     background-color: var(--color-red);
     color: var(--color-white);
@@ -6885,7 +6916,7 @@ body.state-legales #legales-container {
     .home-footer,
     .shop-footer {
         min-height: auto;
-        padding-top: 40px !important;
+        padding-top: 40px;
         padding-bottom: 30px;
         gap: 0;
     }
@@ -7177,7 +7208,7 @@ body.mobile-menu-open #mobile-menu {
 
 .mobile-cat-link {
     display: block;
-    font-family: 'Univers 67 Condensed', 'Arial Narrow', Arial, sans-serif;
+    font-family: 'Helvetica Neue Condensed', 'Arial Narrow', Arial, sans-serif;
     font-size: 28px;
     font-weight: 700;
     letter-spacing: 0.03em;
@@ -7310,7 +7341,7 @@ body.mobile-menu-open #mobile-menu {
 
     /* Description: Univers Regular (not Condensed), smaller than colorway */
     .pdp-description {
-        font-family: 'Univers', sans-serif;
+        font-family: 'Helvetica', sans-serif;
         font-size: 12px;
         line-height: 18px;
         margin-top: 24px;
@@ -7339,7 +7370,7 @@ body.mobile-menu-open #mobile-menu {
     }
 
     .pdp-care-text {
-        font-family: 'Univers', sans-serif;
+        font-family: 'Helvetica', sans-serif;
         font-size: 12px;
         line-height: 18px;
     }
@@ -7694,7 +7725,7 @@ body.archive-detail-open #main-header {
     /* Link Archivo dentro del menú mobile (visible por default, sin stagger) */
     .mobile-archivo-link {
         display: block;
-        font-family: 'Univers 67 Condensed', 'Arial Narrow', Arial, sans-serif;
+        font-family: 'Helvetica Neue Condensed', 'Arial Narrow', Arial, sans-serif;
         font-size: 28px;
         font-weight: 700;
         letter-spacing: 0.03em;
@@ -7740,4 +7771,427 @@ body.header-invert #dropdown-menu .category-link {
 body.header-invert #announcement-bar {
     background-color: var(--color-black) !important;
     color: var(--color-white) !important;
+}
+
+/* =========================================
+   FOOTER 2026 — rediseño
+   Spec: frontend_nuevo/footer_nuevo_1.svg (colapsado),
+         footer_nuevo_2.svg (newsletter abierto),
+         footer_nuevo_mobile.svg (simplificado)
+   Canvas: 1425×630.7 desktop · 390×392.5 mobile
+   Contenedor: 1345 (40px de margen) · 350 (20px de margen)
+   Único elemento heredado del footer anterior: la animación
+   de reveal del logo (.footer-logo → .revealed, JS en start.js).
+   ========================================= */
+.site-footer {
+    --sf-muted: #9D9D9D;
+    width: 100%;
+    background-color: var(--color-white);
+    color: var(--color-black);
+    padding: 96px var(--padding-sides) 32px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    /* Resets contra el CSS del footer anterior (.home-footer / .shop-footer,
+       que siguen en el markup para no romper reglas de #account-* y la PDP) */
+    min-height: 0;
+    gap: 0;
+    border-top: none;
+    justify-content: flex-start;
+    /* Los .ttf de Univers hintean mal en tamaños chicos: sin esto el
+       trazo engorda y las contraformas se cierran. */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Fila superior: copyright a la izquierda, nav a la derecha ── */
+.sf-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    width: 100%;
+    /* Fija la altura del bloque superior en los 114 del SVG: al achicar los
+       links el nav mide menos, y sin esto el newsletter y el logo treparían
+       desde las posiciones ya aprobadas (211 y 421). */
+    min-height: 114px;
+}
+
+.sf-copyright p {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 13.5px;
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+    text-transform: uppercase;
+    color: var(--color-black);
+    margin: 0;
+}
+
+.sf-copyright .footer-cuit {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--sf-muted);
+}
+
+/* ── Columnas de navegación ── */
+.sf-nav {
+    display: flex;
+    gap: 100px;
+    align-items: flex-start;
+}
+
+.sf-nav-col {
+    display: flex;
+    flex-direction: column;
+}
+
+/* El título es el disparador del acordeón: sólo existe en mobile */
+.sf-nav-title {
+    display: none;
+}
+
+.sf-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    /* Separación entre links a la mitad (era 15). */
+    gap: 7.5px;
+    /* -1px arriba y abajo: descuenta el padding del highlight en los
+       extremos, para que el bloque mida los 114 del SVG y no 117. */
+    margin: -1px 0;
+    padding: 0;
+}
+
+.sf-nav-list li {
+    line-height: 0;
+}
+
+.sf-nav-list a {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    /* Mismo cuerpo que el bloque de newsletter */
+    font-size: 13.5px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--color-black);
+    text-decoration: none;
+    /* Highlight que invade de izquierda a derecha (firma GÜIDO).
+       display:block + fit-content en vez de inline-block: la caja abraza
+       al texto igual, pero sin el strut del baseline que sumaba 4px por
+       fila y sacaba el paso de 33 (spec) a 37. */
+    position: relative;
+    display: block;
+    width: fit-content;
+    white-space: nowrap;
+    padding: 1px 4px;
+    margin: 0 -4px;
+    overflow: hidden;
+    transition: color 200ms ease;
+}
+
+.sf-nav-list a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background-color: var(--color-black);
+    transition: width 260ms var(--ease-expose);
+    z-index: 0;
+}
+
+/* El texto viaja por encima del fill */
+.sf-nav-list a span {
+    position: relative;
+    z-index: 1;
+}
+
+.sf-nav-list a:hover {
+    color: var(--color-white);
+}
+
+.sf-nav-list a:hover::before {
+    width: 100%;
+}
+
+/* ── Newsletter ── */
+.sf-newsletter {
+    /* El SVG dibuja 604, pero Univers Condensed corre más ancho que la
+       fuente del SVG y la bajada partía en dos líneas. 648 la deja en una. */
+    width: 648px;
+    max-width: 100%;
+    margin-top: 0;
+}
+
+.sf-nl-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    width: 100%;
+}
+
+.sf-nl-title {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-black);
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sf-nl-toggle {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-black);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: none;
+}
+
+.sf-newsletter.is-open .sf-nl-toggle {
+    display: block;
+}
+
+.sf-nl-sub {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 13.3px;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--sf-muted);
+    margin: 16px 0 0;
+}
+
+.sf-newsletter.is-open .sf-nl-sub {
+    display: none;
+}
+
+/* Formulario — sólo visible con .is-open */
+.sf-nl-form {
+    display: none;
+    margin-top: 16px;
+}
+
+.sf-newsletter.is-open .sf-nl-form {
+    display: block;
+}
+
+.sf-nl-field {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--color-black);
+    background: transparent;
+    padding: 4px 0;
+    margin-bottom: 9px;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-black);
+    border-radius: 0;
+}
+
+.sf-nl-field::placeholder {
+    color: var(--sf-muted);
+    text-transform: uppercase;
+}
+
+.sf-nl-field:focus {
+    outline: none;
+    border-bottom-color: var(--color-red);
+}
+
+.sf-nl-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-top: 30px;
+}
+
+.sf-nl-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 11px;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+    color: var(--color-black);
+    max-width: 370px;
+    cursor: pointer;
+}
+
+.sf-nl-consent input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    border: 1px solid var(--color-black);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+}
+
+.sf-nl-consent input:checked {
+    background: var(--color-black);
+    box-shadow: inset 0 0 0 2px var(--color-white);
+}
+
+.sf-nl-submit {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-black);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity var(--transition-fast) ease;
+}
+
+.sf-nl-submit:hover {
+    opacity: 0.55;
+}
+
+.sf-nl-msg {
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    margin: 12px 0 0;
+    min-height: 14px;
+}
+
+/* ── Logo gigante (conserva el reveal por clip-path) ── */
+.site-footer .footer-logo-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    margin-top: 162px;
+    padding: 0;
+}
+
+.site-footer .footer-logo {
+    width: 100%;
+    height: auto;
+    display: block;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 900ms cubic-bezier(0.25, 0, 0, 1);
+}
+
+.site-footer .footer-logo.revealed {
+    clip-path: inset(0 0% 0 0);
+}
+
+
+/* El footer clonado dentro de las secciones Account/Contact recibe
+   `display: block` de una regla con más especificidad (#account-* .shop-footer).
+   Lo devolvemos a flex column para no romper el layout nuevo. */
+#account-login .site-footer,
+#account-create .site-footer,
+#account-recover .site-footer,
+#account-new-password .site-footer,
+#account-contact .site-footer {
+    display: flex;
+}
+
+/* ── MOBILE: footer simplificado (sin newsletter, sin logo) ── */
+@media (max-width: 768px) {
+    .site-footer {
+        padding: 207px var(--padding-sides) 16px;
+    }
+
+    .sf-top {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .sf-nav {
+        order: 1;
+        flex-direction: column;
+        gap: 17px;
+        width: 100%;
+    }
+
+    .sf-copyright {
+        order: 2;
+        margin-top: 38px;
+    }
+
+    /* 15px (no 15.5) para que entre en 2 líneas dentro de los 350 del
+       contenedor, como en el SVG. Univers Condensed corre más ancho. */
+    .sf-copyright p {
+        font-size: 15px;
+        line-height: 1.25;
+    }
+
+    .sf-copyright .footer-cuit {
+        font-size: 12.8px;
+    }
+
+    .sf-newsletter,
+    .site-footer .footer-logo-container {
+        display: none;
+    }
+
+    /* Acordeones */
+    .sf-nav-col {
+        width: 100%;
+    }
+
+    .sf-nav-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        font-family: 'Helvetica Neue Condensed', sans-serif;
+        font-size: 16px;
+        line-height: 1.25;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--color-black);
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .sf-nav-title::after {
+        content: '+';
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .sf-nav-col.is-open .sf-nav-title::after {
+        content: '–';
+    }
+
+    .sf-nav-list {
+        display: none;
+        gap: 14px;
+        padding-top: 16px;
+    }
+
+    .sf-nav-col.is-open .sf-nav-list {
+        display: flex;
+    }
 }
