@@ -824,7 +824,6 @@ header.menu-open #dropdown-menu ul li {
 /* Al cerrar el menú los items desaparecen junto con el container
    (opacity 0 en #dropdown-menu en 0.3s) — sin animar salida individual */
 
-
 /* Left: Trigger */
 .header-left .shop-trigger {
     font-size: 0.9rem;
@@ -910,11 +909,6 @@ header.menu-open #dropdown-menu ul li {
     -webkit-text-stroke: 0.5px currentColor;
 }
 
-.inverted-letter {
-    display: inline-block;
-    transform: scaleY(-1);
-}
-
 /* Right: Utilities */
 .header-right {
     display: flex;
@@ -992,28 +986,6 @@ header.menu-open #dropdown-menu ul li {
     gap: 50px;
 }
 
-/* Footer Main Content Grid */
-.footer-main-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-    gap: 40px;
-    flex-wrap: wrap;
-}
-
-/* Navigation Columns Container */
-.footer-left-section {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-}
-
-.footer-nav-columns {
-    display: flex;
-    gap: 60px;
-}
-
 /* Individual Navigation Column */
 .footer-nav-column {
     display: flex;
@@ -1029,57 +1001,13 @@ header.menu-open #dropdown-menu ul li {
     color: var(--color-white);
 }
 
-.footer-nav-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.footer-nav-list li a {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.02em;
-    color: var(--color-white);
-    text-decoration: none;
-    transition: opacity var(--transition-fast) ease;
-}
-
-.footer-nav-list li a:hover {
-    opacity: 0.7;
-}
-
-
-/* Footer Copyright */
-.footer-copyright {
-    margin-top: 64px;
-}
-
-.footer-copyright p {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
-    line-height: 1.6;
-    text-transform: uppercase;
-    color: var(--color-white);
-    margin: 0;
-}
-
 .footer-cuit {
     opacity: 0.55;
     font-size: 0.65rem;
 }
 
-.shop-footer .footer-copyright p {
-    color: var(--color-brown);
-}
-
 @media (max-width: 768px) {
-    .footer-copyright {
-        margin-top: 24px;
-    }
 }
-
 
 /* Footer Logo */
 .footer-logo-container {
@@ -1104,25 +1032,6 @@ header.menu-open #dropdown-menu ul li {
 
 .footer-logo.revealed {
     clip-path: inset(0 0% 0 0);
-}
-
-/* Old Footer Content (for shop footer compatibility) */
-.footer-content {
-    display: flex;
-    gap: 40px;
-    align-items: center;
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-}
-
-.brand-name {
-    font-weight: bold;
-}
-
-.footer-links {
-    display: flex;
-    gap: 20px;
-    font-weight: normal;
 }
 
 /* =========================================
@@ -1150,9 +1059,6 @@ header.menu-open #dropdown-menu ul li {
 }
 
 /* color de links del shop-footer gestionado en bloque C4 */
-
-
-
 
 /* =========================================
    SHOP SECTIONS
@@ -1211,24 +1117,6 @@ body.state-shop #shop {
     margin-bottom: 60px;
     /* Significant space added */
     /* Slight optical adjustment */
-}
-
-/* Controls Row */
-.shop-controls-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: 'Helvetica', sans-serif;
-    /* Standard font for controls */
-    font-size: 0.9rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: 10px;
-}
-
-.shop-actions {
-    display: flex;
-    gap: 20px;
-    align-items: center;
 }
 
 .filtros-btn {
@@ -1328,10 +1216,6 @@ body.state-shop #shop {
     font-family: 'Helvetica', sans-serif;
     color: var(--color-black);
     opacity: 0.8;
-}
-
-.product-color {
-    text-transform: uppercase;
 }
 
 /* Precio con highlight negro al ras del texto (aplica también a "PRÓXIMAMENTE") */
@@ -1497,92 +1381,6 @@ body.state-contact #account-contact {
     display: block;
 }
 
-/* Login Header */
-.login-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 60px;
-    border-bottom: 1px solid transparent;
-    /* Alignment fix */
-}
-
-.login-header h1 {
-    font-size: 3rem;
-    /* XL approx */
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
-
-.forgot-pwd {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.8rem;
-    /* XS */
-    text-decoration: underline;
-    color: var(--color-black);
-    opacity: 0.8;
-}
-
-/* Login Fields */
-.login-fields {
-    margin: 60px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-}
-
-.input-group {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    gap: 0;
-}
-
-.input-group label {
-    font-family: 'Helvetica', sans-serif;
-    font-size: var(--fs-body);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-black);
-}
-
-.input-custom {
-    border: none;
-    border-bottom: 1px dashed var(--color-black);
-    height: var(--form-h);
-    padding: 0;
-    font-family: 'Helvetica', sans-serif;
-    font-size: var(--fs-body);
-    line-height: var(--lh-body);
-    background: transparent;
-    outline: none;
-    transition: border-bottom 0.3s ease;
-    border-radius: 0;
-}
-
-.input-custom:focus {
-    border-bottom: 1px solid var(--color-black);
-}
-
-/* Actions */
-.login-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-top: 60px;
-}
-
-.login-actions button {
-    width: 100%;
-    height: var(--form-h);
-    padding: 0;
-    font-size: var(--fs-body);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    border: none;
-}
-
 .is-inactive {
     background-color: #E0E0E0;
     /* Grey Medium */
@@ -1707,18 +1505,6 @@ body.state-contact #account-contact {
 .pdp-gallery--single .pdp-nav,
 .pdp-gallery--single .pdp-counter { display: none; }
 
-/* Right Column — top block: title, colorway, price */
-.pdp-top-info {
-    grid-column: 2;
-    grid-row: 1;
-    padding: 0 var(--padding-sides);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-/* Right Column — bottom block: selectors, button, description (sticky) */
 /* ─── Columna de info: alineada a la izquierda, scrollea contra la galería ─── */
 /* El ritmo vertical de la columna lo lleva el `gap` del flex, no los márgenes
    sueltos de cada bloque: así el espacio es el mismo entre todos los elementos
@@ -1786,16 +1572,6 @@ body.state-contact #account-contact {
     max-width: 100%;
     text-align: left;
     margin: 16px 0 0; /* 40 del gap + 16 = 56 de aire después del botón */
-}
-
-/* Desktop: muestra descripción en top-info (entre precio y selectors), oculta la de bottom-info */
-.pdp-description--mobile {
-    display: none;
-}
-
-.pdp-description--desktop {
-    display: block;
-    margin-top: 24px;
 }
 
 /* Bloque CUIDADO — debajo del botón AÑADIR, alineado a su borde izquierdo */
@@ -2192,7 +1968,6 @@ body.state-contact #account-contact {
     gap: 6.7px;
 }
 
-
 /* =========================================
    CINEMATIC CART SYSTEM
    ========================================= */
@@ -2582,8 +2357,6 @@ body.state-account #account-contact {
     /* Reduced from 40px */
 }
 
-
-
 #account-create .login-actions,
 #account-contact .login-actions {
     margin-top: 25px;
@@ -2615,22 +2388,6 @@ body.state-contact #account-contact {
 #account-contact .login-container {
     justify-content: flex-start !important;
     align-items: stretch !important;
-}
-
-/* Contact confirmation message — single line */
-.contact-confirmation {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: var(--color-black);
-    opacity: 0;
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-top: 40px;
-    white-space: nowrap;
-}
-
-.contact-confirmation.visible {
-    opacity: 1;
 }
 
 #account-create .input-custom {
@@ -2669,68 +2426,14 @@ body.state-contact #account-contact {
     /* Ensure padding doesn't break width */
 }
 
-/* ─── C4: FOOTER NAV ANIMATION — Highlight izquierda a derecha ─── */
-
-/* Reset: quitar hover opacity heredado */
-.footer-nav-list li a:hover {
-    opacity: 1 !important;
-}
-
-/* Base link */
-.footer-nav-list a {
-    position: relative;
-    display: inline-block;
-    text-decoration: none;
-    white-space: nowrap;
-    padding: 1px 4px;
-    margin: 0 -4px;
-    overflow: hidden;
-    transition: color 200ms ease;
-}
-
-/* Fill que invade desde izquierda */
-.footer-nav-list a::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 0%;
-    height: 100%;
-    transition: width 260ms cubic-bezier(0.25, 0, 0, 1);
-    z-index: 0;
-}
-
-/* Span del texto sobre el fill */
-.footer-nav-list a span {
-    position: relative;
-    z-index: 1;
-}
-
 /* SCENARIO 1: HOME (fondo negro — texto blanco, fill blanco, texto invierte a negro) */
 .home-footer .footer-nav-list a {
     color: var(--color-white);
-}
-.home-footer .footer-nav-list a::before {
-    background-color: var(--color-white);
-}
-.home-footer .footer-nav-list a:hover {
-    color: var(--color-black);
-}
-.home-footer .footer-nav-list a:hover::before {
-    width: 100%;
 }
 
 /* SCENARIO 2: SHOP (fondo blanco — texto marrón, fill marrón, texto invierte a blanco) */
 .shop-footer .footer-nav-list a {
     color: var(--color-brown) !important;
-}
-.shop-footer .footer-nav-list a::before {
-    background-color: var(--color-brown);
-}
-.shop-footer .footer-nav-list a:hover {
-    color: var(--color-white) !important;
-}
-.shop-footer .footer-nav-list a:hover::before {
-    width: 100%;
 }
 
 .textarea-custom:focus {
@@ -2851,46 +2554,12 @@ body.state-account .shop-footer {
     color: var(--color-black);
 }
 
-.shop-footer .footer-links a,
-.shop-footer .footer-links span {
-    color: var(--color-black);
-}
-
 /* Home Footer (Black) */
 .home-footer {
     background-color: var(--color-black);
     color: var(--color-white);
     margin-top: auto;
     /* Push to bottom if container is flex col */
-}
-
-.home-footer .brand-name {
-    color: var(--color-white);
-}
-
-.home-footer .footer-links a,
-.home-footer .footer-links span {
-    color: var(--color-white);
-}
-
-.footer-content {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 40px;
-}
-
-.footer-links {
-    display: flex;
-    gap: 20px;
-}
-
-.footer-links a,
-.footer-links span {
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 0.8rem;
-    text-transform: uppercase;
 }
 
 /* Media Query for Mobile (Shift amount adjust) */
@@ -4200,10 +3869,6 @@ body.state-checkout #checkout {
         font-size: 11px;
     }
 
-    .resumen-link {
-        font-size: 10px;
-    }
-
     .envio-opcion {
         padding: 14px 16px;
     }
@@ -5123,7 +4788,6 @@ body.state-confirmation #confirmation-container {
     .producto-confirm-thumb { width: 48px; height: 48px; }
 }
 
-
 /* =========================================
    LEGALES PAGE — Estética ERD
    Sin bordes, sin líneas, sin max-width.
@@ -5629,27 +5293,6 @@ body.state-legales #legales-container {
     color: rgba(26, 26, 26, 0.4);
 }
 
-.cuenta-order-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
-
-.cuenta-order-items {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    color: rgba(26, 26, 26, 0.6);
-    text-transform: uppercase;
-}
-
-.cuenta-order-total {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.78rem;
-    letter-spacing: 0.04em;
-    color: var(--color-black);
-}
-
 /* ── ORDER STATUS BADGE ── */
 .cuenta-order-status {
     display: inline-block;
@@ -5668,14 +5311,6 @@ body.state-legales #legales-container {
 .cuenta-order-status.status-pagado {
     background: rgba(26, 26, 26, 0.08);
     color: var(--color-black);
-}
-.cuenta-order-status.status-preparando {
-    background: rgba(68, 37, 23, 0.08);
-    color: var(--color-brown);
-}
-.cuenta-order-status.status-enviado {
-    background: rgba(173, 28, 28, 0.06);
-    color: var(--color-red);
 }
 .cuenta-order-status.status-entregado {
     background: rgba(26, 26, 26, 0.04);
@@ -5768,7 +5403,6 @@ body.state-legales #legales-container {
 
 .cuenta-order-status.status-pendiente { background: rgba(26,26,26,0.06); color: rgba(26,26,26,0.5); }
 .cuenta-order-status.status-pagado    { background: rgba(26,26,26,0.08); color: var(--color-black); }
-.cuenta-order-status.status-preparando { background: rgba(68,37,23,0.08); color: var(--color-brown); }
 .cuenta-order-status.status-activo   { background: rgba(26,26,26,0.08); color: var(--color-black); }
 .cuenta-order-status.status-entregado { background: rgba(26,26,26,0.04); color: rgba(26,26,26,0.45); }
 .cuenta-order-status.status-alerta   { background: rgba(173,28,28,0.08); color: var(--color-red); }
@@ -6189,16 +5823,6 @@ body.state-legales #legales-container {
     color: var(--color-black);
 }
 
-/* Alert message */
-.cuenta-pedido-alert {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.68rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--color-red);
-    margin-top: 12px;
-}
-
 /* Collapsible detail */
 .cuenta-pedido-detail {
     border-top: 1px solid rgba(26,26,26,0.07);
@@ -6232,47 +5856,6 @@ body.state-legales #legales-container {
     letter-spacing: 0.03em;
     color: var(--color-black);
     text-align: right;
-}
-
-/* Eventos list */
-.cuenta-pedido-eventos {
-    list-style: none;
-    padding: 0;
-    margin: 4px 0 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.cuenta-pedido-evento {
-    display: flex;
-    gap: 12px;
-    align-items: baseline;
-}
-
-.evento-fecha {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: rgba(26,26,26,0.35);
-    flex-shrink: 0;
-    min-width: 80px;
-}
-
-.evento-estado {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-black);
-}
-
-.evento-motivo {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    color: rgba(26,26,26,0.5);
 }
 
 /* =========================================
@@ -7436,15 +7019,6 @@ body.mobile-menu-open #mobile-menu {
         text-transform: uppercase;
     }
 
-    /* Mobile: oculta la del top-info, muestra la del bottom-info */
-    .pdp-description--desktop {
-        display: none;
-    }
-
-    .pdp-description--mobile {
-        display: block;
-    }
-
     .pdp-care {
         margin-top: 28px;
     }
@@ -8197,7 +7771,6 @@ body.header-invert #announcement-bar {
 .site-footer .footer-logo.revealed {
     clip-path: inset(0 0% 0 0);
 }
-
 
 /* El footer clonado dentro de las secciones Account/Contact recibe
    `display: block` de una regla con más especificidad (#account-* .shop-footer).
