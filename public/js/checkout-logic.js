@@ -291,20 +291,48 @@ async function crearOrdenPendiente(clienteId, direccionId, cartItems) {
     // Insertar items de la orden (snapshot del producto + variante_id real)
     const itemsParaInsertar = [];
     for (const item of cartItems) {
-        // Buscar variante_id real en Supabase por colorway + talle (colorway es único por producto)
+        // Buscar variante_id real en Supabase.
+        //
+        // Se busca por SKU, que es UNIQUE en variantes_producto y por lo tanto
+        // identifica una y sólo una fila. La versión anterior buscaba por
+        // (colorway, talle) sin el producto, asumiendo que el colorway era único
+        // en toda la tabla — y no lo es: 'NEGRO' lo comparten la musculosa, la
+        // remera afligida, la baby tee, la termal, la bermuda double knee y el
+        // jean italiano, y las cuatro piezas de INTERVENCIONES comparten '1/1'.
+        // Con .limit(1) la consulta devolvía la primera fila que encontrara, así
+        // que una compra podía descontar stock de otro producto.
         let varianteId = null;
         try {
-            const { data: variantes } = await window.supabaseClient
-                .from('variantes_producto')
-                .select('id')
-                .eq('colorway', item.colorway || '')
-                .eq('talle', item.size || '')
-                .limit(1);
-            if (variantes && variantes.length > 0) {
-                varianteId = variantes[0].id;
-                console.log('[Checkout] ✅ Variante encontrada:', varianteId, 'para', item.name, item.colorway, item.size);
+            if (item.sku) {
+                const { data: variantes } = await window.supabaseClient
+                    .from('variantes_producto')
+                    .select('id')
+                    .eq('sku', item.sku)
+                    .limit(1);
+                if (variantes && variantes.length > 0) varianteId = variantes[0].id;
+            }
+
+            // Fallback por (nombre de producto, colorway, talle) para carritos
+            // viejos en sessionStorage, de antes de que el item llevara SKU.
+            // Incluye el producto, así que tampoco puede cruzarse.
+            if (!varianteId) {
+                const { data: variantes } = await window.supabaseClient
+                    .from('variantes_producto')
+                    .select('id, productos!inner(nombre)')
+                    .eq('productos.nombre', item.name || '')
+                    .eq('colorway', item.colorway || '')
+                    .eq('talle', item.size || '')
+                    .limit(1);
+                if (variantes && variantes.length > 0) {
+                    varianteId = variantes[0].id;
+                    console.warn('[Checkout] Variante resuelta por fallback (item sin SKU):', item.name, item.colorway, item.size);
+                }
+            }
+
+            if (varianteId) {
+                console.log('[Checkout] ✅ Variante encontrada:', varianteId, '| SKU:', item.sku || '(sin SKU)');
             } else {
-                console.warn('[Checkout] Variante no encontrada para:', item.name, item.colorway, item.size);
+                console.error('[Checkout] ❌ Variante NO encontrada:', item.name, item.colorway, item.size, '| SKU:', item.sku);
             }
         } catch (lookupErr) {
             console.warn('[Checkout] Error buscando variante_id:', lookupErr);
