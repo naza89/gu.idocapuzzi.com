@@ -18,12 +18,21 @@
 > en todos los cuerpos. Los `.ttf` de Univers quedan en `public/assets/fonts/` como
 > archivo histórico — no usar en UI nueva.
 
-- **Helvetica Neue LT Std 77 Bold Condensed** (`HelveticaNeueLTStd-BdCn.otf`, familia CSS `'Helvetica Neue Condensed'`) — Títulos, headings, CTAs, header, marquee, textos condensados
-- **Helvetica** (`Helvetica.ttf` 400 + `Helvetica-Bold.ttf` 700, familia CSS `'Helvetica'`) — Body text, descripciones, formularios
+- **Helvetica Neue LT Std 77 Bold Condensed** (`HelveticaNeueLTStd-BdCn.woff2`, familia CSS `'Helvetica Neue Condensed'`) — Títulos, headings, CTAs, header, marquee, descripciones de PDP
+- **Helvetica Neue Roman / Bold** (`HelveticaNeue-Roman.woff2` 400 + `HelveticaNeue-Bold.woff2` 700, familia CSS `'Helvetica'`) — Body text, formularios, tablas
 
 Archivos en: `public/assets/fonts/`
 
-Pendiente técnico: convertir `Helvetica.ttf`/`Helvetica-Bold.ttf` a WOFF2 (hoy ~300KB c/u) y verificar licencia web de Monotype antes del lanzamiento.
+> **2026-08-07:** la secundaria pasó de la Helvetica genérica de Monotype a
+> **Helvetica Neue Roman/Bold**, que es la posición equivalente de la misma familia
+> que la 77 Bold Condensed. Las tres caras se sirven en **WOFF2**: 615→201KB (Roman),
+> 595→195KB (Bold), 28→15KB (Condensed). El nombre de familia en CSS sigue siendo
+> `'Helvetica'` para no reescribir ~100 declaraciones; lo que cambió es el archivo.
+> Los `.ttf`/`.otf` viejos quedan en la carpeta como archivo histórico, sin servirse.
+
+⚠️ **Pendiente bloqueante para el lanzamiento:** verificar la **licencia de web embedding**
+de Helvetica Neue con Monotype. Los `.otf` vienen de una descarga suelta; convertirlos a
+WOFF2 y servirlos desde el dominio es exactamente el uso que requiere licencia.
 
 ## Assets de marca
 
