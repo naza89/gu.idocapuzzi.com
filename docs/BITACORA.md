@@ -4,6 +4,77 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-08-10
+
+### Catálogo: renombre de intervenciones, 2 piezas nuevas y baja de la Baby Tee Navy
+- **Problema encontrado:** los dos jeans 1/1 se llamaban "JEAN INTERVENIDO ..."; había que sacar esa palabra, sumar dos piezas nuevas (Jean Encerado y Bermuda Camo "Woodland") y quitar la Baby Tee Navy, que no entró en producción.
+- **Solución adoptada:** en `start.js`, suela roja → `JEAN PINTOR "WILDCAT"` y encerado → `JEAN PINTOR "FAJA"`; alta de `jean-encerado` (parafina + cera de abejas, con bloque CUIDADO propio) y `bermuda-camo-woodland` ($130.000). Se sacó `INTERVENCIONES` de `RESTRICTED_CATEGORIES`, así que las 4 PDPs quedaron publicadas. Los renames tocaron `title` y `name` en el front, pero **Supabase busca el producto por `nombre` exacto**, así que el lookup de stock queda roto hasta correr la migración.
+- **Archivo modificado:** `public/js/start.js`, `backend/sql/15_catalogo_intervenciones_ago2026.sql` (nuevo).
+- **Pendiente:** ejecutar la migración 15. El checkout busca `variante_id` por `colorway` + `talle` y las 4 intervenciones comparten `1/1` — pasar el lookup a SKU antes de testear una compra.
+
+### Tabla de talles: de pop-up centrado a drawer derecho con fondo blurreado
+- **Problema encontrado:** el size chart aparecía centrado con un reveal de cortina; Naza pidió replicar el de Helmut Lang, que sale de la derecha como el carrito y blurrea el fondo.
+- **Solución adoptada:** se midió la PDP de HL en vivo. El backdrop no es un scrim oscuro: es `rgba(245,245,245,.1)` + `backdrop-filter: blur(6px)`, con el panel de 400px pegado a la derecha a 100vh y scroll propio. Se replicó con ancho 450px y la curva de `#cart-drawer`. El overlay se mueve al `<body>` porque el contenedor de la PDP tiene `transform` y eso rompe el `position:fixed` interno.
+- **Archivo modificado:** `src/app/globals.css`, `public/js/start.js`.
+- **Pendiente:** ninguno.
+
+### PDP 2026: galería en carrusel horizontal sticky + columna de info a la izquierda
+- **Problema encontrado:** había que replicar `frontend_nuevo/pdp_nuevo_1-3.svg` + los 4 mobile, y no estaba claro si la galería era un stack vertical con miniaturas (lo que había) o un carrusel.
+- **Solución adoptada:** se parseó el XML de los SVG normalizando de mm a px. Los paths de las flechas (`path26`/`path26-5`) confirmaron el carrusel. Galería full-bleed 52.27% **sticky** bajo el header con flechas ‹ ›, contador N/M, teclado y swipe; columna de info de 482px alineada a la izquierda; related de 5 cards a 3 full-bleed. Verificado por medición del DOM contra la spec: gap galería→info 13px, chip 42×15, cajas de talle 23 con paso 52, botón 482×39, insets de flecha 38 (desktop) y 21 (mobile).
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`.
+- **Pendiente:** el talle de las piezas 1/1 sigue hardcodeado en `'S'`. La bermuda camo usa la tabla de talles de las bermudas de denim.
+
+### PDP: ajustes de tipografía y ritmo vertical
+- **Problema encontrado:** los títulos traían `<br>` del layout viejo y rompían en lugares raros; la descripción quedaba pegada al botón AÑADIR; había 6 tamaños distintos conviviendo.
+- **Solución adoptada:** se sacaron los `<br>` de los 21 títulos y la palabra "FIT" (solo del campo `title`, para no romper el lookup por `nombre`). El ritmo vertical de la columna pasó a manejarse con el `gap` del flex en vez de márgenes sueltos: botón→descripción pasó de 0 a 56px. Descripción y CUIDADO a Helvetica Neue Condensed. Se quitó el colorway de las cards de related.
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`.
+- **Pendiente:** ninguno.
+
+### Tipografía secundaria: Helvetica genérica → Helvetica Neue Roman/Bold, todo en WOFF2
+- **Problema encontrado:** la secundaria seguía siendo la Helvetica genérica de Monotype en `.ttf` de ~300KB, desalineada con la 77 Bold Condensed de los títulos.
+- **Solución adoptada:** conversión con `fontTools` a WOFF2 de las tres caras. 989KB → 411KB (-58%). Se conservó el nombre de familia CSS `'Helvetica'` para no reescribir ~100 declaraciones — lo que cambió es el archivo detrás.
+- **Archivo modificado:** `src/app/globals.css`, `public/assets/fonts/*.woff2` (3 nuevos), `docs/BRAND_GUIDELINES.md`.
+- **Pendiente:** ⚠️ **licencia de web embedding con Monotype** — los `.otf` vienen de una descarga suelta y ahora se sirven desde el dominio. Bloqueante para el lanzamiento.
+
+### Escala tipográfica híbrida (Helmut Lang × ERD) en Cuenta, Contacto y Legales
+- **Problema encontrado:** Naza pidió homogeneizar tamaños tomando parámetros de Helmut Lang sin perder el carácter ERD. Cuenta y Contacto tenían 6 tamaños distintos (44.8 · 16 · 13.5 · 13.3 · 12 · 11).
+- **Solución adoptada:** se midió `helmutlang.com/login`: **76 de 76 elementos de texto están en Helvetica Neue LT Std Bold 13.5px / lh 17px** — un solo tamaño, con la jerarquía hecha por mayúsculas, peso y espacio. Se bajó GÜIDO a 3 escalones vía variables en `:root` (`--fs-page: 28px`, `--fs-section: 17px`, `--fs-body: 13.5px`) y se tomaron las métricas de formulario de HL (input y botón ambos 35px de alto, antes 38 y 51). Se conservó de ERD el título de página grande y el subrayado punteado de los inputs.
+- **Archivo modificado:** `src/app/globals.css`.
+- **Pendiente:** el punto 4 del híbrido (placeholder dentro del input en vez del label arriba) quedó sin aplicar — es el único con riesgo estético real.
+
+### Inventario de producción cargado
+- **Problema encontrado:** llegó el conteo final de producción (587 unidades) y había que registrarlo y cargarlo en Supabase.
+- **Solución adoptada:** se cargó en Inventario con el mapeo de cada modelo al producto del catálogo: 94 unidades de línea bottom + 493 de línea punto, más las 4 piezas 1/1.
+- **Archivo modificado:** vault `Operaciones/Inventario.md`.
+- **Pendiente:** **no se puede cargar en Supabase todavía** — `variantes_producto` guarda stock por colorway × talle y el conteo vino agregado por modelo. Falta el desglose. Además el MCP de Supabase respondió sin permisos toda la sesión; el conector nuevo requiere reiniciar Claude Code.
+
+## 2026-08-07
+
+### Commit del footer + tipografía Helvetica de la sesión anterior
+- **Problema encontrado:** El footer 2026 y el cambio de marca a Helvetica (sesión 2026-08-06) habían quedado implementados y verificados pero sin commitear.
+- **Solución adoptada:** Dos commits: `aa03c6d` (fuentes Helvetica + footer `.site-footer`/`.sf-*` + header/marquee) y `3df7d1a` (docs + los 13 SVG de `frontend_nuevo/` versionados como spec de diseño).
+- **Archivo modificado:** Ninguno nuevo — sólo commit del trabajo previo.
+- **Pendiente:** Ninguno.
+
+### Shop: grid nuevo con card por producto y selector de colorway
+- **Problema encontrado:** El grid mostraba 20 cards (una por colorway) sin selector visual; había que llevarlo a 12 cards (una por producto) con los colores elegibles desde el grid mismo, según `shop_nuevo_desktop.svg` y `shop_nuevo_mobile.svg`.
+- **Solución adoptada:** `groupByProduct()` agrupa el catálogo plano de `start.js` por nombre para pintar 12 cards; `buildProductCard()` agrega una fila de swatches cuando el producto tiene más de un colorway. El catálogo y el carrito no se tocaron — el agrupado es sólo de presentación. Iteración con Naza sobre el comportamiento del swatch: primera versión aplicaba el colorway con sólo pasar el mouse; versión final separa **hover = preview** (se descarta al salir del card) de **click = elección fijada** (persiste al sacar el mouse), con estado `pinned` explícito por card.
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`, `src/app/page.tsx`.
+- **Pendiente:** Commitear. Colores de swatch de denim (Índigo, Azul Lavado, Negro Encerado) son tentativos, ajustar con fotos reales.
+
+### Header del Shop: sin línea divisoria ni contador, FILTROS reubicado
+- **Problema encontrado:** El SVG nuevo elimina la línea divisoria y el "N Productos" que ocupaban una fila propia; FILTROS pasa a compartir fila con el título de la sección.
+- **Solución adoptada:** Se sacó la fila de controles completa. `#shop` bajó su `padding-top` de 230px a `header + 71px` para que el título suba a la posición del SVG (y=151 en desktop, y=141 en mobile). El botón FILTROS pasó por dos ajustes de Naza tras verlo: en desktop volvió a la geometría vieja (padding 8px 20px, borde 2px) conservando sólo la tipografía Helvetica nueva; en mobile se escaló ×0.65 desde el tamaño del SVG (71×41 → 46×27), manteniéndolo centrado y flotante sobre la grilla.
+- **Bug encontrado y resuelto:** `#shop` tiene un `transform` (de la transición entre páginas) que convierte cualquier `position:fixed` interno en relativo a la sección en vez del viewport — el botón FILTROS en mobile aparecía 1450px fuera de pantalla. Se resolvió moviendo el mismo botón (no clonándolo, para no perder el listener del click) al `<body>` en mobile y de vuelta a `.shop-title-row` en desktop, sincronizado con `matchMedia`.
+- **Archivo modificado:** `src/app/page.tsx`, `src/app/globals.css`, `public/js/start.js`.
+- **Pendiente:** Ninguno.
+
+### Nombres largos de producto en mobile
+- **Problema encontrado:** Títulos de 3-4 palabras (`JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR`) ocupaban 3 renglones en las cards angostas del mobile, desalineando la fila de swatches entre cards vecinas.
+- **Solución adoptada:** Diccionario `SHORT_NAMES` con versiones podadas (ej. `JEAN SELVEDGE JAPONES REGULAR`, sin "DE DENIM" ni "FIT") que reemplaza al nombre completo sólo bajo 768px, vía dos `<span>` (`.pn-full`/`.pn-short`) con `display` condicional por media query.
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css`.
+- **Pendiente:** 5 de 12 productos siguen en 3 renglones (MUSCULOSA DOBLE SIMBOLO, las 2 BERMUDA, los 2 JEAN INTERVENIDO) — falta decidir con Naza si se podan un escalón más o se convive con la altura desigual entre cards.
+
 ## 2026-08-06
 
 ### Cambio de tipografía de marca: Univers → Helvetica (FUNDAMENTAL)
