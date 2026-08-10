@@ -20,12 +20,30 @@
 const SUPABASE_URL = 'https://zwzzrqjmnrlkltuijjjf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3enpycWptbnJsa2x0dWlqampmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2NDczMDcsImV4cCI6MjA4NjIyMzMwN30.t-53wFNuLCU--Bg8328u2KdnaehzHXDmUnW86YJRiDM';
 
-// Crear el cliente de Supabase
-// supabase es una variable global inyectada por el CDN de Supabase
-const { createClient } = supabase;
-window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Crear el cliente de Supabase.
+//
+// `supabase` es la variable global que inyecta el <script> de @supabase/supabase-js
+// (ver page.tsx). Si ese script no cargó —CDN lento o caído, red corporativa que lo
+// bloquea, un adblocker, un ERR_CACHE_WRITE_FAILURE— acá se tiraba un ReferenceError
+// sin capturar: window.supabaseClient nunca se creaba y todo el checkout moría en
+// silencio (sin órdenes, sin cotización de envío, sin pago) sin mostrarle nada al
+// cliente. Ahora la falla es explícita: se loguea y se levanta la bandera
+// window.supabaseUnavailable, que el checkout consulta para avisarle al usuario.
+window.supabaseUnavailable = false;
 
-console.log('[Supabase] Cliente inicializado correctamente');
+if (typeof supabase === 'undefined' || typeof supabase.createClient !== 'function') {
+    window.supabaseClient = null;
+    window.supabaseUnavailable = true;
+    console.error(
+        '[Supabase] ❌ No se pudo inicializar el cliente: la librería no está disponible.\n' +
+        'El <script> de @supabase/supabase-js no cargó (CDN caído/lento, red que lo bloquea o un adblocker).\n' +
+        'Consecuencia: no se pueden crear órdenes, cotizar envíos ni pagar.'
+    );
+} else {
+    const { createClient } = supabase;
+    window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('[Supabase] Cliente inicializado correctamente');
+}
 
 // =============================================================================
 // FUNCIONES HELPER - STOCK
@@ -44,6 +62,10 @@ console.log('[Supabase] Cliente inicializado correctamente');
  * @returns {Promise<number>} Stock disponible, o -1 si no se pudo consultar
  */
 async function obtenerStock(nombreProducto, colorway, talle) {
+    if (!window.supabaseClient) {
+        console.warn('[Stock] Cliente de Supabase no disponible — no se puede consultar stock');
+        return -1;
+    }
     try {
         // Primero buscamos el producto base por nombre
         const { data: productos, error: errProd } = await window.supabaseClient
@@ -89,6 +111,10 @@ async function obtenerStock(nombreProducto, colorway, talle) {
  * @returns {Promise<Array>} Array de { talle, stock, sku }
  */
 async function obtenerVariantesStock(nombreProducto, colorway) {
+    if (!window.supabaseClient) {
+        console.warn('[Stock] Cliente de Supabase no disponible — no se pueden consultar variantes');
+        return [];
+    }
     try {
         const { data: productos } = await window.supabaseClient
             .from('productos')

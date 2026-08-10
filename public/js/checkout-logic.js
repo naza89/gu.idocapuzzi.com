@@ -17,6 +17,39 @@
 // =============================================================================
 
 // =============================================================================
+// DISPONIBILIDAD DEL CLIENTE SUPABASE
+// =============================================================================
+// Si el <script> de @supabase/supabase-js no cargó, supabase-config.js deja
+// window.supabaseClient en null y levanta window.supabaseUnavailable. Sin cliente
+// no hay orden, ni cotización de envío, ni pago: el checkout entero es inviable.
+// Antes eso fallaba mudo (TypeError en consola y nada más). Estas dos funciones
+// hacen que el usuario se entere.
+
+const MSG_SIN_CONEXION_SUPABASE =
+    'No pudimos conectarnos con nuestro sistema. Revisá tu conexión, desactivá el bloqueador de anuncios si tenés uno, y recargá la página.';
+
+/**
+ * @returns {boolean} true si se puede operar contra Supabase desde el browser.
+ */
+function supabaseDisponible() {
+    return !!window.supabaseClient && !window.supabaseUnavailable;
+}
+
+/**
+ * Avisa al entrar al checkout si el cliente de Supabase no está disponible,
+ * para que el usuario no complete todo el formulario y recién ahí choque.
+ * Se llama desde enableCheckoutState() en start.js.
+ *
+ * @returns {boolean} true si el checkout es operable, false si se mostró el aviso.
+ */
+function avisarCheckoutSinConexion() {
+    if (supabaseDisponible()) return true;
+    console.error('[Checkout] Cliente de Supabase no disponible — el checkout no puede operar');
+    mostrarErroresCheckout([MSG_SIN_CONEXION_SUPABASE]);
+    return false;
+}
+
+// =============================================================================
 // VALIDACIÓN DE FORMULARIO
 // =============================================================================
 
@@ -381,6 +414,13 @@ async function crearOrdenPendiente(clienteId, direccionId, cartItems) {
 async function procesarCheckoutStep1(cartItems) {
     console.log('[Checkout] Iniciando procesamiento Step 1...');
 
+    // PASO 0: Sin cliente de Supabase no hay nada que hacer. Se corta acá con un
+    // mensaje al usuario en vez de reventar con un TypeError en la primera query.
+    if (!supabaseDisponible()) {
+        console.error('[Checkout] ❌ Abortado: cliente de Supabase no disponible');
+        return { success: false, errors: [MSG_SIN_CONEXION_SUPABASE] };
+    }
+
     // PASO 1: Validar formulario
     const validacion = validarCheckoutStep1();
     if (!validacion.valid) {
@@ -536,6 +576,8 @@ function setBotonCargando(cargando) {
 }
 
 // Exponer funciones globalmente
+window.supabaseDisponible = supabaseDisponible;
+window.avisarCheckoutSinConexion = avisarCheckoutSinConexion;
 window.procesarCheckoutStep1 = procesarCheckoutStep1;
 window.validarCheckoutStep1 = validarCheckoutStep1;
 window.mostrarErroresCheckout = mostrarErroresCheckout;

@@ -2139,8 +2139,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
         btnLogout.addEventListener('click', async () => {
-            await window.supabaseClient.auth.signOut();
-            console.log('[Auth] Sesión cerrada');
+            // Sin cliente no hay sesión que cerrar contra Supabase, pero el resto de
+            // la limpieza local tiene que correr igual. Antes el TypeError cortaba
+            // el handler entero y el botón no hacía absolutamente nada.
+            if (window.supabaseClient) {
+                await window.supabaseClient.auth.signOut();
+                console.log('[Auth] Sesión cerrada');
+            } else {
+                console.error('[Auth] Cliente de Supabase no disponible — logout solo local');
+            }
             stopPedidosPolling();
             _cuentaNavInitialized = false;
             _showAccountLogin();
@@ -2155,6 +2162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let _cuentaListenersInitialized = false;
 
     async function _getAccessToken() {
+        if (!window.supabaseClient) return null;
         const { data: { session } } = await window.supabaseClient.auth.getSession();
         return session?.access_token ?? null;
     }
@@ -3379,6 +3387,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Populate checkout sidebar with cart items
         renderCheckoutCart();
 
+        // Si el cliente de Supabase no se pudo crear (el script de la librería no
+        // cargó), avisarlo acá y no dejar que el usuario complete todo el formulario
+        // para recién chocarse contra el error al apretar CONTINUAR.
+        if (window.avisarCheckoutSinConexion) window.avisarCheckoutSinConexion();
+
         // Scroll to top
         window.scrollTo(0, 0);
     }
@@ -4453,6 +4466,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!nombre || !email || !mensaje) return;
 
+            if (!supabaseListoParaAuth(document.querySelector('#account-contact .login-container'))) return;
+
             await runLoadBar(btnContactSubmit, 'ENVIANDO...');
 
             try {
@@ -4480,6 +4495,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkContactInputs();
             }
         });
+    }
+
+    // --- HELPER FUNC: Guard de disponibilidad del cliente Supabase ---
+    // Sin cliente de Supabase (la librería no cargó) ninguna acción de cuenta puede
+    // funcionar. Antes cada handler llegaba igual hasta la llamada, se comía el
+    // TypeError en su catch y mostraba "ERROR DE CONEXIÓN" recién después de correr
+    // toda la barra de carga: mensaje engañoso, porque no es que falló la red del
+    // usuario contra Supabase, es que la librería nunca llegó (y recargar puede
+    // resolverlo). Este guard corta antes y lo dice.
+    const MSG_SIN_LIBRERIA_SUPABASE = 'NO PUDIMOS CARGAR EL SISTEMA. RECARGÁ LA PÁGINA O DESACTIVÁ EL BLOQUEADOR DE ANUNCIOS.';
+
+    /**
+     * @param {Element|null} container - .login-container donde mostrar el error
+     * @returns {boolean} true si se puede operar contra Supabase
+     */
+    function supabaseListoParaAuth(container) {
+        if (window.supabaseClient) return true;
+        console.error('[Auth] Cliente de Supabase no disponible — acción cancelada');
+        if (container) showFormError(container, MSG_SIN_LIBRERIA_SUPABASE);
+        return false;
     }
 
     // --- HELPER FUNC: Show Custom Error Message ---
@@ -4627,6 +4662,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             clearFormError(container);
 
+            if (!supabaseListoParaAuth(container)) return;
+
             // Barra de carga
             await runLoadBar(btnLoginSubmit, 'ENTRANDO...');
 
@@ -4699,6 +4736,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (!supabaseListoParaAuth(container)) return;
+
             await runLoadBar(btnFinalCreate, 'CREANDO...');
 
             try {
@@ -4759,6 +4798,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!email) return;
 
             clearFormError(container);
+
+            if (!supabaseListoParaAuth(container)) return;
 
             await runLoadBar(btnRecoverSubmit, 'ENVIANDO...');
 
@@ -4929,6 +4970,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             clearFormError(container);
+
+            if (!supabaseListoParaAuth(container)) return;
+
             await runLoadBar(btnNewPwdSubmit, 'GUARDANDO...');
 
             try {

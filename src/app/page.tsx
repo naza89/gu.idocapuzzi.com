@@ -1594,8 +1594,10 @@ const siteHTML = `
         </div>
     </nav>
 
-    <!-- Supabase Client (CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase Client — servido desde nuestro dominio, no desde un CDN de terceros.
+         Lo copia scripts/vendor-supabase.mjs desde node_modules (predev/prebuild).
+         La versión la fija package.json. -->
+    <script src="/vendor/supabase-js.umd.js"></script>
     <script src="/js/supabase-config.js"></script>
     <script src="/js/checkout-logic.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
