@@ -129,7 +129,10 @@
       "mcp__pixa__assets",
       "mcp__pixa__display",
       "WebFetch(domain:www.martine-rose.com)",
-      "WebFetch(domain:www.upscayl.io)"
+      "WebFetch(domain:www.upscayl.io)",
+      "Read(//c/Users/LAUTA/.claude/**)",
+      "Read(//c/Users/LAUTA/.claude/plugins/.install-manifests/**)",
+      "Bash(node -e ' *)"
     ]
   },
   "enableAllProjectMcpServers": true,
