@@ -417,12 +417,7 @@ const siteHTML = `
             <div class="shop-header">
                 <div class="shop-title-row">
                     <h1 id="shop-category-title" class="font-condensed">VER TODO</h1>
-                </div>
-                <div class="shop-controls-row">
-                    <span id="shop-count" class="shop-count">14 Productos</span>
-                    <div class="shop-actions">
-                        <button class="filtros-btn font-condensed">FILTROS</button>
-                    </div>
+                    <button class="filtros-btn font-condensed">FILTROS</button>
                 </div>
             </div>
 

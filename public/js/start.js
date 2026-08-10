@@ -127,38 +127,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Products Data Source
     const products = [
         // REMERAS (12: 3 Güido + 3 Afligida + 3 Baby Tee + 2 Termal + 1 extra)
-        { slug: 'remera-guido-negro', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Negro', colorway: 'NEGRO LOGO BLANCO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-negra-front.png', 'assets/images/products/remera-güido-negra-back.png'] },
-        { slug: 'remera-guido-rojo', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO<br>OVERSIZED', color: 'Rojo en Negro', colorway: 'NEGRO LOGO ROJO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-rojo-front.png', 'assets/images/products/remera-güido-rojo-back.png'] },
-        { slug: 'remera-guido-blanco', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO<br>OVERSIZED', color: 'Blanco', colorway: 'BLANCO LOGO NEGRO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-güido-blanca-front.png', 'assets/images/products/remera-güido-blanca-back.png'] },
-        { slug: 'remera-afligida-negro', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Negro', colorway: 'NEGRO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-negra-front.png', 'assets/images/products/remera-afligida-negra-back.png'] },
-        { slug: 'remera-afligida-navy', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Navy', colorway: 'NAVY', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-navy-front.png', 'assets/images/products/remera-afligida-navy-back.png'] },
-        { slug: 'remera-afligida-blanco', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA<br>BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanca-front.png', 'assets/images/products/remera-afligida-blanca-back.png'] },
+        { slug: 'remera-guido-negro', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO OVERSIZED', color: 'Negro', colorway: 'NEGRO LOGO BLANCO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-negra-front.png', 'assets/images/products/remera-güido-negra-back.png'] },
+        { slug: 'remera-guido-rojo', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO OVERSIZED', color: 'Negro / Rojo', colorway: 'NEGRO LOGO ROJO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-rojo-front.png', 'assets/images/products/remera-güido-rojo-back.png'] },
+        { slug: 'remera-guido-blanco', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO OVERSIZED', color: 'Blanco', colorway: 'BLANCO LOGO NEGRO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-güido-blanca-front.png', 'assets/images/products/remera-güido-blanca-back.png'] },
+        { slug: 'remera-afligida-negro', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Negro', colorway: 'NEGRO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-negra-front.png', 'assets/images/products/remera-afligida-negra-back.png'] },
+        { slug: 'remera-afligida-navy', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Navy', colorway: 'NAVY', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-navy-front.png', 'assets/images/products/remera-afligida-navy-back.png'] },
+        { slug: 'remera-afligida-blanco', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanca-front.png', 'assets/images/products/remera-afligida-blanca-back.png'] },
 
         // MUSCULOSAS (2)
-        { slug: 'musculosa-negra', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
-        { slug: 'musculosa-blanca', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO<br>OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
+        { slug: 'musculosa-negra', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
+        { slug: 'musculosa-blanca', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
 
         // JEANS (3)
-        { slug: 'jean-selvedge-suelto-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN DE DENIM SELVEDGE JAPONES<br>FIT SUELTO', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT SUELTO: LA MISMA SILUETA SUTILMENTE BOOTCUT DEL CORTE REGULAR, EN UN CALCE MÁS AMPLIO Y RELAJADO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
-        { slug: 'jean-selvedge-regular-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE JAPONES<br>FIT REGULAR', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-indigo-bootcut-front.png', 'assets/images/products/jean-indigo-bootcut-back.png', 'assets/images/products/jean-indigo-fold.png'] },
-        { slug: 'jean-selvedge-regular-negro', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE ITALIANO FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE ITALIANO<br>FIT REGULAR', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM SELVEDGE ITALIANO DE CANDIANI, CRUDO DE 11 OZ. ESTE TEJIDO NACE EN LA PROVINCIA DE MILÁN, ITALIA. NEGRO PROFUNDO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-negro-bootcut-font.png', 'assets/images/products/jean-negro-bootcut-back.png', 'assets/images/products/jean-negro-fold.png'] },
+        { slug: 'jean-selvedge-suelto-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN DE DENIM SELVEDGE JAPONES SUELTO', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT SUELTO: LA MISMA SILUETA SUTILMENTE BOOTCUT DEL CORTE REGULAR, EN UN CALCE MÁS AMPLIO Y RELAJADO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
+        { slug: 'jean-selvedge-regular-indigo', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE JAPONES REGULAR', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-indigo-bootcut-front.png', 'assets/images/products/jean-indigo-bootcut-back.png', 'assets/images/products/jean-indigo-fold.png'] },
+        { slug: 'jean-selvedge-regular-negro', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE ITALIANO FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE ITALIANO REGULAR', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM SELVEDGE ITALIANO DE CANDIANI, CRUDO DE 11 OZ. ESTE TEJIDO NACE EN LA PROVINCIA DE MILÁN, ITALIA. NEGRO PROFUNDO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-negro-bootcut-font.png', 'assets/images/products/jean-negro-bootcut-back.png', 'assets/images/products/jean-negro-fold.png'] },
 
         // BERMUDAS (2)
-        { slug: 'bermuda-double-knee-negro', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE', title: 'BERMUDA SELVEDGE<br>DOUBLE KNEE', color: 'Negro', colorway: 'NEGRO', price: '$175.000', description: 'WORKWEAR ESTILO.', images: ['assets/images/products/bermuda-DK-front.png', 'assets/images/products/bermuda-DK-back.png'] },
-        { slug: 'bermuda-patchwork-indigo', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE<br>PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$160.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-front.png', 'assets/images/products/bermuda-patchwork-back.png'] },
+        { slug: 'bermuda-double-knee-negro', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE', title: 'BERMUDA SELVEDGE DOUBLE KNEE', color: 'Negro', colorway: 'NEGRO', price: '$175.000', description: 'WORKWEAR ESTILO.', images: ['assets/images/products/bermuda-DK-front.png', 'assets/images/products/bermuda-DK-back.png'] },
+        { slug: 'bermuda-patchwork-indigo', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$160.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-front.png', 'assets/images/products/bermuda-patchwork-back.png'] },
 
-        // INTERVENCIONES (2) — piezas 1/1
-        { slug: 'jean-intervenido-suela-roja', category: 'INTERVENCIONES', name: 'JEAN INTERVENIDO "SUELA ROJA" BOOTCUT', title: 'JEAN INTERVENIDO<br>"SUELA ROJA"<br>FIT BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-archivo-1-front.png', 'assets/images/products/jean-archivo-1-back.png'] },
-        { slug: 'jean-intervenido-encerado', category: 'INTERVENCIONES', name: 'JEAN INTERVENIDO "ENCERADO" BOOTCUT', title: 'JEAN INTERVENIDO<br>"ENCERADO"<br>FIT BOOTCUT', color: 'Negro Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-archivo-2-front.png', 'assets/images/products/jean-archivo-2-back.png'] },
+        // INTERVENCIONES (4) — piezas 1/1
+        { slug: 'jean-pintor-wildcat', category: 'INTERVENCIONES', name: 'JEAN PINTOR "WILDCAT"', title: 'JEAN PINTOR "WILDCAT" BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-archivo-1-front.png', 'assets/images/products/jean-archivo-1-back.png'] },
+        { slug: 'jean-pintor-faja', category: 'INTERVENCIONES', name: 'JEAN PINTOR "FAJA"', title: 'JEAN PINTOR "FAJA" BOOTCUT', color: 'Negro Pintado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-archivo-2-front.png', 'assets/images/products/jean-archivo-2-back.png'] },
+        { slug: 'jean-encerado', category: 'INTERVENCIONES', name: 'JEAN ENCERADO', title: 'JEAN ENCERADO BOOTCUT', color: 'Verde Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT, RECUBIERTO A MANO CON UNA MEZCLA<br>DE PARAFINA Y CERA DE ABEJAS APLICADA EN CALIENTE. EL ENCERADO<br>SELLA EL TEJIDO, LE DA CUERPO Y UN BRILLO OPACO QUE SE VA<br>QUEBRANDO CON EL USO. COSTURA INFERIOR ABIERTA PARA MAYOR<br>APERTURA SOBRE EL CALZADO. BOTONES Y REMACHES DE LA MARCA Y<br>BADANA DE CUERO NEGRA, EXCLUSIVA DE INTERVENCIONES. HECHO A<br>MANO EN ARGENTINA.", care: 'EL ENCERADO NO SE LAVA. LIMPIALO EN SECO, CON UN CEPILLO SUAVE O UN PAÑO APENAS HÚMEDO EN FRÍO Y SÓLO SOBRE LA MANCHA. NUNCA A MÁQUINA, NUNCA CON AGUA CALIENTE NI DETERGENTE: DISUELVEN LA CERA. SECALO COLGADO A LA SOMBRA, LEJOS DE ESTUFAS Y RADIADORES. CON EL USO LA CERA SE MARCA Y SE QUIEBRA EN LOS PLIEGUES — ESO ES PARTE DE LA PIEZA. SE PUEDE VOLVER A ENCERAR.', images: ['assets/images/products/jean-archivo-3-front.png', 'assets/images/products/jean-archivo-3-back.png'] },
+        { slug: 'bermuda-camo-woodland', category: 'INTERVENCIONES', name: 'BERMUDA CAMO "WOODLAND"', title: 'BERMUDA CAMO "WOODLAND"', color: 'Camo', colorway: '1/1', price: '$130.000', description: 'PANTALÓN CARGO MILITAR EN CAMUFLADO WOODLAND INTERVENIDO A<br>MANO. PIEZA 1/1. CORTADO A LA ALTURA DE LA BERMUDA Y ABIERTO<br>CON PANELES AGREGADOS SOBRE LA ENTREPIERNA, QUE LLEVAN EL<br>CALCE A UNA SILUETA MUCHO MÁS ANCHA. BAJO DESHILACHADO SIN<br>DOBLADILLO. BOLSILLOS CARGO ORIGINALES. AVÍOS Y ETIQUETAS DE<br>LA MARCA. HECHA A MANO EN ARGENTINA.', images: ['assets/images/products/bermuda-archivo-front.png', 'assets/images/products/bermuda-archivo-back.png'] },
 
         // REMERA BABY TEE (3 colorways - mujer)
-        { slug: 'baby-tee-negro', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-negra-front.png'] },
-        { slug: 'baby-tee-blanco', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-blanca-front.png'] },
-        { slug: 'baby-tee-navy', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE<br>REGISTRADA', color: 'Navy', colorway: 'NAVY', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-navy-front.png'] },
+        { slug: 'baby-tee-negro', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE REGISTRADA', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-negra-front.png'] },
+        { slug: 'baby-tee-blanco', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE REGISTRADA', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-blanca-front.png'] },
 
         // REMERA MANGA LARGA TERMAL (2 colorways)
-        { slug: 'termal-negro', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA<br>TERMAL', color: 'Negro', colorway: 'NEGRO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-negra-front.png', 'assets/images/products/remera-termal-negra-back.png'] },
-        { slug: 'termal-blanco', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA<br>TERMAL', color: 'Blanco', colorway: 'BLANCO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-blanca-front.png', 'assets/images/products/remera-termal-blanca-back.png'] },
+        { slug: 'termal-negro', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA TERMAL', color: 'Negro', colorway: 'NEGRO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-negra-front.png', 'assets/images/products/remera-termal-negra-back.png'] },
+        { slug: 'termal-blanco', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA TERMAL', color: 'Blanco', colorway: 'BLANCO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-blanca-front.png', 'assets/images/products/remera-termal-blanca-back.png'] },
     ];
 
     // -------------------------------------------------------------------------
@@ -228,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Restricción temporal (opción B): estas categorías se muestran en el Shop como
     // teaser (foto atenuada + badge) pero su PDP está bloqueada. Cuando estén listas
     // para lanzarse, se quita la categoría de acá y se retocan sus descripciones.
-    const RESTRICTED_CATEGORIES = ['TOPS / MUSCULOSAS', 'BERMUDAS / SHORTS', 'INTERVENCIONES'];
+    const RESTRICTED_CATEGORIES = ['TOPS / MUSCULOSAS', 'BERMUDAS / SHORTS'];
     function isRestricted(product) {
         return !!product && RESTRICTED_CATEGORIES.includes(product.category);
     }
@@ -244,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (slug.startsWith('musculosa')) fit = 'musculosa';
         else if (slug.startsWith('jean-selvedge-suelto')) fit = 'suelto';
         else if (slug.startsWith('jean-selvedge-regular')) fit = 'regular';
-        else if (slug.startsWith('jean-intervenido')) fit = 'levis';
+        else if (slug.startsWith('jean-pintor') || slug === 'jean-encerado') fit = 'levis';
         else if (slug.startsWith('bermuda')) fit = 'bermudas';
         return fit ? SIZE_CHARTS[fit] : null;
     }
@@ -909,6 +910,25 @@ document.addEventListener('DOMContentLoaded', () => {
         body.classList.remove('filters-open');
     }
 
+    /* En mobile el botón FILTROS flota fijo sobre la grilla, pero #shop tiene
+       un transform (la transición de páginas) que lo convierte en el bloque
+       contenedor de position:fixed y lo ancla al alto de la sección en vez
+       del viewport. Se mueve el mismo botón al body — así conserva su
+       listener — y vuelve a la fila del título en desktop. */
+    const filtrosMobileMQ = window.matchMedia('(max-width: 768px)');
+
+    function syncFiltrosPlacement() {
+        if (!filtersTriggerBtn) return;
+        const titleRow = document.querySelector('.shop-title-row');
+        if (filtrosMobileMQ.matches) {
+            if (filtersTriggerBtn.parentElement !== body) body.appendChild(filtersTriggerBtn);
+        } else if (titleRow && filtersTriggerBtn.parentElement !== titleRow) {
+            titleRow.appendChild(filtersTriggerBtn);
+        }
+    }
+    syncFiltrosPlacement();
+    filtrosMobileMQ.addEventListener('change', syncFiltrosPlacement);
+
     // Filters trigger (FILTROS button in shop)
     if (filtersTriggerBtn) {
         filtersTriggerBtn.addEventListener('click', openFilters);
@@ -1023,49 +1043,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Re-render grid
         const grid = document.getElementById('product-grid');
-        const count = document.getElementById('shop-count');
 
         if (grid) {
             if (filtered.length > 0) {
-                grid.innerHTML = filtered.map(product => {
-                    const idx = products.indexOf(product);
-                    const restricted = isRestricted(product);
-                    const rawImgSrc = product.images && product.images.length > 0 ? product.images[0] : '';
-                    const imageSrc = rawImgSrc && !rawImgSrc.startsWith('/') ? '/' + rawImgSrc : rawImgSrc;
-                    const rawHoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
-                    const hoverSrc = rawHoverSrc && !rawHoverSrc.startsWith('/') ? '/' + rawHoverSrc : rawHoverSrc;
-                    return `
-                    <div class="product-card${restricted ? ' product-card--restricted' : ''}" data-index="${idx}">
-                        <div class="product-image">
-                            ${imageSrc ? `
-                                <img
-                                    class="product-img-primary"
-                                    src="${imageSrc}"
-                                    alt="${product.name}"
-                                    style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:2; transition: opacity 220ms ease;">
-                                ${hoverSrc ? `
-                                    <img
-                                        class="product-img-hover"
-                                        src="${hoverSrc}"
-                                        alt="${product.name}"
-                                        style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:1; opacity:1;">
-                                ` : ''}
-                            ` : ''}
-                        </div>
-                        <div class="product-info">
-                            <span class="product-name">${product.name}</span>
-                            <span class="product-color">${product.color}</span>
-                            <span class="product-price">${restricted ? 'PRÓXIMAMENTE' : product.price}</span>
-                        </div>
-                    </div>
-                `}).join('');
+                grid.innerHTML = groupByProduct(filtered).map(buildProductCard).join('');
             } else {
                 grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 50px; font-family: var(--font-condensed); text-transform: uppercase; opacity: 0.5;">No hay productos con estos filtros</div>';
             }
             attachProductClickListeners();
+            attachSwatchListeners(grid);
             revealProductCards(grid);
         }
-        if (count) count.textContent = `${filtered.length} Productos`;
     }
 
     // Clear all filters (QUITAR TODOS)
@@ -1343,15 +1331,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const images = product.images && product.images.length > 0 ? product.images : [];
             const absImg = src => (src.startsWith('/') ? src : '/' + src);
-            // Fotos apiladas dentro de .pdp-main-wrap (ids para scroll-to / scroll-spy)
-            const mainImagesHTML = images.length > 0
-                ? images.map((src, i) => `<img src="${absImg(src)}" id="pdp-img-${i}" class="pdp-image" alt="${product.name}">`).join('')
-                : '<div style="background:#f4f4f4; width:100%; height:100%; min-height:500px;"></div>';
-            // Rail de miniaturas (Feature 2) — solo si hay más de una imagen
-            const thumbsHTML = images.length > 1
-                ? `<div class="pdp-thumbs-rail" id="pdp-thumbs-rail"><div class="pdp-thumbs" id="pdp-thumbs">${images.map((src, i) => `<button class="pdp-thumb${i === 0 ? ' active' : ''}" data-target="pdp-img-${i}" aria-label="Vista ${i + 1}"><img src="${absImg(src)}" alt=""></button>`).join('')}</div></div>`
-                : '';
-            const imagesHTML = `<div class="pdp-main-wrap">${mainImagesHTML}</div>${thumbsHTML}`;
+            // Galería 2026: carrusel horizontal full-bleed con flechas ‹ › y contador
+            // "N/M" arriba a la izquierda (spec: frontend_nuevo/pdp_nuevo_1.svg).
+            const slidesHTML = images.length > 0
+                ? images.map((src, i) => `<img src="${absImg(src)}" id="pdp-img-${i}" class="pdp-slide" alt="${product.name}">`).join('')
+                : '<div class="pdp-slide" style="background:#eff3f4;"></div>';
+            const chev = (d) => `<svg viewBox="0 0 12 22" fill="none" aria-hidden="true"><path d="${d}" stroke="#1A1A1A" stroke-width="2.6" stroke-linecap="square"/></svg>`;
+            const imagesHTML = `
+                        <div class="pdp-slides" id="pdp-slides">${slidesHTML}</div>
+                        <span class="pdp-counter" id="pdp-counter">1/${Math.max(images.length, 1)}</span>
+                        <button class="pdp-nav pdp-nav--prev" id="pdp-prev" aria-label="Foto anterior">${chev('M10 1 2 11l8 10')}</button>
+                        <button class="pdp-nav pdp-nav--next" id="pdp-next" aria-label="Foto siguiente">${chev('M2 1l8 10-8 10')}</button>`;
 
             // Set page title per product
             document.title = `${product.name} ${product.color} — GÜIDO CAPUZZI`;
@@ -1374,7 +1364,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Guía de talles (Feature 1) — trigger + overlay por producto.
             // Archivo: fila del talle habilitado (S en el template) queda fijada.
             const sizeChart = getSizeChart(product);
-            const sizeGuideTrigger = sizeChart ? '<button class="size-guide-trigger" id="size-guide-open">¿QUÉ TALLE COMPRAR?</button>' : '';
+            const sizeGuideTrigger = sizeChart ? '<button class="size-guide-trigger font-condensed" id="size-guide-open">TABLA DE TALLES</button>' : '';
             const sizeGuideOverlay = sizeChart ? buildSizeGuide(product, sizeChart, isArchive, 'S') : '';
 
             // Bloque de cuidados (denim) — subtítulo CUIDADO + texto, debajo del botón AÑADIR.
@@ -1386,30 +1376,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
             productPage.innerHTML = `
                 <div class="pdp-container">
-                    <div class="pdp-top-info">
-                        <div class="pdp-header">
-                            <h1 class="font-condensed">${product.title || product.name}</h1>
-                            <span class="pdp-colorway font-condensed">${product.colorway || product.color}</span>
+                    <div class="pdp-gallery${images.length > 1 ? '' : ' pdp-gallery--single'}" id="pdp-gallery">${imagesHTML}</div>
+                    <div class="pdp-info">
+                        <div class="pdp-info-head">
+                            <h1 class="pdp-title font-condensed">${product.title || product.name}</h1>
                             <span class="pdp-price font-condensed">${product.price}</span>
                         </div>
-                        <p class="pdp-description pdp-description--desktop">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
-                    </div>
-                    <div class="pdp-visual">${imagesHTML}</div>
-                    <div class="pdp-bottom-info">
+                        <div class="pdp-colorway-block">
+                            <span class="pdp-colorway font-condensed">COLOR: ${product.color || product.colorway}</span>
+                            <span class="pdp-colorway-chip" style="--chip: ${SWATCH_COLORS[product.color] || '#1A1A1A'}"></span>
+                        </div>
                         <div class="pdp-selectors">
                             <div class="selector-group">
-                                ${sizeGuideTrigger}
+                                <span class="pdp-size-label font-condensed">TALLE:</span>
                                 <div class="size-options">
                                     <button class="size-btn" ${sizeOtherStyle}>XS</button>
                                     <button class="size-btn active">S</button>
                                     <button class="size-btn" ${sizeOtherStyle}>M</button>
                                     <button class="size-btn" ${sizeOtherStyle}>L</button>
                                 </div>
+                                ${sizeGuideTrigger}
                             </div>
                         </div>
                         <button class="add-to-cart-btn font-condensed" id="pdp-add-btn"><span class="hover-fill"></span><span class="btn-label">AÑADIR AL CARRITO</span></button>
-                        <p class="pdp-description pdp-description--mobile">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
                         ${careHTML}
+                        <p class="pdp-description">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
                     </div>
                 </div>
                 <div class="related-section">
@@ -1553,98 +1544,74 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 3. Miniaturas (Feature 2) — scroll-to + scroll-spy + anclado al fondo.
-        //    Desktop: fotos apiladas (scroll vertical de la página) + rail sticky.
-        //    Mobile: carrusel horizontal (scroll de .pdp-main-wrap) + miniaturas debajo.
-        const rail = document.getElementById('pdp-thumbs-rail');
-        const mainWrap = productPage.querySelector('.pdp-main-wrap');
-        if (rail && mainWrap) {
-            const thumbs = [...rail.querySelectorAll('.pdp-thumb')];
-            const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 80;
-            const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+        // 3. Galería 2026 — carrusel horizontal: flechas ‹ ›, contador N/M,
+        //    teclado ← →, swipe táctil. Sin miniaturas (las reemplaza el contador).
+        const slides = document.getElementById('pdp-slides');
+        if (slides) {
+            const total = slides.children.length;
+            const counter = document.getElementById('pdp-counter');
+            const prev = document.getElementById('pdp-prev');
+            const next = document.getElementById('pdp-next');
+            let idx = 0;
 
-            // Click → llevar a esa imagen (no reemplaza)
-            thumbs.forEach(t => {
-                t.addEventListener('click', () => {
-                    const img = document.getElementById(t.dataset.target);
-                    if (!img) return;
-                    if (isMobile()) {
-                        mainWrap.scrollTo({ left: img.offsetLeft, behavior: 'smooth' });
-                    } else {
-                        const y = img.getBoundingClientRect().top + window.scrollY - headerH;
-                        window.scrollTo({ top: y, behavior: 'smooth' });
-                    }
-                });
-            });
-
-            // Delay de aparición (solo desktop): margin-top = alto de la 1ª imagen.
-            // Reintenta vía rAF hasta que la imagen tenga altura medida (Fable G8:
-            // imagen complete pero aún sin layout mide 0 → margin-top quedaba en 0).
-            const setDelay = (retry) => {
-                if (isMobile()) { rail.style.marginTop = ''; return; }
-                const first = productPage.querySelector('.pdp-image');
-                if (!first) return;
-                const h = Math.round(first.getBoundingClientRect().height);
-                if (h > 0) { rail.style.marginTop = h + 'px'; return; }
-                if ((retry || 0) < 60) requestAnimationFrame(() => setDelay((retry || 0) + 1));
+            const render = () => {
+                slides.style.transform = `translateX(${-idx * 100}%)`;
+                if (counter) counter.textContent = `${idx + 1}/${total}`;
+                if (prev) prev.disabled = idx === 0;
+                if (next) next.disabled = idx === total - 1;
             };
+            const go = (n) => { idx = Math.max(0, Math.min(total - 1, n)); render(); };
 
-            // Scroll-spy: marca la miniatura de la imagen en vista
-            const setActive = () => {
-                let best = 0, bestDist = Infinity;
-                if (isMobile()) {
-                    const mid = mainWrap.scrollLeft + mainWrap.clientWidth / 2;
-                    thumbs.forEach((t, i) => {
-                        const img = document.getElementById(t.dataset.target); if (!img) return;
-                        const d = Math.abs((img.offsetLeft + img.offsetWidth / 2) - mid);
-                        if (d < bestDist) { bestDist = d; best = i; }
-                    });
-                } else {
-                    const mid = window.scrollY + headerH + (window.innerHeight - headerH) / 2;
-                    thumbs.forEach((t, i) => {
-                        const img = document.getElementById(t.dataset.target); if (!img) return;
-                        const r = img.getBoundingClientRect();
-                        const d = Math.abs((r.top + window.scrollY + r.height / 2) - mid);
-                        if (d < bestDist) { bestDist = d; best = i; }
-                    });
-                }
-                thumbs.forEach((t, i) => t.classList.toggle('active', i === best));
+            if (prev) prev.addEventListener('click', () => go(idx - 1));
+            if (next) next.addEventListener('click', () => go(idx + 1));
+
+            // Teclado: singleton a nivel document (no acumular entre PDPs).
+            // Se ignora si la guía de talles está abierta — ahí manda Escape.
+            if (window.__pdpGalleryKeys) document.removeEventListener('keydown', window.__pdpGalleryKeys);
+            window.__pdpGalleryKeys = (e) => {
+                const guide = document.querySelector('.size-guide-overlay.open');
+                if (guide) return;
+                if (e.key === 'ArrowLeft') go(idx - 1);
+                else if (e.key === 'ArrowRight') go(idx + 1);
             };
+            document.addEventListener('keydown', window.__pdpGalleryKeys);
 
-            // rAF-gate para el scroll-spy (evita jank con PNGs pesados)
-            let ticking = false;
-            const onScroll = () => {
-                if (ticking) return;
-                ticking = true;
-                requestAnimationFrame(() => { setActive(); ticking = false; });
-            };
-            const onResize = () => { setDelay(); setActive(); };
+            // Swipe (mobile). Umbral de 40px para no comerse taps ni scroll vertical.
+            let x0 = null, y0 = null;
+            const gallery = document.getElementById('pdp-gallery');
+            gallery.addEventListener('touchstart', (e) => {
+                x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+            }, { passive: true });
+            gallery.addEventListener('touchend', (e) => {
+                if (x0 === null) return;
+                const dx = e.changedTouches[0].clientX - x0;
+                const dy = e.changedTouches[0].clientY - y0;
+                if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(idx + (dx < 0 ? 1 : -1));
+                x0 = y0 = null;
+            }, { passive: true });
 
-            // Listeners de window: singleton (se reemplazan en cada PDP, no se acumulan)
-            if (window.__pdpSpyScroll) window.removeEventListener('scroll', window.__pdpSpyScroll);
-            window.__pdpSpyScroll = onScroll;
-            window.addEventListener('scroll', onScroll, { passive: true });
-            if (window.__pdpSpyResize) window.removeEventListener('resize', window.__pdpSpyResize);
-            window.__pdpSpyResize = onResize;
-            window.addEventListener('resize', onResize);
-            // Scroll del carrusel mobile (mainWrap muere con el innerHTML → sin leak)
-            mainWrap.addEventListener('scroll', onScroll, { passive: true });
-
-            // Recalcular margin-top cuando cargan las imágenes (o si ya están cacheadas)
-            productPage.querySelectorAll('.pdp-image').forEach(img => {
-                if (img.complete) setDelay(); else img.addEventListener('load', () => setDelay());
-            });
-            setDelay();
-            setActive();
-        } else if (window.__pdpSpyScroll) {
-            // PDP sin rail (1 imagen temporal): desactivar el spy previo
+            render();
+        }
+        // El scroll-spy del rail viejo ya no existe: si quedó colgado de una PDP
+        // anterior, se desengancha.
+        if (window.__pdpSpyScroll) {
             window.removeEventListener('scroll', window.__pdpSpyScroll);
             window.__pdpSpyScroll = null;
         }
+        if (window.__pdpSpyResize) {
+            window.removeEventListener('resize', window.__pdpSpyResize);
+            window.__pdpSpyResize = null;
+        }
 
         // 4. Guía de talles (Feature 1) — abrir/cerrar + unidades + cross-highlight
+        // El overlay se mueve al <body>: el contenedor de la PDP tiene transform y
+        // eso convierte cualquier position:fixed interno en relativo a la sección,
+        // no al viewport (mismo bug que el botón FILTROS del Shop). Sin esto el
+        // drawer no ancla al borde derecho real de la pantalla.
+        document.querySelectorAll('body > .size-guide-overlay').forEach(el => el.remove());
         const overlay = document.getElementById('size-guide-overlay');
         if (overlay) {
+            document.body.appendChild(overlay);
             const openBtn = document.getElementById('size-guide-open');
             const closeBtn = document.getElementById('size-guide-close');
             const openGuide = () => overlay.classList.add('open');
@@ -1701,7 +1668,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!relatedContainer) return;
 
         // Random Selection (excluye prendas restringidas — no se sugieren)
-        const shuffled = [...products].filter(p => !isRestricted(p)).sort(() => 0.5 - Math.random()).slice(0, 5);
+        // 3 cards (spec pdp_nuevo_3.svg), antes eran 5
+        const shuffled = [...products].filter(p => !isRestricted(p)).sort(() => 0.5 - Math.random()).slice(0, 3);
 
         relatedContainer.innerHTML = shuffled.map(p => {
             const idx = products.indexOf(p);
@@ -1714,7 +1682,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="product-info">
                     <span class="product-name">${p.name}</span>
-                    <span class="product-color">${p.color}</span>
                     <span class="product-price">${p.price}</span>
                 </div>
              </div>`
@@ -1731,6 +1698,152 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- SHOP LOGIC ---
     // Used for initial shop grid rendering
+    /* ─── SHOP 2026: card por producto con selector de colorway ───────────
+       Spec: frontend_nuevo/shop_nuevo_desktop.svg + shop_nuevo_mobile.svg
+       El catálogo sigue siendo plano (una entrada por colorway); acá se
+       agrupa por `name` sólo para pintar la grilla. No toca carrito ni
+       checkout: el card lleva data-index del colorway activo, así que el
+       click abre la PDP que ya existe.
+       ──────────────────────────────────────────────────────────────────── */
+
+    // Fill de cada swatch. Los de remera salen del SVG de Naza; los de denim
+    // son tentativos — confirmar con las fotos reales.
+    const SWATCH_COLORS = {
+        'Negro': '#1A1A1A',
+        'Blanco': '#FAFAFA',
+        'Negro / Rojo': '#96201D',
+        'Navy': '#061A66',
+        'Índigo': '#2F3E63',
+        'Índigo/Negro': '#2F3E63',
+        'Azul Lavado': '#7B93B8',
+        'Negro Pintado': '#14110F',
+        'Verde Encerado': '#23342A',
+        'Camo': '#4B5335'
+    };
+
+    // Nombre corto para las cards en mobile: los títulos completos se comían
+    // 3 y 4 renglones. Se sacan los conectores ("DE DENIM", "FIT") y se deja
+    // lo que identifica la prenda. Sólo entran los que difieren del completo.
+    const SHORT_NAMES = {
+        'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO': 'JEAN SELVEDGE JAPONES SUELTO',
+        'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR': 'JEAN SELVEDGE JAPONES REGULAR',
+        'JEAN DE DENIM SELVEDGE ITALIANO FIT REGULAR': 'JEAN SELVEDGE ITALIANO REGULAR',
+        'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE': 'BERMUDA SELVEDGE DOUBLE KNEE',
+        'BERMUDA DE DENIM SELVEDGE PATCHWORK': 'BERMUDA SELVEDGE PATCHWORK',
+        'MUSCULOSA DOBLE SIMBOLO OVERSIZED': 'MUSCULOSA DOBLE SIMBOLO',
+        'REMERA AFLIGIDA BAGGED TEE': 'REMERA AFLIGIDA BAGGED'
+    };
+
+    function groupByProduct(list) {
+        const groups = [];
+        const byName = new Map();
+        list.forEach(product => {
+            let g = byName.get(product.name);
+            if (!g) {
+                g = { name: product.name, price: product.price, colorways: [] };
+                byName.set(product.name, g);
+                groups.push(g);
+            }
+            g.colorways.push(product);
+        });
+        return groups;
+    }
+
+    function absUrl(src) {
+        if (!src) return '';
+        return src.startsWith('/') ? src : '/' + src;
+    }
+
+    function buildProductCard(group) {
+        const first = group.colorways[0];
+        const idx = products.indexOf(first);
+        const restricted = isRestricted(first);
+        const imageSrc = absUrl(first.images && first.images[0]);
+        const hoverSrc = absUrl(first.images && first.images[1]);
+
+        // Un solo colorway → no se dibuja el selector
+        const swatches = group.colorways.length > 1 ? `
+                        <div class="product-swatches">
+                            ${group.colorways.map((cw, i) => `
+                                <button type="button"
+                                    class="product-swatch${i === 0 ? ' is-active' : ''}"
+                                    style="--swatch: ${SWATCH_COLORS[cw.color] || '#1A1A1A'}"
+                                    data-index="${products.indexOf(cw)}"
+                                    data-img="${absUrl(cw.images && cw.images[0])}"
+                                    data-hover="${absUrl(cw.images && cw.images[1])}"
+                                    aria-label="${cw.color}"></button>
+                            `).join('')}
+                        </div>` : '';
+
+        return `
+                    <div class="product-card${restricted ? ' product-card--restricted' : ''}" data-index="${idx}">
+                        <div class="product-image">
+                            ${imageSrc ? `
+                                <img class="product-img-primary" src="${imageSrc}" alt="${group.name}">
+                                ${hoverSrc ? `<img class="product-img-hover" src="${hoverSrc}" alt="${group.name}">` : ''}
+                            ` : ''}
+                        </div>
+                        <div class="product-info">
+                            <span class="product-name"><span class="pn-full">${group.name}</span><span class="pn-short">${SHORT_NAMES[group.name] || group.name}</span></span>
+                            <span class="product-price">${restricted ? 'PRÓXIMAMENTE' : group.price}</span>
+                        </div>${swatches}
+                    </div>`;
+    }
+
+    /* Selector de colorway del card.
+       Hover = preview: cambia la foto mientras el mouse está encima.
+       Click = elección: ese colorway queda fijado, así que al salir del card
+       la foto vuelve al elegido y no al primero. */
+    function attachSwatchListeners(grid) {
+        grid.querySelectorAll('.product-card').forEach(card => {
+            const swatches = [...card.querySelectorAll('.product-swatch')];
+            if (!swatches.length) return;
+            const primary = card.querySelector('.product-img-primary');
+            const hover = card.querySelector('.product-img-hover');
+
+            const stateOf = (sw) => ({
+                index: sw.dataset.index,
+                img: sw.dataset.img,
+                hover: sw.dataset.hover
+            });
+
+            // El colorway fijado arranca en el primero y sólo cambia por click
+            let pinned = stateOf(swatches[0]);
+
+            const apply = (st, activeSwatch) => {
+                card.dataset.index = st.index;
+                if (primary && st.img) primary.setAttribute('src', st.img);
+                if (hover) {
+                    if (st.hover) {
+                        hover.setAttribute('src', st.hover);
+                        hover.style.display = '';
+                    } else {
+                        hover.style.display = 'none';
+                    }
+                }
+                swatches.forEach(s => s.classList.toggle('is-active', s === activeSwatch));
+            };
+
+            swatches.forEach(sw => {
+                const preview = () => apply(stateOf(sw), sw);
+                sw.addEventListener('mouseenter', preview);
+                sw.addEventListener('focus', preview);
+                // Click fija el colorway (y en mobile, donde no hay hover, es la única vía)
+                sw.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    pinned = stateOf(sw);
+                    apply(pinned, sw);
+                });
+            });
+
+            // Al salir del card se descarta el preview y queda el fijado
+            card.addEventListener('mouseleave', () => {
+                const pinnedSwatch = swatches.find(s => s.dataset.index === pinned.index);
+                apply(pinned, pinnedSwatch);
+            });
+        });
+    }
+
     function attachProductClickListeners() {
         // Only target shop grid cards, not related (handled separately)
         const grid = document.getElementById('product-grid');
@@ -1788,49 +1901,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const grid = document.getElementById('product-grid');
-        const count = document.getElementById('shop-count');
 
         if (grid) {
             if (filteredProducts.length > 0) {
-                grid.innerHTML = filteredProducts.map(product => {
-                    const idx = products.indexOf(product);
-                    const restricted = isRestricted(product);
-                    const rawImgSrc = product.images && product.images.length > 0 ? product.images[0] : '';
-                    const imageSrc = rawImgSrc && !rawImgSrc.startsWith('/') ? '/' + rawImgSrc : rawImgSrc;
-                    const rawHoverSrc = product.images && product.images.length > 1 ? product.images[1] : null;
-                    const hoverSrc = rawHoverSrc && !rawHoverSrc.startsWith('/') ? '/' + rawHoverSrc : rawHoverSrc;
-                    return `
-                    <div class="product-card${restricted ? ' product-card--restricted' : ''}" data-index="${idx}">
-                        <div class="product-image">
-                            ${imageSrc ? `
-                                <img
-                                    class="product-img-primary"
-                                    src="${imageSrc}"
-                                    alt="${product.name}"
-                                    style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:2; transition: opacity 220ms ease;">
-                                ${hoverSrc ? `
-                                    <img
-                                        class="product-img-hover"
-                                        src="${hoverSrc}"
-                                        alt="${product.name}"
-                                        style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:1; opacity:1;">
-                                ` : ''}
-                            ` : ''}
-                        </div>
-                        <div class="product-info">
-                            <span class="product-name">${product.name}</span>
-                            <span class="product-color">${product.color}</span>
-                            <span class="product-price">${restricted ? 'PRÓXIMAMENTE' : product.price}</span>
-                        </div>
-                    </div>
-                `}).join('');
+                grid.innerHTML = groupByProduct(filteredProducts).map(buildProductCard).join('');
             } else {
                 grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 50px;">SIN STOCK EN ESTA CATEGORÍA</div>';
             }
             attachProductClickListeners();
+            attachSwatchListeners(grid);
             revealProductCards(grid); // A3: stagger reveal
         }
-        if (count) count.textContent = `${filteredProducts.length} Productos`;
     }
 
     function enableShopState(e, category = 'VER TODO', skipHistory = false) {
@@ -3993,7 +4074,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!loadingEl) {
             loadingEl = document.createElement('div');
             loadingEl.className = 'envio-loading';
-            loadingEl.style.cssText = 'text-align:center;padding:20px 0;font-family:Univers,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;';
+            loadingEl.style.cssText = 'text-align:center;padding:20px 0;font-family:Helvetica,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;';
             loadingEl.textContent = 'Calculando opciones de envío...';
             if (headerEl) headerEl.after(loadingEl);
         }
@@ -4062,7 +4143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="envio-sucursales" id="envio-sucursales-lista">
                             <p class="envio-sucursales-titulo">Sucursales cerca de tu domicilio:</p>
                             <div class="envio-sucursales-list" id="envio-sucursales-list-container">
-                                <div class="envio-loading" style="text-align:center;padding:10px 0;font-family:Univers,sans-serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#888;">
+                                <div class="envio-loading" style="text-align:center;padding:10px 0;font-family:Helvetica,sans-serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#888;">
                                     Cargando sucursales...
                                 </div>
                             </div>
@@ -4095,14 +4176,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('envio-sucursales-list-container');
         if (!container || !cp) return;
 
-        container.innerHTML = '<div class="envio-loading" style="text-align:center;padding:10px 0;font-family:Univers,sans-serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#888;">Cargando sucursales...</div>';
+        container.innerHTML = '<div class="envio-loading" style="text-align:center;padding:10px 0;font-family:Helvetica,sans-serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#888;">Cargando sucursales...</div>';
 
         try {
             const res = await fetch(`/api/oca/sucursales?cp=${encodeURIComponent(cp)}`);
             const data = await res.json();
 
             if (!data.success || !data.sucursales || data.sucursales.length === 0) {
-                container.innerHTML = '<p style="font-family:Univers,sans-serif;font-size:0.75rem;color:#888;padding:10px 0;">No se encontraron sucursales para tu código postal.</p>';
+                container.innerHTML = '<p style="font-family:Helvetica,sans-serif;font-size:0.75rem;color:#888;padding:10px 0;">No se encontraron sucursales para tu código postal.</p>';
                 return;
             }
 
@@ -4122,7 +4203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (err) {
             console.error('[OCA] Error cargando sucursales:', err);
-            container.innerHTML = '<p style="font-family:Univers,sans-serif;font-size:0.75rem;color:#888;padding:10px 0;">Error al cargar sucursales.</p>';
+            container.innerHTML = '<p style="font-family:Helvetica,sans-serif;font-size:0.75rem;color:#888;padding:10px 0;">Error al cargar sucursales.</p>';
         }
     }
 
@@ -4380,7 +4461,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('[Contact] ✅ Consulta enviada con éxito');
 
                 const fields = document.querySelector('#account-contact .login-fields');
-                const successHtml = `<span style="font-family:'Helvetica',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">Tu consulta fue enviada. Nos comunicamos a la brevedad.</span>`;
+                const successHtml = `<span style="font-family:Helvetica,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">Tu consulta fue enviada. Nos comunicamos a la brevedad.</span>`;
 
                 // Keep the button text as ENVIADO during success phase
                 await animateButtonAndForm(btnContactSubmit, fields, 'ENVIAR', 'ENVIADO', successHtml);
@@ -4566,7 +4647,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log(`[Login] ✅ Bienvenido, ${nombre || data.user.email}`);
 
                     const fields = document.querySelector('#account-login .login-fields');
-                    const successHtml = `<span style="font-family:'Helvetica',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">SESIÓN INICIADA CORRECTAMENTE.</span>`;
+                    const successHtml = `<span style="font-family:Helvetica,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">SESIÓN INICIADA CORRECTAMENTE.</span>`;
 
                     await animateButtonAndForm(btnLoginSubmit, fields, 'ENTRAR', saludoText, successHtml);
 
@@ -4643,7 +4724,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     console.log('[Create Account] ✅ Cuenta creada. Verificar email.');
                     const fields = document.querySelector('#account-create .login-fields');
-                    const successHtml = `<span style="font-family:'Helvetica',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.6;">TE ENVIAMOS UN EMAIL PARA VERIFICAR TU CUENTA.<br>REVISÁ TU BANDEJA Y HACÉ CLICK EN EL LINK DE CONFIRMACIÓN.</span>`;
+                    const successHtml = `<span style="font-family:Helvetica,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.6;">TE ENVIAMOS UN EMAIL PARA VERIFICAR TU CUENTA.<br>REVISÁ TU BANDEJA Y HACÉ CLICK EN EL LINK DE CONFIRMACIÓN.</span>`;
 
                     await animateButtonAndForm(btnFinalCreate, fields, 'CREAR UNA CUENTA', 'MAIL ENVIADO', successHtml);
 
@@ -4695,7 +4776,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     console.log('[Recover Password] ✅ Email de recuperación enviado');
                     const fields = document.querySelector('#account-recover .login-fields');
-                    const successHtml = `<span style="font-family:'Helvetica',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">TE ENVIAMOS UN EMAIL CON LAS INSTRUCCIONES.</span>`;
+                    const successHtml = `<span style="font-family:Helvetica,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">TE ENVIAMOS UN EMAIL CON LAS INSTRUCCIONES.</span>`;
 
                     await animateButtonAndForm(btnRecoverSubmit, fields, 'ENVIAR LINK', 'LINK ENVIADO', successHtml);
                 }
@@ -4852,7 +4933,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (error) throw new Error(error.message);
 
                 const fields = document.querySelector('#account-new-password .login-fields');
-                const successHtml = `<span style="font-family:'Helvetica',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">¡CONTRASEÑA ACTUALIZADA! YA PODÉS INICIAR SESIÓN.</span>`;
+                const successHtml = `<span style="font-family:Helvetica,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#1A1A1A;line-height:1.5;">¡CONTRASEÑA ACTUALIZADA! YA PODÉS INICIAR SESIÓN.</span>`;
                 await animateButtonAndForm(btnNewPwdSubmit, fields, 'GUARDAR CONTRASEÑA', 'CONTRASEÑA GUARDADA', successHtml);
 
                 // After success, redirect to login after a moment
