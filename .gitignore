@@ -31,6 +31,8 @@ yarn-error.log*
 
 # Claude Code (worktrees y estado interno — no commitear)
 .claude/worktrees/
+# settings.local.json = estado local + permisos (contuvo credenciales en claro). NUNCA commitear.
+.claude/settings.local.json
 
 # Snapshot de trabajo anterior (referencia local, no subir)
 .antigravity/
@@ -39,8 +41,17 @@ yarn-error.log*
 oca-fire-step.mjs
 oca-webhook-sim.mjs
 
+# Originales del shoot: bandeja de entrada local. Al repo entran sólo los WebP
+# generados en public/assets/images/products/ (ver docs/internal/FOTOS_PRODUCTO_NOMBRES.md).
+public/assets/images/fotoproducto/
+
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
 .vercel
+
+# Masters de video y gráficas del shoot: fuentes pesadas, quedan locales.
+# Al repo entran sólo los derivados optimizados (mp4/webm y webp).
+public/assets/video/*.mov
+public/assets/images/gráficas/
