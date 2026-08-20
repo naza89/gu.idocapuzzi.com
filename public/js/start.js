@@ -155,10 +155,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { slug: 'bermuda-patchwork-indigo', sku: 'BER-PAT-MIX', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$160.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-indigo-1.webp', 'assets/images/products/bermuda-patchwork-indigo-2.webp', 'assets/images/products/bermuda-patchwork-indigo-3.webp', 'assets/images/products/bermuda-patchwork-indigo-4.webp'] },
 
         // INTERVENCIONES (4) — piezas 1/1
-        { slug: 'jean-pintor-wildcat', sku: 'JEA-1/1-SUR', category: 'INTERVENCIONES', name: 'JEAN PINTOR "WILDCAT"', title: 'JEAN PINTOR "WILDCAT" BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-pintor-wildcat-1.webp', 'assets/images/products/jean-pintor-wildcat-2.webp', 'assets/images/products/jean-pintor-wildcat-3.webp', 'assets/images/products/jean-pintor-wildcat-4.webp', 'assets/images/products/jean-pintor-wildcat-5.webp'] },
-        { slug: 'jean-pintor-faja', sku: 'JEA-1/1-ENC', category: 'INTERVENCIONES', name: 'JEAN PINTOR "FAJA"', title: 'JEAN PINTOR "FAJA" BOOTCUT', color: 'Negro Pintado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-pintor-faja-1.webp', 'assets/images/products/jean-pintor-faja-2.webp'] },
-        { slug: 'jean-encerado', sku: 'JEA-1/1-WAX', category: 'INTERVENCIONES', name: 'JEAN ENCERADO', title: 'JEAN ENCERADO BOOTCUT', color: 'Verde Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT, RECUBIERTO A MANO CON UNA MEZCLA<br>DE PARAFINA Y CERA DE ABEJAS APLICADA EN CALIENTE. EL ENCERADO<br>SELLA EL TEJIDO, LE DA CUERPO Y UN BRILLO OPACO QUE SE VA<br>QUEBRANDO CON EL USO. COSTURA INFERIOR ABIERTA PARA MAYOR<br>APERTURA SOBRE EL CALZADO. BOTONES Y REMACHES DE LA MARCA Y<br>BADANA DE CUERO NEGRA, EXCLUSIVA DE INTERVENCIONES. HECHO A<br>MANO EN ARGENTINA.", care: 'EL ENCERADO NO SE LAVA. LIMPIALO EN SECO, CON UN CEPILLO SUAVE O UN PAÑO APENAS HÚMEDO EN FRÍO Y SÓLO SOBRE LA MANCHA. NUNCA A MÁQUINA, NUNCA CON AGUA CALIENTE NI DETERGENTE: DISUELVEN LA CERA. SECALO COLGADO A LA SOMBRA, LEJOS DE ESTUFAS Y RADIADORES. CON EL USO LA CERA SE MARCA Y SE QUIEBRA EN LOS PLIEGUES — ESO ES PARTE DE LA PIEZA. SE PUEDE VOLVER A ENCERAR.', images: ['assets/images/products/jean-encerado-1.webp', 'assets/images/products/jean-encerado-2.webp', 'assets/images/products/jean-encerado-3.webp', 'assets/images/products/jean-encerado-4.webp', 'assets/images/products/jean-encerado-5.webp'] },
-        { slug: 'bermuda-camo-woodland', sku: 'BER-1/1-CAM', category: 'INTERVENCIONES', name: 'BERMUDA CAMO "WOODLAND"', title: 'BERMUDA CAMO "WOODLAND"', color: 'Camo', colorway: '1/1', price: '$130.000', description: 'PANTALÓN CARGO MILITAR EN CAMUFLADO WOODLAND INTERVENIDO A<br>MANO. PIEZA 1/1. CORTADO A LA ALTURA DE LA BERMUDA Y ABIERTO<br>CON PANELES AGREGADOS SOBRE LA ENTREPIERNA, QUE LLEVAN EL<br>CALCE A UNA SILUETA MUCHO MÁS ANCHA. BAJO DESHILACHADO SIN<br>DOBLADILLO. BOLSILLOS CARGO ORIGINALES. AVÍOS Y ETIQUETAS DE<br>LA MARCA. HECHA A MANO EN ARGENTINA.', images: ['assets/images/products/bermuda-camo-woodland-1.webp', 'assets/images/products/bermuda-camo-woodland-2.webp', 'assets/images/products/bermuda-camo-woodland-3.webp'] },
+        { slug: 'jean-pintor-wildcat', sku: 'JEA-1/1-SUR', category: 'INTERVENCIONES', name: 'JEAN PINTOR "WILDCAT"', title: 'JEAN PINTOR "WILDCAT" BOOTCUT', color: 'Azul Lavado', colorway: '1/1', sizes: ['M'], price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-pintor-wildcat-1.webp', 'assets/images/products/jean-pintor-wildcat-2.webp', 'assets/images/products/jean-pintor-wildcat-3.webp', 'assets/images/products/jean-pintor-wildcat-4.webp', 'assets/images/products/jean-pintor-wildcat-5.webp'] },
+        { slug: 'jean-pintor-faja', sku: 'JEA-1/1-ENC', category: 'INTERVENCIONES', name: 'JEAN PINTOR "FAJA"', title: 'JEAN PINTOR "FAJA" BOOTCUT', color: 'Negro Pintado', colorway: '1/1', sizes: ['M'], price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-pintor-faja-1.webp', 'assets/images/products/jean-pintor-faja-2.webp'] },
+        { slug: 'jean-encerado', sku: 'JEA-1/1-WAX', category: 'INTERVENCIONES', name: 'JEAN ENCERADO', title: 'JEAN ENCERADO BOOTCUT', color: 'Verde Encerado', colorway: '1/1', sizes: ['M'], price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT, RECUBIERTO A MANO CON UNA MEZCLA<br>DE PARAFINA Y CERA DE ABEJAS APLICADA EN CALIENTE. EL ENCERADO<br>SELLA EL TEJIDO, LE DA CUERPO Y UN BRILLO OPACO QUE SE VA<br>QUEBRANDO CON EL USO. COSTURA INFERIOR ABIERTA PARA MAYOR<br>APERTURA SOBRE EL CALZADO. BOTONES Y REMACHES DE LA MARCA Y<br>BADANA DE CUERO NEGRA, EXCLUSIVA DE INTERVENCIONES. HECHO A<br>MANO EN ARGENTINA.", care: 'EL ENCERADO NO SE LAVA. LIMPIALO EN SECO, CON UN CEPILLO SUAVE O UN PAÑO APENAS HÚMEDO EN FRÍO Y SÓLO SOBRE LA MANCHA. NUNCA A MÁQUINA, NUNCA CON AGUA CALIENTE NI DETERGENTE: DISUELVEN LA CERA. SECALO COLGADO A LA SOMBRA, LEJOS DE ESTUFAS Y RADIADORES. CON EL USO LA CERA SE MARCA Y SE QUIEBRA EN LOS PLIEGUES — ESO ES PARTE DE LA PIEZA. SE PUEDE VOLVER A ENCERAR.', images: ['assets/images/products/jean-encerado-1.webp', 'assets/images/products/jean-encerado-2.webp', 'assets/images/products/jean-encerado-3.webp', 'assets/images/products/jean-encerado-4.webp', 'assets/images/products/jean-encerado-5.webp'] },
+        { slug: 'bermuda-camo-woodland', sku: 'BER-1/1-CAM', category: 'INTERVENCIONES', name: 'BERMUDA CAMO "WOODLAND"', title: 'BERMUDA CAMO "WOODLAND"', color: 'Camo', colorway: '1/1', sizes: ['M'], price: '$130.000', description: 'PANTALÓN CARGO MILITAR EN CAMUFLADO WOODLAND INTERVENIDO A<br>MANO. PIEZA 1/1. CORTADO A LA ALTURA DE LA BERMUDA Y ABIERTO<br>CON PANELES AGREGADOS SOBRE LA ENTREPIERNA, QUE LLEVAN EL<br>CALCE A UNA SILUETA MUCHO MÁS ANCHA. BAJO DESHILACHADO SIN<br>DOBLADILLO. BOLSILLOS CARGO ORIGINALES. AVÍOS Y ETIQUETAS DE<br>LA MARCA. HECHA A MANO EN ARGENTINA.', images: ['assets/images/products/bermuda-camo-woodland-1.webp', 'assets/images/products/bermuda-camo-woodland-2.webp', 'assets/images/products/bermuda-camo-woodland-3.webp'] },
 
         // REMERA BABY TEE (3 colorways - mujer)
         { slug: 'baby-tee-negro', sku: 'REM-BBY-NEG', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE REGISTRADA', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/baby-tee-negro-1.webp', 'assets/images/products/baby-tee-negro-2.webp', 'assets/images/products/baby-tee-negro-3.webp', 'assets/images/products/baby-tee-negro-4.webp', 'assets/images/products/baby-tee-negro-5.webp'] },
@@ -168,6 +168,38 @@ document.addEventListener('DOMContentLoaded', () => {
         { slug: 'termal-negro', sku: 'REM-TRM-NEG', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA TERMAL', color: 'Negro', colorway: 'NEGRO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/termal-negro-1.webp', 'assets/images/products/termal-negro-2.webp', 'assets/images/products/termal-negro-3.webp', 'assets/images/products/termal-negro-4.webp', 'assets/images/products/termal-negro-5.webp'] },
         { slug: 'termal-blanco', sku: 'REM-TRM-BLA', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA TERMAL', color: 'Blanco', colorway: 'BLANCO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/termal-blanco-1.webp', 'assets/images/products/termal-blanco-2.webp', 'assets/images/products/termal-blanco-3.webp', 'assets/images/products/termal-blanco-4.webp', 'assets/images/products/termal-blanco-5.webp', 'assets/images/products/termal-blanco-6.webp'] },
     ];
+
+    // -------------------------------------------------------------------------
+    // TALLES — qué talles ofrece cada producto.
+    //
+    // La PDP NO puede ofrecer un talle que no exista en `variantes_producto`:
+    // el carrito arma el SKU como `${product.sku}-${talle}` y, si ese SKU no
+    // resuelve, `POST /api/checkout/crear-orden` corta con 409 y el cliente no
+    // puede comprar. Eso es exactamente lo que pasaba con las 4 piezas 1/1, que
+    // existen sólo en M mientras la PDP ofrecía S por defecto.
+    //
+    // Regla: un producto ofrece `product.sizes` si lo declara, y `TALLES_DEFAULT`
+    // si no. Los talles declarados acá se contrastan contra Supabase en cada
+    // corrida de `npm run verificar:catalogo`, que sale con código ≠ 0 si no
+    // coinciden — o sea que esta lista no puede desincronizarse en silencio.
+    // -------------------------------------------------------------------------
+    const TALLES_DEFAULT = ['XS', 'S', 'M', 'L'];
+
+    /** Talles reales de un producto, en el orden en que se muestran. */
+    function getSizes(product) {
+        const sizes = Array.isArray(product?.sizes) && product.sizes.length
+            ? product.sizes
+            : TALLES_DEFAULT;
+        // Se respeta el orden canónico XS → S → M → L para que la fila no baile
+        // entre productos.
+        return TALLES_DEFAULT.filter(t => sizes.includes(t));
+    }
+
+    /** Talle preseleccionado: S si está disponible, si no el primero que haya. */
+    function getDefaultSize(product) {
+        const sizes = getSizes(product);
+        return sizes.includes('S') ? 'S' : sizes[0];
+    }
 
     // -------------------------------------------------------------------------
     // GUÍA DE TALLES — config por tipo de prenda (Feature 1)
@@ -1369,14 +1401,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     currency: 'ARS'
                 });
             }
-            const sizeOtherStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
             const qtyContainerStyle = isArchive ? 'style="opacity: 0.5; pointer-events: none;"' : '';
 
+            // Talles: se dibujan las cuatro posiciones para no romper el ancho de
+            // la fila, pero sólo las que el producto tiene de verdad son
+            // clickeables. Las demás quedan atenuadas y sin pointer-events, así
+            // no se puede mandar al carrito un SKU que no existe en la base.
+            const sizesDisponibles = getSizes(product);
+            const sizeActivo = getDefaultSize(product);
+            const sizeBtnsHTML = TALLES_DEFAULT.map(talle => {
+                const disponible = sizesDisponibles.includes(talle);
+                const clases = `size-btn${talle === sizeActivo ? ' active' : ''}${disponible ? '' : ' size-btn--na'}`;
+                const attrs = disponible
+                    ? ''
+                    : ' style="opacity: 0.5; pointer-events: none;" aria-disabled="true" title="Sin stock en este talle"';
+                return `<button class="${clases}"${attrs}>${talle}</button>`;
+            }).join('');
+
             // Guía de talles (Feature 1) — trigger + overlay por producto.
-            // Archivo: fila del talle habilitado (S en el template) queda fijada.
+            // Piezas 1/1: se fija la fila del talle real de la prenda.
             const sizeChart = getSizeChart(product);
             const sizeGuideTrigger = sizeChart ? '<button class="size-guide-trigger font-condensed" id="size-guide-open">TABLA DE TALLES</button>' : '';
-            const sizeGuideOverlay = sizeChart ? buildSizeGuide(product, sizeChart, isArchive, 'S') : '';
+            const sizeGuideOverlay = sizeChart ? buildSizeGuide(product, sizeChart, isArchive, sizeActivo) : '';
 
             // Bloque de cuidados (denim) — subtítulo CUIDADO + texto, debajo del botón AÑADIR.
             const careHTML = product.care ? `
@@ -1400,12 +1446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="pdp-selectors">
                             <div class="selector-group">
                                 <span class="pdp-size-label font-condensed">TALLE:</span>
-                                <div class="size-options">
-                                    <button class="size-btn" ${sizeOtherStyle}>XS</button>
-                                    <button class="size-btn active">S</button>
-                                    <button class="size-btn" ${sizeOtherStyle}>M</button>
-                                    <button class="size-btn" ${sizeOtherStyle}>L</button>
-                                </div>
+                                <div class="size-options">${sizeBtnsHTML}</div>
                                 ${sizeGuideTrigger}
                             </div>
                         </div>
@@ -1503,15 +1544,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const productPage = document.getElementById('product-page');
         if (!productPage) return;
 
-        // Talle por defecto: leer el que viene marcado .active en el template (S)
+        // Talle por defecto: el que renderizó `getDefaultSize` como .active — que
+        // es el primer talle REAL del producto, no un 'S' fijo. Para una pieza
+        // 1/1 que sólo existe en M, acá sale M.
         const activeSizeBtn = productPage.querySelector('.size-btn.active');
-        let selectedSize = activeSizeBtn ? activeSizeBtn.textContent : 'S';
+        let selectedSize = activeSizeBtn ? activeSizeBtn.textContent : '';
         let selectedQty = 1;
 
-        // 1. Size Selection
+        // 1. Size Selection — los talles sin stock ya vienen con pointer-events:none,
+        //    pero se chequea igual: un click sintético no puede seleccionarlos.
         const sizeBtns = productPage.querySelectorAll('.size-btn');
         sizeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                if (btn.classList.contains('size-btn--na')) return;
                 sizeBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 selectedSize = btn.textContent;
