@@ -8447,3 +8447,73 @@ body.header-invert #announcement-bar {
         display: none;
     }
 }
+
+/* ─── Selvedge: video de fondo ───────────────────────────────────────────
+   selvedge-loop.mp4 es la concatenacion de 6 cortes del film de denim, sin
+   audio (ver docs/internal/FOTOS_PRODUCTO_NOMBRES.md). El marron queda debajo
+   como fondo mientras el video carga o si el navegador no lo reproduce. */
+.selvedge-section {
+    overflow: hidden;
+}
+
+.selvedge-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* El contenido va por encima del video. .home-section ya es position:relative. */
+.selvedge-section .selvedge-block,
+.selvedge-section .section-mobile-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Si el usuario pidio menos movimiento, el video se esconde y queda el poster. */
+@media (prefers-reduced-motion: reduce) {
+    .selvedge-video { display: none; }
+    .selvedge-section {
+        background-image: url("/assets/video/selvedge-loop.jpg");
+        background-size: cover;
+        background-position: center;
+    }
+}
+
+/* ─── Graficas de marca: bloque entre el video y el footer ───────────────
+   Las graficas son composiciones cerradas (fondo blanco + wordmark), asi que
+   van con object-fit: contain — recortarlas rompe el diseno. El fondo #FAFAFA
+   empalma con el blanco de las que lo tienen. Rotan cada 5s con crossfade. */
+.graficas-section {
+    width: 100%;
+    background-color: var(--color-white);
+    padding: 0;
+}
+
+.graficas-stage {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.grafica-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 900ms var(--ease-expose, ease);
+    pointer-events: none;
+}
+
+.grafica-slide.is-active {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .graficas-stage { height: 70vh; }
+}

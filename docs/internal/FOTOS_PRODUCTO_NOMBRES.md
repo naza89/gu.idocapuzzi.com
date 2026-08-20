@@ -212,3 +212,56 @@ estas; las viejas se borran una vez que cada producto tenga material nuevo.
 Sobras a limpiar en el camino: `remera-bbytee-navy-front.png` (producto eliminado) y
 `jean-negro-bootcut-font.png` (typo de "front" que hoy está referenciado así en
 `start.js:144` — funciona, pero se corrige al reemplazarlo).
+
+---
+
+## Video y gráficas (2026-08-20)
+
+### Selvedge — `selvedge-loop.mp4`
+
+Fondo de la sección SELVEDGE DENIM del home. Es la concatenación de 6 cortes del
+master `VIDEO DENIM.mov` (154MB, 1920×1080, 29.97fps, 75.4s), **sin audio**, en
+loop. Intervalos pedidos por Naza:
+
+| # | Desde | Hasta | Dura |
+|---|-------|-------|------|
+| 1 | 00:03 | 00:10 | 7.0s |
+| 2 | 00:15 | 00:18 | 3.0s |
+| 3 | 00:21 | 00:28 | 7.0s |
+| 4 | 00:33 | 00:36 | 3.0s |
+| 5 | 00:38 | 00:40 | 2.0s |
+| 6 | 00:38,5 | 00:45 | 6.5s |
+
+Total 28.5s · 6.2MB · H.264 CRF 27 · `+faststart`. Póster: `selvedge-loop.jpg`.
+
+> ⚠️ **Los cortes 5 y 6 se solapan.** El 5 va de 38 a 40 y el 6 arranca en 38,5,
+> así que el tramo 38,5–40 se ve **dos veces seguidas**: hay un salto hacia atrás
+> de 1,5s a los 22 segundos del loop. Verificado comparando los frames de 21,0s y
+> 22,5s del resultado: son el mismo (diferencia media 0.52 sobre 255). Si no era
+> deliberado, se arregla cambiando el corte 5 a `38 – 38,5` o el 6 a `40 – 45`.
+
+Regenerar: ver el comando `ffmpeg -filter_complex` con `trim`/`concat` en la
+bitácora del 2026-08-20.
+
+### Archivo — `ss26-film.mp4`
+
+El master completo, 75.4s **con audio** (AAC 128k), 1920×1080 CRF 25, 23MB,
+`+faststart`. Reemplazó al placeholder generado con ffmpeg, que se borró.
+Referenciado desde `public/js/archive-data.js` (landing y bloque FILM de SS26).
+
+> El peso es el punto a vigilar: son 23MB que viajan en el repo y arrancan solos
+> al abrir `/archivo`. Si molesta, las salidas son subirlo a Vercel Blob o
+> Supabase Storage, o bajar a 720p.
+
+### Gráficas — bloque entre el video y el footer
+
+`public/assets/images/graficas/grafica-8.webp` y `grafica-15.webp` (2000px de
+lado largo, WebP q84, 502KB y 214KB). Los PNG originales (17-24MB) quedan en
+`public/assets/images/gráficas/`, que está en el `.gitignore` — ojo que el nombre
+de esa carpeta lleva acento y por eso **no** se sirve directamente.
+
+Rotan cada 5s con crossfade de 900ms (`initGraficas` en `start.js`). Para sumar o
+sacar gráficas alcanza con editar el array `GRAFICAS`. Van con
+`object-fit: contain` sobre fondo `#FAFAFA`: son composiciones cerradas (fondo
+blanco + wordmark), recortarlas rompe el diseño — la `grafica-15` es literalmente
+un díptico con el wordmark en el panel izquierdo.

@@ -28,8 +28,8 @@
 // lo hacen a propósito: la foto se ve cortada por el viewport, como en la referencia.
 window.ARCHIVE_LANDING = {
     film: {
-        src: 'assets/video/archivo-film-placeholder.mp4',
-        poster: 'assets/video/archivo-film-placeholder.jpg',
+        src: 'assets/video/ss26-film.mp4',
+        poster: 'assets/video/ss26-film.jpg',
         // Caja final tras el decrecimiento radial (medida del SVG: 777.7×416.2 px
         // sobre 1920×868.7 → 40.5% del ancho, ratio 1.85:1 = cinema flat).
         width: 40.51,
@@ -81,8 +81,8 @@ window.ARCHIVE_DATA = [
             { src: '', alt: '', w: 1500, h: 1200 }
         ],
         film: {
-            src: 'assets/video/archivo-film-placeholder.mp4',
-            poster: 'assets/video/archivo-film-placeholder.jpg'
+            src: 'assets/video/ss26-film.mp4',
+            poster: 'assets/video/ss26-film.jpg'
         }
     }
 ];

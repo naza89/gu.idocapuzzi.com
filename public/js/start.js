@@ -5158,6 +5158,67 @@ document.addEventListener('DOMContentLoaded', () => {
     initFooterAccordion();
 
     // =========================================================================
+    // GRÁFICAS DE MARCA — bloque entre el video de Selvedge y el footer.
+    // Rotan cada 5s con crossfade. Para sumar o sacar gráficas alcanza con
+    // editar GRAFICAS: los archivos viven en public/assets/images/graficas/.
+    // El timer se pausa cuando el bloque no está en pantalla o la pestaña está
+    // oculta, así no corre de fondo en el resto del sitio (que es una SPA).
+    // =========================================================================
+    const GRAFICAS = [
+        { src: "assets/images/graficas/grafica-8.webp",  alt: "GÜIDO CAPUZZI — campaña, piso a cuadros" },
+        { src: "assets/images/graficas/grafica-15.webp", alt: "GÜIDO CAPUZZI — campaña, sillón rojo" }
+    ];
+    const GRAFICAS_INTERVALO = 5000;
+
+    function initGraficas() {
+        const stage = document.getElementById("graficas-stage");
+        if (!stage || stage.childElementCount > 0 || !GRAFICAS.length) return;
+
+        const slides = GRAFICAS.map(function (g, i) {
+            const img = document.createElement("img");
+            img.className = "grafica-slide" + (i === 0 ? " is-active" : "");
+            img.src = absUrl(g.src);
+            img.alt = g.alt || "";
+            // Sólo la primera es prioritaria: el resto entra a medida que rota.
+            img.loading = i === 0 ? "eager" : "lazy";
+            img.decoding = "async";
+            stage.appendChild(img);
+            return img;
+        });
+        if (slides.length < 2) return;
+
+        let actual = 0;
+        let timer = null;
+
+        function avanzar() {
+            slides[actual].classList.remove("is-active");
+            actual = (actual + 1) % slides.length;
+            slides[actual].classList.add("is-active");
+        }
+        function arrancar() { if (timer === null) timer = setInterval(avanzar, GRAFICAS_INTERVALO); }
+        function frenar() { if (timer !== null) { clearInterval(timer); timer = null; } }
+
+        // Sólo rota mientras el bloque se ve Y la pestaña está al frente.
+        // enPantalla se guarda aparte porque el IntersectionObserver no vuelve a
+        // disparar al recuperar el foco: sin esa bandera, ocultar la pestaña con el
+        // bloque a la vista dejaba el timer frenado para siempre.
+        let enPantalla = false;
+        function sincronizar() {
+            if (enPantalla && !document.hidden) { arrancar(); } else { frenar(); }
+        }
+        if (typeof IntersectionObserver === "function") {
+            new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) { enPantalla = e.isIntersecting; });
+                sincronizar();
+            }, { threshold: 0.15 }).observe(stage);
+        } else {
+            enPantalla = true;
+            sincronizar();
+        }
+        document.addEventListener("visibilitychange", sincronizar);
+    }
+    initGraficas();
+    // =========================================================================
     // MARQUEE — sincroniza body.header-active cuando el header se activa (negro)
     // =========================================================================
     if (header) {

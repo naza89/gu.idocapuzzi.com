@@ -336,6 +336,11 @@ const siteHTML = `
 
             <!-- Section 2: Selvedge (Brown) -->
             <section class="home-section selvedge-section">
+                <!-- Fondo: concatenacion de cortes del film de denim. Sin audio, en loop. -->
+                <video class="selvedge-video" autoplay muted loop playsinline preload="metadata"
+                       poster="/assets/video/selvedge-loop.jpg" aria-hidden="true" tabindex="-1">
+                    <source src="/assets/video/selvedge-loop.mp4" type="video/mp4" />
+                </video>
                 <!-- Desktop content block (top-left, parallax) -->
                 <div class="section-content-block selvedge-block">
                     <p class="section-subtitle">Nuevos jeans de stock único.</p>
@@ -350,6 +355,11 @@ const siteHTML = `
                     <h2 class="section-mobile-title font-condensed">SELVEDGE DENIM</h2>
                     <a href="/shop?cat=PANTALONES%20%2F%20JEANS" class="btn-rect btn-rect-mobile" data-shop-cat="PANTALONES / JEANS"><span>VER JEANS</span></a>
                 </div>
+            </section>
+
+            <!-- Section 3: Graficas de marca. Rotan cada 5s (initGraficas en start.js). -->
+            <section class="graficas-section" id="graficas-section" aria-label="Graficas de campana">
+                <div class="graficas-stage" id="graficas-stage"></div>
             </section>
 
             <!-- Footer -->
