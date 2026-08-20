@@ -1,0 +1,128 @@
+# CI de GÜIDO CAPUZZI — Azure DevOps
+#
+# Gemelo de `.github/workflows/ci.yml`: mismos stages, mismos comandos. Se
+# mantienen a la par a propósito — si uno pasa y el otro no, eso ya es la señal.
+#
+# ── Setup en Azure DevOps (una sola vez) ─────────────────────────────────────
+#   1. Pipelines → New pipeline → GitHub → naza89/gu.idocapuzzi.com.
+#      La service connection a GitHub es POR PROYECTO: la del proyecto de
+#      Mercedino no se hereda, hay que autorizar de nuevo.
+#   2. "Existing Azure Pipelines YAML file" → /azure-pipelines.yml.
+#   3. NO hace falta variable group todavía: ningún stage necesita secretos.
+#      Cuando `verificar-catalogo` tenga que pegarle a la base, crear el grupo
+#      `guido` con las claves de un proyecto de staging o de solo-lectura.
+#      NUNCA las productivas de NAVE ni de OCA.
+#
+# ── Sobre el stage Deploy ────────────────────────────────────────────────────
+# No existe: deploya Vercel solo, en el push a main. Poner acá un stage que no
+# hace nada sería teatro. Cuando el deploy pase por el pipeline, ahí sí va un
+# Environment con approval gate.
+#
+# ── Nota de Mercedino que aplica acá ─────────────────────────────────────────
+# `UsePythonVersion@0` sólo usa el tool cache; `NodeTool@0` sí descarga la
+# versión que le pidas. Así que la divergencia que apareció en Mercedino entre
+# Azure y Actions no debería pasar acá. Si algún día Test falla en Azure y no en
+# Actions, mirar primero la versión de Node que resolvió cada uno.
+
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  NODE_VERSION: '24.x'
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+
+stages:
+  - stage: Lint
+    displayName: Lint
+    jobs:
+      - job: lint
+        displayName: ESLint + TypeScript
+        steps:
+          - task: NodeTool@0
+            displayName: Node $(NODE_VERSION)
+            inputs:
+              versionSpec: $(NODE_VERSION)
+
+          - task: Cache@2
+            displayName: Caché de npm
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(npm_config_cache)
+
+          - script: npm ci
+            displayName: npm ci
+
+          - script: npm run lint
+            displayName: ESLint
+
+          - script: npm run typecheck
+            displayName: tsc --noEmit
+
+  - stage: Test
+    displayName: Test
+    dependsOn: Lint
+    jobs:
+      - job: test
+        displayName: Tests + catálogo
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(npm_config_cache)
+
+          - script: npm ci
+            displayName: npm ci
+
+          - script: npm test
+            displayName: Tests unitarios (node --test)
+
+          - script: npm run verificar:catalogo
+            displayName: Verificar catálogo (front)
+            # Sin credenciales corre en modo solo-front y lo dice explícito.
+            # El diff contra Supabase se corre a mano antes de tocar precios.
+
+  - stage: Build
+    displayName: Build
+    dependsOn: Test
+    jobs:
+      - job: build
+        displayName: next build
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(npm_config_cache)
+
+          - script: npm ci
+            displayName: npm ci
+
+          - script: npm run build
+            displayName: next build
+            env:
+              # Placeholders: el build compila las rutas de API, no las ejecuta.
+              NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key

@@ -1,0 +1,89 @@
+# CI de GÜIDO CAPUZZI — GitHub Actions
+#
+# Qué agrega esto sobre lo que ya hace Vercel:
+#   · Vercel buildea (y typechequea) DESPUÉS del push a main. Acá corre en la
+#     rama y en el PR, antes de que exista el deploy.
+#   · Vercel NO bloquea por ESLint. Acá sí.
+#   · Corre los tests, que sin CI no iban a existir nunca.
+#   · Es el gancho del que después cuelgan las evals del asistente (FASE 2).
+#
+# El gemelo de este pipeline vive en `azure-pipelines.yml`. Se mantienen a la
+# par a propósito: mismos stages, mismos comandos.
+#
+# ⚠️ SECRETOS: este workflow NO recibe ninguna credencial. `verificar-catalogo`
+# corre en modo solo-front (avisa que no verificó la base). Las claves de NAVE y
+# OCA nunca entran acá — el 18-ago ya se filtró una clave productiva de OCA en
+# este mismo repo; el CI no puede ser la segunda puerta.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '24.x'
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: ESLint
+        run: npm run lint
+      - name: TypeScript
+        run: npm run typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Tests unitarios
+        run: npm test
+      - name: Verificar catálogo (front)
+        # Sin credenciales sólo valida el lado del front: SKU duplicados,
+        # precios ilegibles, imágenes que no existen en public/.
+        # El diff contra Supabase se corre a mano antes de tocar precios.
+        run: npm run verificar:catalogo
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: next build
+        # El build no necesita las claves reales: las rutas de API se compilan,
+        # no se ejecutan. Se pasan placeholders para que el módulo de Supabase
+        # no explote en tiempo de import.
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+        run: npm run build
