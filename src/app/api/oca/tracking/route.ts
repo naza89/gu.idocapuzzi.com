@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
 import { parsearTracking } from '@/lib/oca/xml-parser';
+import { requireAdmin } from '@/lib/admin-auth';
 
 /**
  * GET /api/oca/tracking?nroEnvio=XX
  *
  * Consulta el estado y los eventos de un envío OCA.
  * El nro_envio_oca (19 dígitos) se obtiene del panel ePak o de la orden.
+ * Ruta de backoffice — requiere header x-admin-token.
  */
 export async function GET(req: NextRequest) {
+    const denied = requireAdmin(req);
+    if (denied) return denied;
+
     const nroEnvio = req.nextUrl.searchParams.get('nroEnvio');
     if (!nroEnvio) return NextResponse.json({ error: 'nroEnvio requerido' }, { status: 400 });
 

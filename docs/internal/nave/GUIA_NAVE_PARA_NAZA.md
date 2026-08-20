@@ -402,7 +402,7 @@ Porque antes de estos errores, sí tuvimos un error nuestro (`duration_time` com
 
 1. **Reintentar durante horario hábil** (lunes a viernes, 9-18 hs Argentina)
 2. Si sigue fallando, escribir a `integraciones@navenegocios.com` diciendo:
-   > "Hola, estamos integrando el checkout con NAVE. Las credenciales de Sandbox (POS ID: f71ba756...) funcionan para la autenticación pero la creación de payment_request devuelve `stores_error: AxiosError-timeout of 10000ms exceeded`. ¿Hay algún problema con el entorno de Sandbox?"
+   > "Hola, estamos integrando el checkout con NAVE. Las credenciales de Sandbox (POS ID: __redactado__) funcionan para la autenticación pero la creación de payment_request devuelve `stores_error: AxiosError-timeout of 10000ms exceeded`. ¿Hay algún problema con el entorno de Sandbox?"
 
 ---
 
@@ -450,9 +450,9 @@ Escribir a `integraciones@navenegocios.com` con ambas URLs (sandbox y producció
 
 | Dato | Valor |
 |------|-------|
-| Client ID | `d3OkB2jExe4gBCUQzEeTiuAOV6e8kGSc` |
-| Client Secret | `cuDRa5Tz19sFZwPRHP1Tcexsjv8f98slQ88o_OWUbr4f4YlxPpgp27QaV5OY3q0y` |
-| POS ID | `f71ba756-1d80-4ab3-9f43-5dc247fd6c4a` |
+| Client ID | `__redactado_ver_vault__` |
+| Client Secret | `__redactado_ver_vault__` |
+| POS ID | `__redactado_ver_vault__` |
 | Auth URL | `https://homoservices.apinaranja.com/security-ms/api/security/auth0/b2b/m2msPrivate` |
 | API URL | `https://api-sandbox.ranty.io` |
 | Environment | `sandbox` |

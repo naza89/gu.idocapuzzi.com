@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
 import { OCA_CONFIG } from '@/lib/oca/config';
+import { requireAdmin } from '@/lib/admin-auth';
 
 /**
  * POST /api/oca/anular
  *
  * Anula una orden de retiro en OCA ePak.
  * Solo funciona si la orden aún no fue despachada.
+ * Ruta de backoffice — requiere header x-admin-token (con las credenciales del
+ * comercio; sin auth, cualquiera podría cancelar los envíos iterando ids).
  */
 export async function POST(req: NextRequest) {
+    const denied = requireAdmin(req);
+    if (denied) return denied;
+
     try {
         const { idOrdenRetiro } = await req.json();
 

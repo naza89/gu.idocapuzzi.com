@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
 import { XMLParser } from 'fast-xml-parser';
+import { requireAdmin } from '@/lib/admin-auth';
 
 /**
  * GET /api/oca/centros-costo?operativa=XXXXX
  *
  * Lista centros de costo para una operativa dada.
  * Usa el endpoint alternativo (Oep_Track.asmx).
+ * Ruta de backoffice — requiere header x-admin-token.
  */
 export async function GET(req: NextRequest) {
+    const denied = requireAdmin(req);
+    if (denied) return denied;
+
     const operativa = req.nextUrl.searchParams.get('operativa');
     if (!operativa) return NextResponse.json({ error: 'Operativa requerida' }, { status: 400 });
 

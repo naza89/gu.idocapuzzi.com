@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ocaGet } from '@/lib/oca/client';
+import { requireAdmin } from '@/lib/admin-auth';
 
 /**
  * GET /api/oca/etiqueta?ordenId=XX&formato=pdf
@@ -7,8 +8,13 @@ import { ocaGet } from '@/lib/oca/client';
  * Descarga la etiqueta de un envío OCA.
  * Formatos: html, pdf (A4), etiquetadora (10x15), zpl (Zebra).
  * Recomendación GÜIDO: "pdf" para hoja común, "etiquetadora" para impresora de etiquetas.
+ * Ruta de backoffice — requiere header x-admin-token (la etiqueta tiene datos
+ * personales del comprador y los idOrdenRetiro son enumerables).
  */
 export async function GET(req: NextRequest) {
+    const denied = requireAdmin(req);
+    if (denied) return denied;
+
     const ordenId = req.nextUrl.searchParams.get('ordenId');
     const formato = req.nextUrl.searchParams.get('formato') || 'pdf';
 

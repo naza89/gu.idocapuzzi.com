@@ -253,12 +253,19 @@ export async function PATCH(
             updateData.total_centavos = currentOrder.subtotal_centavos + costoEnvioCentavos;
         }
 
+        // Guarda de estado: sólo se puede recalcular el envío de una orden que
+        // todavía no fue pagada. Sin esto, apretar "Atrás" desde el pago y
+        // re-confirmar el envío degradaba una orden ya `pagado` a
+        // `envio_calculado`, habilitando un segundo cobro.
+        const ESTADOS_EDITABLES = ['pendiente', 'envio_calculado', 'pago_pendiente'];
+
         const { data, error } = await supabase
             .from('ordenes')
             .update(updateData)
             .eq('id', id)
+            .in('estado', ESTADOS_EDITABLES)
             .select('id, estado, tipo_envio, precio_envio')
-            .single();
+            .maybeSingle();
 
         if (error) {
             console.error('[PATCH ordenes] Supabase error:', error);
@@ -269,9 +276,10 @@ export async function PATCH(
         }
 
         if (!data) {
+            // La orden no existe, o ya está en un estado no editable (p.ej. pagado).
             return NextResponse.json(
-                { error: 'Orden no encontrada' },
-                { status: 404 }
+                { error: 'La orden no se puede modificar en su estado actual' },
+                { status: 409 }
             );
         }
 

@@ -230,7 +230,7 @@ Content-Type: application/json
 {
   "external_payment_id": "order-111",
   "seller": {
-    "pos_id": "f71ba756-1d80-4ab3-9f43-5dc247fd6c4a"
+    "pos_id": "__redactado_ver_vault__"
   },
   "transactions": [
     {
@@ -311,7 +311,7 @@ curl --location 'https://api-sandbox.ranty.io/api/payment_request/ecommerce' \
 --data '{
   "external_payment_id": "order-111",
   "seller": {
-    "pos_id": "f71ba756-1d80-4ab3-9f43-5dc247fd6c4a"
+    "pos_id": "__redactado_ver_vault__"
   },
   "transactions": [
     {

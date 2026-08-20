@@ -83,9 +83,9 @@ Secuencia:
 
 ```bash
 # NAVE Sandbox
-NAVE_CLIENT_ID=d3OkB2jExe4gBCUQzEeTiuAOV6e8kGSc
-NAVE_CLIENT_SECRET=cuDRa5Tz19sFZwPRHP1Tcexsjv8f98slQ88o_OWUbr4f4YlxPpgp27QaV5OY3q0y
-NAVE_POS_ID=f71ba756-1d80-4ab3-9f43-5dc247fd6c4a
+NAVE_CLIENT_ID=__redactado_ver_vault__
+NAVE_CLIENT_SECRET=__redactado_ver_vault__
+NAVE_POS_ID=__redactado_ver_vault__
 NAVE_AUDIENCE=https://naranja.com/ranty/merchants/api
 NAVE_ENVIRONMENT=sandbox
 
@@ -135,9 +135,9 @@ src/lib/
 
 | Campo | Valor |
 |---|---|
-| Client ID | `d3OkB2jExe4gBCUQzEeTiuAOV6e8kGSc` |
-| Client Secret | `cuDRa5Tz19sFZwPRHP1Tcexsjv8f98slQ88o_OWUbr4f4YlxPpgp27QaV5OY3q0y` |
-| POS ID (Test) | `f71ba756-1d80-4ab3-9f43-5dc247fd6c4a` |
+| Client ID | `__redactado_ver_vault__` |
+| Client Secret | `__redactado_ver_vault__` |
+| POS ID (Test) | `__redactado_ver_vault__` |
 | Audience | `https://naranja.com/ranty/merchants/api` |
 | Auth endpoint | `https://homoservices.apinaranja.com/security-ms/api/security/auth0/b2b/m2msPrivate` |
 | API endpoint | `https://api-sandbox.ranty.io/api/payment_request/ecommerce` |

@@ -1,29 +1,26 @@
 // =============================================================================
 // CHECKOUT LOGIC - GÜIDO CAPUZZI
 // =============================================================================
-// Este archivo maneja la persistencia de datos del checkout en Supabase.
+// Este archivo maneja la validación del Step 1 y dispara la creación de la orden.
 //
 // FLUJO DEL CHECKOUT (Step 1 → "CONTINUAR A ENVÍOS"):
 // 1. Validar formulario (email, nombre, dirección, CP, teléfono)
-// 2. Guardar o actualizar cliente en Supabase → cliente_id
-// 3. Guardar dirección de envío → direccion_id
-// 4. Crear orden con estado "pendiente" → orden_id
-// 5. Insertar items de la orden → items creados
-// 6. Transicionar al Step 2 (Envíos)
+// 2. POST /api/checkout/crear-orden (SERVER-SIDE, service_role):
+//    guarda/actualiza cliente + dirección, crea la orden con PRECIOS DEL
+//    CATÁLOGO (no del browser) e inserta los items.
+// 3. Transicionar al Step 2 (Envíos)
 //
-// DEPENDENCIAS:
-// - supabase-config.js debe estar cargado antes que este archivo
-// - start.js debe exponer el carrito (cart) y datos del checkout
+// ⚠️ SEGURIDAD: la orden ya NO se inserta desde el browser con la anon key.
+//   Los precios se resuelven server-side contra `productos.precio_centavos`,
+//   así el cliente no puede fabricar una orden con montos arbitrarios. El RLS
+//   (migración 17) le quita a la anon key el permiso de escribir en ordenes.
 // =============================================================================
 
 // =============================================================================
 // DISPONIBILIDAD DEL CLIENTE SUPABASE
 // =============================================================================
-// Si el <script> de @supabase/supabase-js no cargó, supabase-config.js deja
-// window.supabaseClient en null y levanta window.supabaseUnavailable. Sin cliente
-// no hay orden, ni cotización de envío, ni pago: el checkout entero es inviable.
-// Antes eso fallaba mudo (TypeError en consola y nada más). Estas dos funciones
-// hacen que el usuario se entere.
+// El resto de la página (stock, auth) sigue usando window.supabaseClient. Estas
+// dos funciones las consume start.js para avisar si la librería no cargó.
 
 const MSG_SIN_CONEXION_SUPABASE =
     'No pudimos conectarnos con nuestro sistema. Revisá tu conexión, desactivá el bloqueador de anuncios si tenés uno, y recargá la página.';
@@ -36,15 +33,14 @@ function supabaseDisponible() {
 }
 
 /**
- * Avisa al entrar al checkout si el cliente de Supabase no está disponible,
- * para que el usuario no complete todo el formulario y recién ahí choque.
+ * Avisa al entrar al checkout si el cliente de Supabase no está disponible.
  * Se llama desde enableCheckoutState() en start.js.
  *
  * @returns {boolean} true si el checkout es operable, false si se mostró el aviso.
  */
 function avisarCheckoutSinConexion() {
     if (supabaseDisponible()) return true;
-    console.error('[Checkout] Cliente de Supabase no disponible — el checkout no puede operar');
+    console.error('[Checkout] Cliente de Supabase no disponible');
     mostrarErroresCheckout([MSG_SIN_CONEXION_SUPABASE]);
     return false;
 }
@@ -122,290 +118,11 @@ function validarCheckoutStep1() {
 }
 
 // =============================================================================
-// GUARDAR CLIENTE
-// =============================================================================
-
-/**
- * Guarda o actualiza un cliente en Supabase.
- * 
- * CÓMO FUNCIONA:
- * 1. Busca si ya existe un cliente con ese email
- * 2. Si existe → actualiza sus datos (nombre, teléfono, etc.)
- * 3. Si no existe → crea uno nuevo
- * 4. Retorna el cliente_id (UUID)
- *
- * Esto se conoce como "upsert" (update + insert).
- * Usamos el email como identificador único del cliente.
- *
- * @param {object} datos - Datos del formulario validados
- * @returns {Promise<string>} cliente_id (UUID)
- */
-async function guardarCliente(datos) {
-    // Buscar si el cliente ya existe por email
-    const { data: clienteExistente, error: errBuscar } = await window.supabaseClient
-        .from('clientes')
-        .select('id')
-        .eq('email', datos.email)
-        .limit(1)
-        .maybeSingle();
-
-    if (errBuscar) {
-        console.error('[Checkout] Error buscando cliente:', errBuscar);
-        throw new Error('Error al buscar cliente: ' + errBuscar.message);
-    }
-
-    if (clienteExistente) {
-        // Cliente existe → actualizar datos
-        const { data: updated, error: errUpdate } = await window.supabaseClient
-            .from('clientes')
-            .update({
-                nombre: datos.nombre,
-                apellido: datos.apellido,
-                telefono: datos.telefono,
-                newsletter: datos.newsletter,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', clienteExistente.id)
-            .select('id')
-            .single();
-
-        if (errUpdate) {
-            console.error('[Checkout] Error actualizando cliente:', errUpdate);
-            throw new Error('Error al actualizar cliente: ' + errUpdate.message);
-        }
-
-        console.log('[Checkout] Cliente actualizado:', updated.id);
-        return updated.id;
-    } else {
-        // Cliente nuevo → insertar
-        const { data: nuevo, error: errInsert } = await window.supabaseClient
-            .from('clientes')
-            .insert({
-                email: datos.email,
-                nombre: datos.nombre,
-                apellido: datos.apellido,
-                telefono: datos.telefono,
-                newsletter: datos.newsletter
-            })
-            .select('id')
-            .single();
-
-        if (errInsert) {
-            console.error('[Checkout] Error creando cliente:', errInsert);
-            throw new Error('Error al crear cliente: ' + errInsert.message);
-        }
-
-        console.log('[Checkout] Cliente creado:', nuevo.id);
-        return nuevo.id;
-    }
-}
-
-// =============================================================================
-// GUARDAR DIRECCIÓN DE ENVÍO
-// =============================================================================
-
-/**
- * Guarda la dirección de envío del cliente en Supabase.
- *
- * CÓMO FUNCIONA:
- * Inserta una nueva dirección asociada al cliente.
- * Un cliente puede tener múltiples direcciones guardadas.
- *
- * @param {string} clienteId - UUID del cliente
- * @param {object} datos - Datos del formulario validados
- * @returns {Promise<string>} direccion_id (UUID)
- */
-async function guardarDireccion(clienteId, datos) {
-    const direccionPayload = {
-        cliente_id: clienteId,
-        direccion: datos.direccion + (datos.departamento ? `, ${datos.departamento}` : ''),
-        departamento: datos.departamento || null,
-        ciudad: datos.ciudad,
-        provincia: datos.provincia,
-        codigo_postal: datos.cp,
-        es_predeterminada: true,
-        // OCA requires separate calle/numero fields
-        // Parse from the direccion field: "Calle 123" → calle="Calle", numero="123"
-        calle: datos.direccion ? datos.direccion.replace(/\s+\d+\s*$/, '').trim() : null,
-        numero: datos.direccion ? (datos.direccion.match(/(\d+)\s*$/) || [])[1] || '' : null,
-        piso: datos.departamento ? datos.departamento.replace(/[^\d]/g, '').slice(0, 5) || null : null,
-        depto: datos.departamento ? datos.departamento.replace(/^\d+\s*/, '').trim() || null : null,
-    };
-
-    // Check if we already saved a dirección in this session (re-entry case)
-    const existingDireccionId = sessionStorage.getItem('checkout_direccion_id');
-
-    if (existingDireccionId) {
-        // Update existing dirección
-        const { data: updated, error } = await window.supabaseClient
-            .from('direcciones_envio')
-            .update(direccionPayload)
-            .eq('id', existingDireccionId)
-            .select('id')
-            .single();
-
-        if (error) {
-            console.error('[Checkout] Error actualizando dirección:', error);
-            throw new Error('Error al actualizar dirección: ' + error.message);
-        }
-
-        console.log('[Checkout] Dirección actualizada:', updated.id);
-        return updated.id;
-    } else {
-        // Insert new dirección
-        const { data: direccion, error } = await window.supabaseClient
-            .from('direcciones_envio')
-            .insert(direccionPayload)
-            .select('id')
-            .single();
-
-        if (error) {
-            console.error('[Checkout] Error guardando dirección:', error);
-            throw new Error('Error al guardar dirección: ' + error.message);
-        }
-
-        // Store for re-entry
-        sessionStorage.setItem('checkout_direccion_id', direccion.id);
-        console.log('[Checkout] Dirección guardada:', direccion.id);
-        return direccion.id;
-    }
-}
-
-// =============================================================================
-// CREAR ORDEN PENDIENTE
-// =============================================================================
-
-/**
- * Crea una orden con estado "pendiente" en Supabase.
- *
- * CÓMO FUNCIONA:
- * 1. Calcula subtotal y total desde los items del carrito
- * 2. Inserta la orden en la tabla `ordenes`
- * 3. Inserta cada item del carrito en la tabla `items_orden`
- *    (con un "snapshot" del producto — precio, nombre, color, talle)
- * 4. La orden queda en estado "pendiente" esperando el paso de envío
- *
- * SNAPSHOT: Guardamos los datos del producto al momento de la compra.
- * Si mañana cambia el precio, la orden mantiene el precio original.
- *
- * @param {string} clienteId - UUID del cliente
- * @param {string} direccionId - UUID de la dirección de envío
- * @param {Array} cartItems - Array de items del carrito desde start.js
- * @returns {Promise<string>} orden_id (UUID)
- */
-async function crearOrdenPendiente(clienteId, direccionId, cartItems) {
-    // Calcular totales (todo en centavos)
-    const subtotalCentavos = cartItems.reduce((acc, item) => {
-        return acc + (item.priceValue * 100 * item.qty);
-    }, 0);
-
-    // Insertar la orden
-    const { data: orden, error: errOrden } = await window.supabaseClient
-        .from('ordenes')
-        .insert({
-            cliente_id: clienteId,
-            direccion_envio_id: direccionId,
-            estado: 'pendiente',
-            subtotal_centavos: subtotalCentavos,
-            costo_envio_centavos: 0,  // Se calculará en el paso de envío
-            descuento_centavos: 0,
-            total_centavos: subtotalCentavos  // Por ahora = subtotal (sin envío)
-        })
-        .select('id, numero_orden')
-        .single();
-
-    if (errOrden) {
-        console.error('[Checkout] Error creando orden:', errOrden);
-        throw new Error('Error al crear orden: ' + errOrden.message);
-    }
-
-    console.log('[Checkout] Orden creada:', orden.id, '| Nº:', orden.numero_orden);
-
-    // Insertar items de la orden (snapshot del producto + variante_id real)
-    const itemsParaInsertar = [];
-    for (const item of cartItems) {
-        // Buscar variante_id real en Supabase.
-        //
-        // Se busca por SKU, que es UNIQUE en variantes_producto y por lo tanto
-        // identifica una y sólo una fila. La versión anterior buscaba por
-        // (colorway, talle) sin el producto, asumiendo que el colorway era único
-        // en toda la tabla — y no lo es: 'NEGRO' lo comparten la musculosa, la
-        // remera afligida, la baby tee, la termal, la bermuda double knee y el
-        // jean italiano, y las cuatro piezas de INTERVENCIONES comparten '1/1'.
-        // Con .limit(1) la consulta devolvía la primera fila que encontrara, así
-        // que una compra podía descontar stock de otro producto.
-        let varianteId = null;
-        try {
-            if (item.sku) {
-                const { data: variantes } = await window.supabaseClient
-                    .from('variantes_producto')
-                    .select('id')
-                    .eq('sku', item.sku)
-                    .limit(1);
-                if (variantes && variantes.length > 0) varianteId = variantes[0].id;
-            }
-
-            // Fallback por (nombre de producto, colorway, talle) para carritos
-            // viejos en sessionStorage, de antes de que el item llevara SKU.
-            // Incluye el producto, así que tampoco puede cruzarse.
-            if (!varianteId) {
-                const { data: variantes } = await window.supabaseClient
-                    .from('variantes_producto')
-                    .select('id, productos!inner(nombre)')
-                    .eq('productos.nombre', item.name || '')
-                    .eq('colorway', item.colorway || '')
-                    .eq('talle', item.size || '')
-                    .limit(1);
-                if (variantes && variantes.length > 0) {
-                    varianteId = variantes[0].id;
-                    console.warn('[Checkout] Variante resuelta por fallback (item sin SKU):', item.name, item.colorway, item.size);
-                }
-            }
-
-            if (varianteId) {
-                console.log('[Checkout] ✅ Variante encontrada:', varianteId, '| SKU:', item.sku || '(sin SKU)');
-            } else {
-                console.error('[Checkout] ❌ Variante NO encontrada:', item.name, item.colorway, item.size, '| SKU:', item.sku);
-            }
-        } catch (lookupErr) {
-            console.warn('[Checkout] Error buscando variante_id:', lookupErr);
-        }
-
-        itemsParaInsertar.push({
-            orden_id: orden.id,
-            variante_id: varianteId,
-            nombre_producto: item.name,
-            color: item.color || '',
-            talle: item.size || '',
-            precio_unitario_centavos: item.priceValue * 100,
-            cantidad: item.qty,
-            subtotal_centavos: item.priceValue * 100 * item.qty
-        });
-    }
-
-    const { error: errItems } = await window.supabaseClient
-        .from('items_orden')
-        .insert(itemsParaInsertar);
-
-    if (errItems) {
-        console.error('[Checkout] Error insertando items:', errItems);
-        throw new Error('Error al guardar items de la orden: ' + errItems.message);
-    }
-
-    console.log('[Checkout] Items de orden insertados:', itemsParaInsertar.length);
-
-    return {
-        ordenId: orden.id,
-        numeroOrden: orden.numero_orden
-    };
-}
-
-// =============================================================================
 // FLUJO PRINCIPAL: PROCESAR CHECKOUT STEP 1
 // =============================================================================
 
 /**
- * Función principal que ejecuta todo el flujo del Step 1.
+ * Ejecuta el Step 1: valida y crea la orden server-side.
  * Se llama cuando el usuario hace click en "CONTINUAR A ENVÍOS".
  *
  * @param {Array} cartItems - El array `cart` de start.js
@@ -414,13 +131,6 @@ async function crearOrdenPendiente(clienteId, direccionId, cartItems) {
 async function procesarCheckoutStep1(cartItems) {
     console.log('[Checkout] Iniciando procesamiento Step 1...');
 
-    // PASO 0: Sin cliente de Supabase no hay nada que hacer. Se corta acá con un
-    // mensaje al usuario en vez de reventar con un TypeError en la primera query.
-    if (!supabaseDisponible()) {
-        console.error('[Checkout] ❌ Abortado: cliente de Supabase no disponible');
-        return { success: false, errors: [MSG_SIN_CONEXION_SUPABASE] };
-    }
-
     // PASO 1: Validar formulario
     const validacion = validarCheckoutStep1();
     if (!validacion.valid) {
@@ -428,54 +138,62 @@ async function procesarCheckoutStep1(cartItems) {
         return { success: false, errors: validacion.errors };
     }
 
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+        return { success: false, errors: ['Tu carrito está vacío'] };
+    }
+
     try {
-        // Check if we already have an order from a previous pass (re-entry case)
+        // Ids de una pasada anterior (re-entrada), si existen
         const existingOrdenId = sessionStorage.getItem('checkout_orden_id');
-        const existingNumero = sessionStorage.getItem('checkout_numero_orden');
+        const existingDireccionId = sessionStorage.getItem('checkout_direccion_id');
 
-        // PASO 2: Guardar/actualizar cliente
-        const clienteId = await guardarCliente(validacion.datos);
+        // Sólo mandamos identificadores del item — el precio lo pone el servidor
+        const items = cartItems.map(function (item) {
+            return {
+                sku: item.sku || null,
+                name: item.name || '',
+                colorway: item.colorway || '',
+                size: item.size || '',
+                color: item.color || '',
+                qty: item.qty || 1,
+            };
+        });
 
-        // PASO 3: Guardar/actualizar dirección
-        const direccionId = await guardarDireccion(clienteId, validacion.datos);
+        // PASO 2: Crear/actualizar la orden server-side
+        const res = await fetch('/api/checkout/crear-orden', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                datos: validacion.datos,
+                items,
+                existingOrdenId: existingOrdenId || null,
+                existingDireccionId: existingDireccionId || null,
+            }),
+        });
 
-        let ordenId, numeroOrden;
+        const data = await res.json().catch(() => ({}));
 
-        if (existingOrdenId) {
-            // Re-entry: update existing order's dirección reference
-            const { error: errUpdate } = await window.supabaseClient
-                .from('ordenes')
-                .update({ direccion_envio_id: direccionId })
-                .eq('id', existingOrdenId);
-
-            if (errUpdate) {
-                console.error('[Checkout] Error actualizando orden:', errUpdate);
-                throw new Error('Error al actualizar orden: ' + errUpdate.message);
-            }
-
-            ordenId = existingOrdenId;
-            numeroOrden = existingNumero;
-            console.log('[Checkout] ✅ Orden existente actualizada:', numeroOrden);
-        } else {
-            // First pass: create new order
-            const result = await crearOrdenPendiente(clienteId, direccionId, cartItems);
-            ordenId = result.ordenId;
-            numeroOrden = result.numeroOrden;
-
-            // Store for re-entry
-            sessionStorage.setItem('checkout_orden_id', ordenId);
-            sessionStorage.setItem('checkout_numero_orden', numeroOrden);
+        if (!res.ok) {
+            console.error('[Checkout] ❌ Error del servidor al crear la orden:', data);
+            return {
+                success: false,
+                errors: [data.error || 'No pudimos procesar tu orden. Intentá de nuevo.'],
+            };
         }
 
-        console.log('[Checkout] ✅ Step 1 completado exitosamente');
-        console.log('[Checkout] Orden:', numeroOrden, '| ID:', ordenId);
+        // Guardar para re-entrada
+        sessionStorage.setItem('checkout_orden_id', data.ordenId);
+        sessionStorage.setItem('checkout_numero_orden', data.numeroOrden);
+        if (data.direccionId) sessionStorage.setItem('checkout_direccion_id', data.direccionId);
+
+        console.log('[Checkout] ✅ Step 1 completado. Orden:', data.numeroOrden, '| ID:', data.ordenId);
 
         return {
             success: true,
-            ordenId,
-            numeroOrden,
-            clienteId,
-            direccionId,
+            ordenId: data.ordenId,
+            numeroOrden: data.numeroOrden,
+            clienteId: data.clienteId,
+            direccionId: data.direccionId,
             errors: []
         };
 
@@ -483,7 +201,7 @@ async function procesarCheckoutStep1(cartItems) {
         console.error('[Checkout] ❌ Error en Step 1:', error);
         return {
             success: false,
-            errors: [error.message || 'Error inesperado al procesar tu orden']
+            errors: ['Error de conexión al procesar tu orden. Revisá tu conexión e intentá de nuevo.']
         };
     }
 }
