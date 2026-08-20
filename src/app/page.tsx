@@ -312,12 +312,12 @@ const siteHTML = `
 
             <!-- Section 1: Campaign (Red / Video) -->
             <section class="home-section campaign-section">
-                <video class="campaign-video campaign-video-desktop" autoplay muted loop playsinline>
-                    <source src="/assets/videos/hero-desktop.mp4" type="video/mp4">
-                </video>
-                <video class="campaign-video campaign-video-mobile" autoplay muted loop playsinline>
-                    <source src="/assets/videos/hero-mobile.mp4" type="video/mp4">
-                </video>
+                <!-- Fondo del hero. Placeholder hasta que llegue el fashion film de edicion: -->
+                <!-- grafica3 (apaisada) en desktop, grafica4 (vertical) en mobile. -->
+                <picture>
+                    <source media="(max-width: 768px)" srcset="/assets/images/graficas/grafica-4.webp" />
+                    <img class="campaign-media" src="/assets/images/graficas/grafica-3.webp" alt="" aria-hidden="true" />
+                </picture>
                 <!-- Desktop content block (bottom-left) -->
                 <div class="section-content-block campaign-block">
                     <p class="section-subtitle">Descubrí los vestuarios del origen de Güido.</p>
@@ -337,10 +337,11 @@ const siteHTML = `
             <!-- Section 2: Selvedge (Brown) -->
             <section class="home-section selvedge-section">
                 <!-- Fondo: concatenacion de cortes del film de denim. Sin audio, en loop. -->
-                <video class="selvedge-video" autoplay muted loop playsinline preload="metadata"
-                       poster="/assets/video/selvedge-loop.jpg" aria-hidden="true" tabindex="-1">
-                    <source src="/assets/video/selvedge-loop.mp4" type="video/mp4" />
-                </video>
+                <!-- Fondo de Selvedge, sin audio y en loop. El src lo elige initSelvedgeVideo()
+                     en start.js: selvedge-loop.mp4 en desktop, selvedge-loop-mobile.mp4 en mobile.
+                     Va vacio en el HTML para no bajar los dos videos. -->
+                <video class="selvedge-video" id="selvedge-video" autoplay muted loop playsinline
+                       preload="metadata" poster="/assets/video/selvedge-loop.jpg" aria-hidden="true" tabindex="-1"></video>
                 <!-- Desktop content block (top-left, parallax) -->
                 <div class="section-content-block selvedge-block">
                     <p class="section-subtitle">Nuevos jeans de stock único.</p>

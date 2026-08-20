@@ -276,3 +276,44 @@ No se pueden recortar para llenar un alto fijo: son composiciones cerradas — l
 `grafica-15` es un díptico con el wordmark en el panel izquierdo, y en la
 `grafica-8` el wordmark cruza casi todo el ancho. Subir la resolución tampoco
 resuelve el encuadre: el problema es la forma, no los píxeles.
+
+---
+
+## Home: desktop y mobile no comparten material (2026-08-20)
+
+El material del shoot vino en dos relaciones de aspecto, así que el home usa piezas
+distintas según la pantalla. El breakpoint es **768px**, el mismo del CSS.
+
+| Bloque | Desktop | Mobile |
+|--------|---------|--------|
+| Fondo del hero | `grafica-3.webp` (3000×2000, apaisada) | `grafica-4.webp` (1500×2250, vertical) |
+| Fondo de Selvedge | `selvedge-loop.mp4` (26.0s, 5.7MB) | `selvedge-loop-mobile.mp4` (39.3s, 6.6MB) |
+| Shuffle antes del footer | `grafica-8` + `grafica-15` | `grafica-1` + `grafica-5` |
+
+**Hero.** Reemplazó al video rojo (`hero-desktop.mp4` / `hero-mobile.mp4`, que
+quedaron en el repo sin usar). Es un placeholder hasta que llegue el fashion film
+de edición. Se resuelve con `<picture>` + `<source media>`, que es la forma
+confiable de que el navegador baje **una sola** de las dos imágenes.
+
+**Selvedge.** El `<video>` va **sin `src` en el HTML** a propósito: con dos
+`<source>` el navegador se baja el que no corresponde. Lo asigna
+`initSelvedgeVideo()` en `start.js` según `ES_MOBILE`, y llama a `play()` a mano
+porque `autoplay` no siempre dispara cuando el `src` se asigna después del parseo.
+
+El de mobile es la concatenación de `mobile1.mp4` … `mobile5.mp4` (1080×1920,
+23.976fps, ~7-8s cada uno), sin audio, H.264 CRF 30. Los cinco originales **se
+borraron** después de concatenar, como pidió Naza. Se eligió CRF 30 sobre 28
+porque bajaba de 8.7MB a 6.6MB y en pantalla chica no se nota.
+
+**Gráficas por plataforma.** Las apaisadas (3, 8, 15) van a 3000px de lado largo;
+las verticales (1, 4, 5) sólo se ven en mobile, así que van a 1500px — con 430px
+de CSS y 3× de densidad, más es desperdicio.
+
+> **Bug que se arregló acá.** El texto y los botones de Selvedge habían quedado
+> tapados. La causa fue una regla que agregué al meter el video:
+> `.selvedge-section .selvedge-block { position: relative }`. Le pisaba el
+> `position: absolute; top: 100px` original, así que el bloque caía al pie de la
+> sección (que es `align-items: flex-end`) y ahí el `overflow: hidden` —también
+> agregado por mí— lo recortaba. La regla nunca hizo falta:
+> `.section-content-block` ya trae `z-index: 60` y el video queda en 0. Se
+> eliminaron las dos.

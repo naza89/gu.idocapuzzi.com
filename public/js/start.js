@@ -5164,11 +5164,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // El timer se pausa cuando el bloque no está en pantalla o la pestaña está
     // oculta, así no corre de fondo en el resto del sitio (que es una SPA).
     // =========================================================================
-    const GRAFICAS = [
+    // Desktop y mobile no comparten material: las gráficas apaisadas son de desktop
+    // y las verticales de mobile, y el video de fondo de Selvedge también cambia.
+    // El breakpoint es el mismo 768px que usa el CSS.
+    const ES_MOBILE = window.matchMedia("(max-width: 768px)").matches;
+
+    const GRAFICAS = ES_MOBILE ? [
+        { src: "assets/images/graficas/grafica-1.webp", alt: "GÜIDO CAPUZZI — campaña" },
+        { src: "assets/images/graficas/grafica-5.webp", alt: "GÜIDO CAPUZZI — campaña" }
+    ] : [
         { src: "assets/images/graficas/grafica-8.webp",  alt: "GÜIDO CAPUZZI — campaña, piso a cuadros" },
         { src: "assets/images/graficas/grafica-15.webp", alt: "GÜIDO CAPUZZI — campaña, sillón rojo" }
     ];
     const GRAFICAS_INTERVALO = 5000;
+
+    // El <video> de Selvedge viene sin src en el HTML a propósito: si tuviera los dos
+    // <source>, el navegador se bajaría el que no corresponde. Se lo ponemos acá.
+    function initSelvedgeVideo() {
+        const v = document.getElementById("selvedge-video");
+        if (!v || v.getAttribute("src")) return;
+        v.poster = absUrl(ES_MOBILE ? "assets/video/selvedge-loop-mobile.jpg" : "assets/video/selvedge-loop.jpg");
+        v.src = absUrl(ES_MOBILE ? "assets/video/selvedge-loop-mobile.mp4" : "assets/video/selvedge-loop.mp4");
+        // autoplay no siempre dispara si el src se asigna después del parseo.
+        const p = v.play();
+        if (p && typeof p.catch === "function") p.catch(function () { /* el poster queda */ });
+    }
+    initSelvedgeVideo();
 
     function initGraficas() {
         const stage = document.getElementById("graficas-stage");

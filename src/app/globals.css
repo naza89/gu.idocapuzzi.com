@@ -943,7 +943,8 @@ header.menu-open #dropdown-menu ul li {
 }
 
 /* Video background for campaign section */
-.campaign-video {
+.campaign-video,
+.campaign-media {
     position: absolute;
     top: 0;
     left: 0;
@@ -8452,9 +8453,6 @@ body.header-invert #announcement-bar {
    selvedge-loop.mp4 es la concatenacion de 6 cortes del film de denim, sin
    audio (ver docs/internal/FOTOS_PRODUCTO_NOMBRES.md). El marron queda debajo
    como fondo mientras el video carga o si el navegador no lo reproduce. */
-.selvedge-section {
-    overflow: hidden;
-}
 
 .selvedge-video {
     position: absolute;
@@ -8466,12 +8464,10 @@ body.header-invert #announcement-bar {
     pointer-events: none;
 }
 
-/* El contenido va por encima del video. .home-section ya es position:relative. */
-.selvedge-section .selvedge-block,
-.selvedge-section .section-mobile-content {
-    position: relative;
-    z-index: 1;
-}
+/* El contenido ya va por encima del video: .section-content-block trae z-index 60
+   y el video queda en 0. NO tocar aca el position — .selvedge-block es absolute con
+   top:100px y el parallax lo desplaza; ponerlo en relative lo tira al pie de la
+   seccion, donde queda recortado. */
 
 /* Si el usuario pidio menos movimiento, el video se esconde y queda el poster. */
 @media (prefers-reduced-motion: reduce) {
