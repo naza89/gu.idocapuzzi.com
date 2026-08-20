@@ -330,3 +330,52 @@ de CSS y 3× de densidad, más es desperdicio.
 > cambia el viewport **sin emitir ninguno de los tres**, lo que hizo imposible
 > verificar el swap automatico ahi; se verifico despachando el evento a mano, y
 > el swap funciona en los dos sentidos.
+
+---
+
+## Pagina Archivo — material real (2026-08-20)
+
+Las 95 fotos de `fotoproducto/_ARCHIVO/` reemplazaron a los placeholders
+numerados. Se convirtieron a WebP de 1400px (calidad 82) — el tile de la grilla
+mide ~450px en 3 columnas, asi que 1400 cubre retina de sobra. **7.9MB en total.**
+
+Se repartieron por orientacion, que es lo que pide la propia estructura del dato:
+
+| Destino | Cantidad | Ruta |
+|---|---|---|
+| LOOKS (tiles 4:5) | 93 verticales | `assets/images/archive/ss26/looks/01..93.webp` |
+| DETALLES (tiles 5:4) | 2 apaisadas | `assets/images/archive/ss26/detalles/01..02.webp` |
+| Grid de la landing | las 5 primeras | reusan los archivos de `looks/` |
+
+El orden es el numerico de los `IMG_XXXX.jpg` originales, de menor a mayor.
+
+**Hero de la coleccion:** `grafica-17.webp` (2560x2042), el fondo que se ve detras
+del SS26 gigante al entrar por CONTENIDO. Sale de `gráfica17.png`, que Naza dejo
+dentro de `_ARCHIVO/`.
+
+> DETALLES quedo con solo 2 fotos porque son las unicas apaisadas del set. Si la
+> idea era otra reparticion, se mueven editando `archive-data.js`.
+
+## Botones del home: Condensed, sin trazo, con fill (2026-08-20)
+
+`.btn-rect` paso de Helvetica Roman a **Helvetica Neue Condensed bold**, y perdio
+el borde de 1px. El boton ahora es tipografia mas el fill que entra en hover
+(desktop) o al tocar (mobile, via `.btn-rect:active` dentro de
+`@media (hover: none)`, que ya existia).
+
+> **Detalle que se come a cualquiera:** la cara Condensed esta registrada en
+> `@font-face` con `font-weight: bold`. Un `<a>` pesa 400 por defecto, asi que
+> declarar solo `font-family` no alcanza — el navegador no encuentra la cara y cae
+> al sans-serif del sistema sin avisar. Hay que poner `font-weight: bold` tambien.
+> Verificado midiendo: el mismo texto da 246px en Condensed contra 320px en
+> Helvetica, o sea que la cara real esta aplicada.
+
+**Mobile venia distinto y ahora es identico a desktop.** Tenia
+`background-color: white !important` y `font-family: Helvetica !important`: el
+boton ya estaba lleno, asi que la animacion de fill era invisible, y la tipografia
+no coincidia con el resto de la pagina. Se saco todo eso; queda solo un padding
+un poco mas grande para el dedo (12x26 contra 10x20).
+
+> A vigilar: sin fondo ni borde, el CTA de mobile queda como texto blanco sobre la
+> foto. La legibilidad depende de que tan clara sea la zona de la grafica que quede
+> detras.

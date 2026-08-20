@@ -550,17 +550,12 @@ body.state-contact.search-open .header-logo {
     line-height: 1;
 }
 
-/* Mobile btn-rect: white fill, dark text */
+/* Mobile usa el mismo boton que desktop. Antes venia con el fondo blanco forzado
+   y la Helvetica Roman: la animacion de fill quedaba invisible (el boton ya estaba
+   lleno) y la tipografia no coincidia con el resto de la pagina. El fill en touch
+   lo dispara el bloque @media (hover: none) de mas abajo, via .btn-rect:active. */
 .btn-rect.btn-rect-mobile {
-    background-color: var(--color-white) !important;
-    border-color: var(--color-white);
-    background: var(--color-white);
-}
-
-.btn-rect.btn-rect-mobile span {
-    color: var(--color-black) !important;
-    font-family: 'Helvetica', sans-serif !important;
-    font-weight: 400;
+    padding: 12px 26px;
 }
 
 /* ─── BTN-RECT ─── */
@@ -568,10 +563,14 @@ body.state-contact.search-open .header-logo {
 .btn-rect {
     display: inline-block;
     padding: 10px 20px;
-    border: 1px solid var(--color-white);
+    /* Sin trazo: el boton es tipografia + el fill que entra en hover/tap. */
+    border: 0;
     border-radius: 0;
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.75rem;
+    /* La cara Condensed esta registrada en font-weight: bold, asi que sin declarar
+       el peso un <a> (400 por defecto) caeria al sans-serif del sistema. */
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-weight: bold;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--color-white);
@@ -634,7 +633,6 @@ body.state-contact.search-open .header-logo {
 }
 
 .selvedge-block .btn-rect {
-    border-color: var(--color-white);
     color: var(--color-white);
 }
 
