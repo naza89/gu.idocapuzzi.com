@@ -9,6 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"tests/**/*.test.ts\"",
     "verificar:catalogo": "node --env-file-if-exists=.env.local scripts/verificar-catalogo.mjs",
     "vendor:supabase": "node scripts/vendor-supabase.mjs"
   },

@@ -1,5 +1,5 @@
 import { XMLParser } from 'fast-xml-parser';
-import { CotizacionResult, CrearEnvioResult, TrackingResult, Sucursal } from './types';
+import type { CotizacionResult, CrearEnvioResult, TrackingResult, Sucursal } from './types';
 
 const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' });
 

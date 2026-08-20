@@ -3,7 +3,7 @@
  * Previene llamadas inválidas que generarían errores confusos en la API de OCA.
  */
 
-import { DireccionDestino } from './types';
+import type { DireccionDestino } from './types';
 
 export interface ValidationError {
     campo: string;

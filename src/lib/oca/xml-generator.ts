@@ -1,5 +1,5 @@
 import { OCA_CONFIG } from './config';
-import { CrearEnvioInput } from './types';
+import type { CrearEnvioInput } from './types';
 
 /**
  * Genera el XML ISO-8859-1 para IngresoORMultiplesRetiros.

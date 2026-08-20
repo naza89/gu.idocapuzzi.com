@@ -1,0 +1,4 @@
+{
+  "//": "Los tests son ESM: el runner nativo de Node resuelve como modulo y exige la extension en el import. Declararlo aca evita el warning MODULE_TYPELESS_PACKAGE_JSON en cada corrida del CI, sin tocar el tipo del paquete raiz (que Next necesita como CommonJS).",
+  "type": "module"
+}

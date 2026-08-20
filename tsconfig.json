@@ -10,6 +10,10 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    // Los tests corren con el runner nativo de Node (`node --test`), que resuelve
+    // como ESM y exige la extensión explícita en el import. Sin esto, tsc marcaría
+    // como error los `from '../src/lib/oca/validations.ts'` de tests/.
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
