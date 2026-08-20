@@ -24,6 +24,42 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 - **Archivo modificado:** `backend/sql/18_fotos_produccion_webp.sql` (nuevo, sin ejecutar).
 - **Pendiente:** correr la 18 después de deployar, y recién ahí borrar los 45 PNG en un commit aparte.
 
+### Video de denim, gráficas de campaña y el home separado en desktop/mobile
+- **Problema encontrado:** la sección SELVEDGE tenía fondo marrón plano, el hero un video rojo viejo, y no había bloque de gráficas. Además el material del shoot vino en dos relaciones de aspecto, así que lo que sirve en desktop no sirve en mobile.
+- **Solución adoptada:** `selvedge-loop.mp4` (6 cortes del master concatenados, 26.0s, sin audio) de fondo en Selvedge, con el marrón abajo como fallback. Bloque de gráficas nuevo entre el video y el footer, rotando cada 5s con crossfade: el stage adopta la relación de aspecto de la gráfica activa, así ocupan el ancho completo sin recorte ni franjas. Y el home entero separado por el breakpoint de 768px — hero, video y shuffle distintos en cada plataforma. El `<video>` va sin `src` en el HTML a propósito: con dos `<source>` el navegador se baja el que no corresponde.
+- **Archivo modificado:** `src/app/page.tsx`, `src/app/globals.css`, `public/js/start.js`, `public/assets/video/`, `public/assets/images/graficas/`.
+- **Pendiente:** el material de Fini para `_HOME` y el fashion film que reemplaza a la gráfica del hero.
+
+### Dos bugs propios encontrados y corregidos en el camino
+- **Problema encontrado:** (1) el texto y los botones de SELVEDGE quedaron tapados al meter el video. (2) En mobile aparecía el material de desktop.
+- **Solución adoptada:** (1) la culpa era una regla que agregué, `.selvedge-block { position: relative }`, que le pisaba el `position: absolute; top: 100px` original: el bloque caía al pie de la sección y ahí el `overflow: hidden` —también mío— lo recortaba. Nunca hizo falta: `.section-content-block` ya trae `z-index: 60`. (2) `matchMedia` se leía **una sola vez al cargar**, así que cruzar el breakpoint después dejaba montado el material de la otra plataforma; ahora se re-evalúa y reconstruye, colgado de `change`, `resize` y `orientationchange`.
+- **Archivo modificado:** `src/app/globals.css`, `public/js/start.js`.
+- **Pendiente:** ninguno.
+
+### Página Archivo con las 95 fotos reales
+- **Problema encontrado:** el Archivo seguía con placeholders numerados desde el 2026-07-10.
+- **Solución adoptada:** las 95 fotos de `_ARCHIVO` a WebP de 1400px (7.9MB en total, contra 553MB de originales), repartidas por orientación como pide la estructura del dato: 93 verticales a LOOKS (tiles 4:5) y 2 apaisadas a DETALLES (5:4), en el orden numérico de los `IMG_XXXX`. El grid de la landing toma las 5 primeras. `grafica-17` quedó de fondo del hero de la colección, y el film completo (`ss26-film.mp4`, 75s con audio) reemplazó al placeholder de ffmpeg.
+- **Archivo modificado:** `public/js/archive-data.js`, `public/assets/images/archive/ss26/`, `public/assets/video/ss26-film.mp4`.
+- **Pendiente:** DETALLES quedó con sólo 2 fotos, que son las únicas apaisadas del set.
+
+### Producto nuevo: REMERA LOGO GÜIDO STRASS
+- **Problema encontrado:** Naza pidió sumar la variante con strass a último momento, sin stock propio porque la hace a pedido.
+- **Solución adoptada:** producto nuevo a $65.000 con dos colorways sobre tela negra (LOGO ROJO y LOGO BLANCO), 5 fotos cada uno. El stock sale de la remera logo común: 4 unidades de cada talle de las dos variantes negras, 16 por colorway. Migración 19 **ejecutada y verificada** en Supabase. Falló en el primer intento porque `variantes_producto.color` es NOT NULL y no estaba en el INSERT; el conector envuelve todo en una transacción, así que revirtió limpio. Dos campos opcionales nuevos en el catálogo: `swatch` (para que el chip muestre el color del logo y no el de la tela, que es negra en las dos) y `colorLabel` (etiqueta de la PDP).
+- **Archivo modificado:** `public/js/start.js`, `backend/sql/19_remera_logo_strass.sql`, 10 WebP nuevos.
+- **Pendiente:** ⚠️ **XS y L de la remera logo negra quedaron en CERO** en los dos colorways — es la aritmética de restar 4 donde había exactamente 4. Devolverles unidades es un UPDATE.
+
+### Botones y tabla de talles a Helvetica Neue Condensed
+- **Problema encontrado:** los botones usaban Helvetica Roman, y en mobile venían con el fondo blanco forzado y `!important`, así que la animación de fill era invisible y la tipografía no coincidía con el resto de la página. La tabla de talles mezclaba dos caras.
+- **Solución adoptada:** `.btn-rect` a Condensed bold con el marco en `currentColor`, idéntico en desktop y mobile, con el fill corriendo en hover y en tap. Tabla de talles entera en Condensed mayúscula y **sin el selector CM/IN**: todo en centímetros. Como el selector era lo único que decía "CM" en pantalla, las tres descripciones que no aclaraban la unidad ahora la dicen.
+- **Archivo modificado:** `src/app/globals.css`, `public/js/start.js`.
+- **Pendiente:** ⚠️ **detalle que se come a cualquiera:** la cara Condensed está en `@font-face` con `font-weight: bold`, y un `<a>` pesa 400 — declarar sólo `font-family` hace que el navegador caiga al sans-serif del sistema **sin avisar**. Hay que poner el peso también.
+
+### Deploy: 13 commits pusheados
+- **Problema encontrado:** producción corría `397e98a`, de 2 días atrás, sin las fotos ni los fixes de seguridad del camino de dinero. Eran ~7 sesiones sin commitear.
+- **Solución adoptada:** todo commiteado en 13 commits temáticos (`6d93def` → `4ae7ec2`) y pusheado a `main`. Typecheck limpio.
+- **Archivo modificado:** todo el repo.
+- **Pendiente:** ⚠️ correr las migraciones **16 → 17 → 18** apenas el deploy quede READY. La 18 es urgente: los 45 PNG viejos ya no están en el repo y `productos.imagenes` todavía apunta a ellos, así que las miniaturas de las órdenes dan 404 hasta que corra.
+
 ## 2026-08-19
 
 ### ⚠️ NAVE quedó en modo producción sobre el código viejo — revertir a sandbox
