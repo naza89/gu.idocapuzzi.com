@@ -1835,9 +1835,10 @@ body.state-contact #account-contact {
     padding-bottom: 38px;
 }
 .sg-label {
-    font-family: 'Helvetica', sans-serif;
-    font-weight: 700;
-    font-size: 0.82rem;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.86rem;
     letter-spacing: 0.02em;
     color: var(--color-black);
 }
@@ -1866,7 +1867,8 @@ body.state-contact #account-contact {
 
 /* descripción — Univers Regular, mayúsculas, #1A1A1A */
 .sg-desc {
-    font-family: 'Helvetica', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-weight: bold;
     color: #1A1A1A;
     text-transform: uppercase;
     font-size: 0.78rem;
@@ -1882,65 +1884,27 @@ body.state-contact #account-contact {
 .size-guide-body { display: block; }
 .sg-table-wrap { display: block; }
 
-/* toggle CM / IN — control segmentado on/off, centrado sobre la tabla */
-.sg-units {
-    display: flex;
-    width: fit-content;
-    margin: 0 auto 16px;
-    border: 1px solid var(--color-black);
-    overflow: hidden;
-    font-family: 'Helvetica', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-size: 0.72rem;
-}
-.sg-units button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px 15px;
-    font: inherit;
-    letter-spacing: inherit;
-    text-transform: inherit;
-    color: var(--color-black);
-    transition: background-color 0.22s var(--ease-expose), color 0.22s var(--ease-expose);
-}
-.sg-units button:first-child {
-    border-right: 1px solid var(--color-black);
-}
-.sg-units button.active {
-    background-color: var(--color-black);
-    color: var(--color-white);
-}
-.sg-units button:not(.active):hover {
-    background-color: rgba(26, 26, 26, 0.06);
-}
-
 /* tabla estilo Martine Rose: grilla, talles en filas */
 .size-guide-table { width: 100%; border-collapse: collapse; }
 .size-guide-table th,
 .size-guide-table td {
     text-align: center;
     padding: 10px 3px;
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.76rem;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.82rem;
     border: 1px solid rgba(26, 26, 26, 0.18);
     transition: background-color 0.15s ease;
 }
-/* primera fila (encabezados) y primera columna (talles) en Univers Regular Bold */
+/* Encabezados y columna de talles heredan la Condensed de la regla de arriba;
+   aca solo cambia el cuerpo. */
 .size-guide-table thead th {
-    font-family: 'Helvetica', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
     letter-spacing: 0;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
 }
 .size-guide-table tbody th {
-    font-family: 'Helvetica', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 /* cross-highlight: al hover de una celda se enciende su fila y su columna */
 .size-guide-table td.sg-hl,

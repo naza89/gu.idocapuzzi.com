@@ -73,8 +73,11 @@ WHERE NOT EXISTS (
 -- ----------------------------------------------------------------------------
 -- 3. Variantes: 4 talles x 2 colorways, 4 unidades cada una.
 -- ----------------------------------------------------------------------------
-INSERT INTO variantes_producto (producto_id, sku, colorway, talle, stock)
-SELECT p.id, v.sku, v.colorway, v.talle, 4
+-- `color` es NOT NULL y es el campo por el que filtra el Shop. Las dos son
+-- remeras negras, igual que las variantes de origen, asi que va 'Negro' en ambas;
+-- lo que distingue los colorways es `colorway`.
+INSERT INTO variantes_producto (producto_id, sku, color, colorway, talle, stock)
+SELECT p.id, v.sku, 'Negro', v.colorway, v.talle, 4
 FROM productos p
 CROSS JOIN (VALUES
     ('REM-STR-NRO-XS', 'LOGO ROJO',   'XS'),

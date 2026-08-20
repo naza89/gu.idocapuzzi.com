@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const SIZE_CHARTS = {
         oversize: {
             svg: '/assets/size-charts/oversize_sc.svg',
-            desc: ['Nuestra remera oversize puede usarla cualquier persona y está diseñada para un calce holgado y amplio. Para un calce más regular, podés elegir un talle menos.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano.'],
+            desc: ['Nuestra remera oversize puede usarla cualquier persona y está diseñada para un calce holgado y amplio. Para un calce más regular, podés elegir un talle menos.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano, en centímetros.'],
             cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
             rows: { XS: [68, 54, 50, 22], S: [70, 57, 52, 23], M: [72, 60, 54, 24], L: [74, 63, 56, 25] }
         },
@@ -209,13 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         suelto: {
             svg: '/assets/size-charts/suelto_sc.svg',
-            desc: ['Nuestro jean de corte suelto puede usarlo cualquier persona y está diseñado para un calce holgado y amplio. Para un calce más ajustado, podés elegir un talle menos.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano.'],
+            desc: ['Nuestro jean de corte suelto puede usarlo cualquier persona y está diseñado para un calce holgado y amplio. Para un calce más ajustado, podés elegir un talle menos.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano, en centímetros.'],
             cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
             rows: { XS: [102, 74, 100, 28, 22], S: [104, 78, 104, 29, 23], M: [106, 82, 108, 30, 24], L: [108, 86, 112, 31, 25] }
         },
         regular: {
             svg: '/assets/size-charts/regular_sc.svg',
-            desc: ['Nuestro jean de corte regular está diseñado para un calce recto y cómodo. Para un calce más suelto, podés elegir un talle más.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano.'],
+            desc: ['Nuestro jean de corte regular está diseñado para un calce recto y cómodo. Para un calce más suelto, podés elegir un talle más.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano, en centímetros.'],
             cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
             rows: { XS: [100, 74, 98, 28, 22], S: [102, 78, 102, 29, 23], M: [104, 82, 106, 30, 24], L: [106, 86, 110, 31, 25] }
         },
@@ -278,10 +278,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="sg-desc">${descHTML}</div>
                         <div class="size-guide-body">
                             <div class="sg-table-wrap">
-                                <div class="sg-units" id="sg-units" role="group" aria-label="Unidades de medida">
-                                    <button data-unit="cm" class="active">CM</button>
-                                    <button data-unit="in">IN</button>
-                                </div>
                                 <table class="size-guide-table" id="sg-table"${archiveAttr}>
                                     <thead>${headHTML}</thead>
                                     <tbody>${bodyHTML}</tbody>
@@ -1645,17 +1641,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             document.addEventListener('keydown', window.__pdpEscClose);
 
-            // Toggle CM / IN (pulgadas = cm / 2.54)
+            // Las medidas van siempre en centimetros: se saco el toggle CM / IN.
+            // `data-cm` queda en cada celda documentando la unidad.
             const table = document.getElementById('sg-table');
-            const unitBtns = [...overlay.querySelectorAll('#sg-units button')];
-            const setUnit = (u) => {
-                unitBtns.forEach(b => b.classList.toggle('active', b.dataset.unit === u));
-                table.querySelectorAll('td[data-cm]').forEach(td => {
-                    const cm = parseFloat(td.dataset.cm);
-                    td.textContent = u === 'in' ? (cm / 2.54).toFixed(1) : String(cm);
-                });
-            };
-            unitBtns.forEach(b => b.addEventListener('click', () => setUnit(b.dataset.unit)));
 
             if (table.dataset.archive === '1') {
                 // INTERVENCIONES: pieza 1/1 — fila del talle de la prenda fijada, sin hover dinámico
