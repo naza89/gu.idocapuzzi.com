@@ -59,7 +59,8 @@ export async function POST(request: NextRequest) {
     try {
         const body = (await request.json()) as Body;
         const { datos, items } = body;
-        let { existingOrdenId, existingDireccionId } = body;
+        let { existingOrdenId } = body;
+        const { existingDireccionId } = body;
 
         // ── Validación mínima server-side ──
         if (!datos || typeof datos !== 'object') {

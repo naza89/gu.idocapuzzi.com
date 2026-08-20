@@ -219,6 +219,7 @@ async function processWebhook(
     const supabase = createAdminClient();
 
     // STEP 1: Buscar la orden por nroEnvio (preferred)
+    // eslint-disable-next-line prefer-const -- `orden` se reasigna abajo en el fallback por nroDocCliente
     let { data: orden, error: ordenError } = await supabase
       .from('ordenes')
       .select('id, cliente_id')
