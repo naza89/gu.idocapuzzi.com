@@ -43,6 +43,8 @@ const PRODUCTOS = {
     INTERV_FAJA: 'jean-pintor-faja',
     INTERV_ENCERADO: 'jean-encerado',
     INTERV_CAMO: 'bermuda-camo-woodland',
+    REMERA_LOGO_STRASS_ROJO: 'remera-guido-strass-rojo',
+    REMERA_LOGO_STRASS_BLANCO: 'remera-guido-strass-blanco',
 };
 
 const pedidos = process.argv.slice(2);
@@ -59,9 +61,12 @@ for (const carpeta of carpetas) {
     const dir = path.join(IN, carpeta);
     const todos = fs.readdirSync(dir).filter(f => fs.statSync(path.join(dir, f)).isFile());
 
-    // Sólo los que respetan PREFIJO_<n>.<ext>. El resto se reporta y se saltea:
+    // Basta con que el archivo termine en _<n>.<ext>: el numero es lo unico que
+    // define el orden. No se exige que el prefijo iguale al de la carpeta porque
+    // en la practica no siempre coincide (REMERA_STRASS_ROJO_1.jpg vive dentro de
+    // REMERA_LOGO_STRASS_ROJO/). Lo que no tenga numero se reporta y se saltea:
     // renombrar por adivinanza es peor que dejarlo afuera.
-    const rx = new RegExp(`^${carpeta}_(\\d+)\\.(jpe?g|png|tiff?|webp)$`, 'i');
+    const rx = /_(\d+)\.(jpe?g|png|tiff?|webp)$/i;
     const validos = [];
     for (const f of todos) {
         const m = f.match(rx);

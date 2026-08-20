@@ -563,8 +563,8 @@ body.state-contact.search-open .header-logo {
 .btn-rect {
     display: inline-block;
     padding: 10px 20px;
-    /* Sin trazo: el boton es tipografia + el fill que entra en hover/tap. */
-    border: 0;
+    /* El marco queda en reposo y el fill entra por encima en hover/tap. */
+    border: 1px solid currentColor;
     border-radius: 0;
     /* La cara Condensed esta registrada en font-weight: bold, asi que sin declarar
        el peso un <a> (400 por defecto) caeria al sans-serif del sistema. */

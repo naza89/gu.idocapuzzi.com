@@ -130,6 +130,13 @@ document.addEventListener('DOMContentLoaded', () => {
         { slug: 'remera-guido-negro', sku: 'REM-LOGO-NBL', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO OVERSIZED', color: 'Negro', colorway: 'NEGRO LOGO BLANCO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-guido-negro-1.webp', 'assets/images/products/remera-guido-negro-2.webp', 'assets/images/products/remera-guido-negro-3.webp', 'assets/images/products/remera-guido-negro-4.webp'] },
         { slug: 'remera-guido-rojo', sku: 'REM-LOGO-NRO', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO OVERSIZED', color: 'Negro / Rojo', colorway: 'NEGRO LOGO ROJO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-guido-rojo-1.webp', 'assets/images/products/remera-guido-rojo-2.webp', 'assets/images/products/remera-guido-rojo-3.webp', 'assets/images/products/remera-guido-rojo-4.webp'] },
         { slug: 'remera-guido-blanco', sku: 'REM-LOGO-BNE', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO OVERSIZED', color: 'Blanco', colorway: 'BLANCO LOGO NEGRO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-guido-blanco-1.webp', 'assets/images/products/remera-guido-blanco-2.webp', 'assets/images/products/remera-guido-blanco-3.webp', 'assets/images/products/remera-guido-blanco-4.webp', 'assets/images/products/remera-guido-blanco-5.webp', 'assets/images/products/remera-guido-blanco-6.webp'] },
+        // REMERA LOGO GÜIDO STRASS — misma base que la logo, con strass a mano.
+        // `swatch` pisa el color del chip: el rectangulo muestra el color del logo,
+        // no el de la tela (las dos son negras). `colorLabel` es lo que muestra la
+        // PDP; `color` queda en 'Negro' para que el filtro NEGRO del Shop las tome.
+        { slug: 'remera-guido-strass-rojo', sku: 'REM-STR-NRO', category: 'REMERAS', name: 'REMERA LOGO GÜIDO STRASS', title: 'REMERA LOGO GÜIDO STRASS', color: 'Negro', swatch: '#AD1C1C', colorway: 'LOGO ROJO', colorLabel: 'LOGO ROJO', price: '$65.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO CON STRASS APLICADO A MANO, PIEZA POR PIEZA. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-guido-strass-rojo-1.webp', 'assets/images/products/remera-guido-strass-rojo-2.webp', 'assets/images/products/remera-guido-strass-rojo-3.webp', 'assets/images/products/remera-guido-strass-rojo-4.webp', 'assets/images/products/remera-guido-strass-rojo-5.webp'] },
+        { slug: 'remera-guido-strass-blanco', sku: 'REM-STR-NBL', category: 'REMERAS', name: 'REMERA LOGO GÜIDO STRASS', title: 'REMERA LOGO GÜIDO STRASS', color: 'Negro', swatch: '#FAFAFA', colorway: 'LOGO BLANCO', colorLabel: 'LOGO BLANCO', price: '$65.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO CON STRASS APLICADO A MANO, PIEZA POR PIEZA. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-guido-strass-blanco-1.webp', 'assets/images/products/remera-guido-strass-blanco-2.webp', 'assets/images/products/remera-guido-strass-blanco-3.webp', 'assets/images/products/remera-guido-strass-blanco-4.webp', 'assets/images/products/remera-guido-strass-blanco-5.webp'] },
+
         { slug: 'remera-afligida-negro', sku: 'REM-AFL-NEG', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Negro', colorway: 'NEGRO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-negro-1.webp', 'assets/images/products/remera-afligida-negro-2.webp', 'assets/images/products/remera-afligida-negro-3.webp', 'assets/images/products/remera-afligida-negro-4.webp', 'assets/images/products/remera-afligida-negro-5.webp'] },
         { slug: 'remera-afligida-navy', sku: 'REM-AFL-NAV', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Navy', colorway: 'NAVY', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-navy-1.webp', 'assets/images/products/remera-afligida-navy-2.webp', 'assets/images/products/remera-afligida-navy-3.webp', 'assets/images/products/remera-afligida-navy-4.webp', 'assets/images/products/remera-afligida-navy-5.webp'] },
         { slug: 'remera-afligida-blanco', sku: 'REM-AFL-BLA', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanco-1.webp', 'assets/images/products/remera-afligida-blanco-2.webp', 'assets/images/products/remera-afligida-blanco-3.webp', 'assets/images/products/remera-afligida-blanco-4.webp', 'assets/images/products/remera-afligida-blanco-5.webp'] },
@@ -1391,8 +1398,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="pdp-price font-condensed">${product.price}</span>
                         </div>
                         <div class="pdp-colorway-block">
-                            <span class="pdp-colorway font-condensed">COLOR: ${product.color || product.colorway}</span>
-                            <span class="pdp-colorway-chip" style="--chip: ${SWATCH_COLORS[product.color] || '#1A1A1A'}"></span>
+                            <span class="pdp-colorway font-condensed">COLOR: ${product.colorLabel || product.color || product.colorway}</span>
+                            <span class="pdp-colorway-chip" style="--chip: ${product.swatch || SWATCH_COLORS[product.color] || '#1A1A1A'}"></span>
                         </div>
                         <div class="pdp-selectors">
                             <div class="selector-group">
@@ -1739,7 +1746,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE': 'BERMUDA SELVEDGE DOUBLE KNEE',
         'BERMUDA DE DENIM SELVEDGE PATCHWORK': 'BERMUDA SELVEDGE PATCHWORK',
         'MUSCULOSA DOBLE SIMBOLO OVERSIZED': 'MUSCULOSA DOBLE SIMBOLO',
-        'REMERA AFLIGIDA BAGGED TEE': 'REMERA AFLIGIDA BAGGED'
+        'REMERA AFLIGIDA BAGGED TEE': 'REMERA AFLIGIDA BAGGED',
+        'REMERA LOGO GÜIDO STRASS': 'REMERA LOGO STRASS'
     };
 
     function groupByProduct(list) {
@@ -1775,11 +1783,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${group.colorways.map((cw, i) => `
                                 <button type="button"
                                     class="product-swatch${i === 0 ? ' is-active' : ''}"
-                                    style="--swatch: ${SWATCH_COLORS[cw.color] || '#1A1A1A'}"
+                                    style="--swatch: ${cw.swatch || SWATCH_COLORS[cw.color] || '#1A1A1A'}"
                                     data-index="${products.indexOf(cw)}"
                                     data-img="${absUrl(cw.images && cw.images[0])}"
                                     data-hover="${absUrl(cw.images && cw.images[1])}"
-                                    aria-label="${cw.color}"></button>
+                                    aria-label="${cw.colorway || cw.color}"></button>
                             `).join('')}
                         </div>` : '';
 
