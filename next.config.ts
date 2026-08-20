@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       { source: '/shop/producto', destination: '/' },
       { source: '/shop/:slug', destination: '/' },
       { source: '/archivo', destination: '/' },
+      { source: '/archivo/colecciones/:slug', destination: '/' },
       { source: '/cuenta', destination: '/' },
       { source: '/contacto', destination: '/' },
       { source: '/checkout/confirmacion', destination: '/' },
