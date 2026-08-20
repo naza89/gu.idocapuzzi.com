@@ -5190,10 +5190,21 @@ document.addEventListener('DOMContentLoaded', () => {
         let actual = 0;
         let timer = null;
 
+        // El stage toma la relación de aspecto de la gráfica activa, así ocupa el
+        // ancho completo sin recorte ni franjas. Se mide con naturalWidth/Height,
+        // que sirve para cualquier gráfica futura sin hardcodear nada.
+        function ajustarAltoStage() {
+            const img = slides[actual];
+            if (!img.naturalWidth || !img.naturalHeight) return;
+            stage.classList.add("is-medido");
+            stage.style.height = (stage.clientWidth * img.naturalHeight / img.naturalWidth) + "px";
+        }
+
         function avanzar() {
             slides[actual].classList.remove("is-active");
             actual = (actual + 1) % slides.length;
             slides[actual].classList.add("is-active");
+            ajustarAltoStage();
         }
         function arrancar() { if (timer === null) timer = setInterval(avanzar, GRAFICAS_INTERVALO); }
         function frenar() { if (timer !== null) { clearInterval(timer); timer = null; } }
@@ -5216,6 +5227,11 @@ document.addEventListener('DOMContentLoaded', () => {
             sincronizar();
         }
         document.addEventListener("visibilitychange", sincronizar);
+
+        // Primera medición: si la portada ya está en cache, mide ya; si no, al load.
+        if (slides[0].complete) { ajustarAltoStage(); }
+        else { slides[0].addEventListener("load", ajustarAltoStage, { once: true }); }
+        window.addEventListener("resize", ajustarAltoStage);
     }
     initGraficas();
     // =========================================================================

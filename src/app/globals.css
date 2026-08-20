@@ -8485,18 +8485,31 @@ body.header-invert #announcement-bar {
 
 /* ─── Graficas de marca: bloque entre el video y el footer ───────────────
    Las graficas son composiciones cerradas (fondo blanco + wordmark), asi que
-   van con object-fit: contain — recortarlas rompe el diseno. El fondo #FAFAFA
-   empalma con el blanco de las que lo tienen. Rotan cada 5s con crossfade. */
+   ocupan el contenedor entero sin recorte: el stage adopta su relacion de aspecto
+   (ver .graficas-stage). El fondo #FAFAFA empalma con el blanco de las que lo
+   tienen y se ve mientras el alto se acomoda. Rotan cada 5s con crossfade. */
 .graficas-section {
     width: 100%;
     background-color: var(--color-white);
     padding: 0;
 }
 
+/* El alto lo fija ajustarAltoStage() en start.js: ancho / relacion de aspecto
+   de la gráfica activa. Asi la gráfica ocupa el contenedor entero sin recorte ni
+   franjas, y el cambio de alto entre una y otra se anima junto con el crossfade.
+   El 66.67% (3:2) es el valor de arranque hasta que el JS mide la primera. */
 .graficas-stage {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 0;
+    padding-top: 66.67%;
+    transition: height 900ms var(--ease-expose, ease);
+}
+
+/* Con el stage siguiendo la relacion de aspecto, cover no recorta nada: llena
+   exactamente y evita las franjas de subpixel que deja contain. */
+.graficas-stage.is-medido {
+    padding-top: 0;
 }
 
 .grafica-slide {
@@ -8504,7 +8517,7 @@ body.header-invert #announcement-bar {
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     opacity: 0;
     transition: opacity 900ms var(--ease-expose, ease);
     pointer-events: none;
@@ -8514,6 +8527,4 @@ body.header-invert #announcement-bar {
     opacity: 1;
 }
 
-@media (max-width: 768px) {
-    .graficas-stage { height: 70vh; }
-}
+

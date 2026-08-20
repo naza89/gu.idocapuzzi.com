@@ -219,9 +219,8 @@ Sobras a limpiar en el camino: `remera-bbytee-navy-front.png` (producto eliminad
 
 ### Selvedge — `selvedge-loop.mp4`
 
-Fondo de la sección SELVEDGE DENIM del home. Es la concatenación de 6 cortes del
-master `VIDEO DENIM.mov` (154MB, 1920×1080, 29.97fps, 75.4s), **sin audio**, en
-loop. Intervalos pedidos por Naza:
+Fondo de la sección SELVEDGE DENIM del home. Concatenación de 6 tramos del master
+`VIDEO DENIM.mov` (154MB, 1920×1080, 29.97fps, 75.4s), **sin audio**, en loop.
 
 | # | Desde | Hasta | Dura |
 |---|-------|-------|------|
@@ -229,19 +228,22 @@ loop. Intervalos pedidos por Naza:
 | 2 | 00:15 | 00:18 | 3.0s |
 | 3 | 00:21 | 00:28 | 7.0s |
 | 4 | 00:33 | 00:36 | 3.0s |
-| 5 | 00:38 | 00:40 | 2.0s |
-| 6 | 00:38,5 | 00:45 | 6.5s |
+| 5 | 00:38,5 | 00:41 | 2.5s |
+| 6 | 00:41,5 | 00:45 | 3.5s |
 
-Total 28.5s · 6.2MB · H.264 CRF 27 · `+faststart`. Póster: `selvedge-loop.jpg`.
+Total 26.0s · 5.7MB · H.264 CRF 27 · `+faststart`. Póster: `selvedge-loop.jpg`.
 
-> ⚠️ **Los cortes 5 y 6 se solapan.** El 5 va de 38 a 40 y el 6 arranca en 38,5,
-> así que el tramo 38,5–40 se ve **dos veces seguidas**: hay un salto hacia atrás
-> de 1,5s a los 22 segundos del loop. Verificado comparando los frames de 21,0s y
-> 22,5s del resultado: son el mismo (diferencia media 0.52 sobre 255). Si no era
-> deliberado, se arregla cambiando el corte 5 a `38 – 38,5` o el 6 a `40 – 45`.
+> **Historial de los cortes.** La primera versión tenía dos tramos más: uno de
+> 38–40 y otro de 38,5–45, que **se solapaban** y hacían que 38,5–40 se viera dos
+> veces seguidas (salto atrás de 1,5s a los 22s del loop, verificado comparando
+> frames: eran idénticos, diferencia 0.52 sobre 255). Naza además marcó dos tramos
+> a sacar, referidos al loop de 28,5s: 20–22 (que era el corte de 38–40 entero, así
+> que ese corte desapareció) y 24,5–25 (que caía dentro del último corte y lo
+> partió en 38,5–41 y 41,5–45). Verificado que ya no quedan frames repetidos: los
+> mismos dos puntos que antes eran idénticos ahora dan 46.66 de diferencia.
 
-Regenerar: ver el comando `ffmpeg -filter_complex` con `trim`/`concat` en la
-bitácora del 2026-08-20.
+Regenerar: comando `ffmpeg -filter_complex` con `trim`/`concat`, en la bitácora
+del 2026-08-20.
 
 ### Archivo — `ss26-film.mp4`
 
@@ -255,13 +257,22 @@ Referenciado desde `public/js/archive-data.js` (landing y bloque FILM de SS26).
 
 ### Gráficas — bloque entre el video y el footer
 
-`public/assets/images/graficas/grafica-8.webp` y `grafica-15.webp` (2000px de
-lado largo, WebP q84, 502KB y 214KB). Los PNG originales (17-24MB) quedan en
+`public/assets/images/graficas/grafica-8.webp` y `grafica-15.webp` (3000px de
+lado largo, WebP q86, 1.2MB y 619KB). Se subieron de 2000 a 3000px porque ahora
+van a ancho completo y en pantalla retina 2000px se quedaba corto. Los PNG originales (17-24MB) quedan en
 `public/assets/images/gráficas/`, que está en el `.gitignore` — ojo que el nombre
 de esa carpeta lleva acento y por eso **no** se sirve directamente.
 
 Rotan cada 5s con crossfade de 900ms (`initGraficas` en `start.js`). Para sumar o
-sacar gráficas alcanza con editar el array `GRAFICAS`. Van con
-`object-fit: contain` sobre fondo `#FAFAFA`: son composiciones cerradas (fondo
-blanco + wordmark), recortarlas rompe el diseño — la `grafica-15` es literalmente
-un díptico con el wordmark en el panel izquierdo.
+sacar gráficas alcanza con editar el array `GRAFICAS`.
+
+**Ocupan el contenedor entero sin recorte.** El bloque adopta la relación de
+aspecto de la gráfica activa: `ajustarAltoStage()` mide `naturalWidth/Height` y le
+pone al stage `alto = ancho / relación`, con una transición de 900ms que corre
+junto al crossfade. Así `object-fit: cover` llena exacto sin cortar nada. Antes el
+stage tenía alto fijo (100vh) y con `contain` dejaba ~325px de vacío a cada lado.
+
+No se pueden recortar para llenar un alto fijo: son composiciones cerradas — la
+`grafica-15` es un díptico con el wordmark en el panel izquierdo, y en la
+`grafica-8` el wordmark cruza casi todo el ancho. Subir la resolución tampoco
+resuelve el encuadre: el problema es la forma, no los píxeles.
