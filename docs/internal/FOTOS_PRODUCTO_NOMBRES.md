@@ -317,3 +317,16 @@ de CSS y 3× de densidad, más es desperdicio.
 > agregado por mí— lo recortaba. La regla nunca hizo falta:
 > `.section-content-block` ya trae `z-index: 60` y el video queda en 0. Se
 > eliminaron las dos.
+
+> **Fix del 2026-08-20 (segunda vuelta).** La primera version leia
+> `matchMedia` **una sola vez al cargar**, asi que si el ancho cruzaba el
+> breakpoint despues (rotar el telefono, redimensionar la ventana, abrir el
+> device toolbar de devtools sin recargar) quedaba montado el material de la otra
+> plataforma. Ahora `aplicarPlataforma()` se re-evalua y reconstruye los tres
+> bloques, con una guarda que sale sin hacer nada si la plataforma no cambio.
+>
+> Cuelga de **tres** disparadores a proposito: el evento `change` de matchMedia
+> (el correcto), mas `resize` y `orientationchange` como red. El preview headless
+> cambia el viewport **sin emitir ninguno de los tres**, lo que hizo imposible
+> verificar el swap automatico ahi; se verifico despachando el evento a mano, y
+> el swap funciona en los dos sentidos.

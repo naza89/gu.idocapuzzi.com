@@ -5158,44 +5158,81 @@ document.addEventListener('DOMContentLoaded', () => {
     initFooterAccordion();
 
     // =========================================================================
-    // GRÁFICAS DE MARCA — bloque entre el video de Selvedge y el footer.
-    // Rotan cada 5s con crossfade. Para sumar o sacar gráficas alcanza con
-    // editar GRAFICAS: los archivos viven en public/assets/images/graficas/.
-    // El timer se pausa cuando el bloque no está en pantalla o la pestaña está
-    // oculta, así no corre de fondo en el resto del sitio (que es una SPA).
+    // HOME — material por plataforma (hero, video de Selvedge, gráficas)
+    // -------------------------------------------------------------------------
+    // El shoot vino en dos relaciones de aspecto, así que desktop y mobile usan
+    // piezas distintas. El breakpoint es el mismo 768px que usa el CSS.
+    //
+    // Se re-evalúa cada vez que se cruza el breakpoint (rotar el teléfono,
+    // redimensionar la ventana). La primera versión leía matchMedia UNA sola vez
+    // al cargar, así que si el ancho cambiaba después quedaba montado el material
+    // de la otra plataforma.
     // =========================================================================
-    // Desktop y mobile no comparten material: las gráficas apaisadas son de desktop
-    // y las verticales de mobile, y el video de fondo de Selvedge también cambia.
-    // El breakpoint es el mismo 768px que usa el CSS.
-    const ES_MOBILE = window.matchMedia("(max-width: 768px)").matches;
+    const MQ_MOBILE = window.matchMedia("(max-width: 768px)");
 
-    const GRAFICAS = ES_MOBILE ? [
-        { src: "assets/images/graficas/grafica-1.webp", alt: "GÜIDO CAPUZZI — campaña" },
-        { src: "assets/images/graficas/grafica-5.webp", alt: "GÜIDO CAPUZZI — campaña" }
-    ] : [
-        { src: "assets/images/graficas/grafica-8.webp",  alt: "GÜIDO CAPUZZI — campaña, piso a cuadros" },
-        { src: "assets/images/graficas/grafica-15.webp", alt: "GÜIDO CAPUZZI — campaña, sillón rojo" }
-    ];
+    const HERO_GRAFICA = {
+        desktop: "assets/images/graficas/grafica-3.webp",
+        mobile: "assets/images/graficas/grafica-4.webp"
+    };
+    const SELVEDGE_VIDEO = {
+        desktop: { mp4: "assets/video/selvedge-loop.mp4", poster: "assets/video/selvedge-loop.jpg" },
+        mobile: { mp4: "assets/video/selvedge-loop-mobile.mp4", poster: "assets/video/selvedge-loop-mobile.jpg" }
+    };
+    const GRAFICAS_POR_PLATAFORMA = {
+        desktop: [
+            { src: "assets/images/graficas/grafica-8.webp", alt: "GÜIDO CAPUZZI — campaña, piso a cuadros" },
+            { src: "assets/images/graficas/grafica-15.webp", alt: "GÜIDO CAPUZZI — campaña, sillón rojo" }
+        ],
+        mobile: [
+            { src: "assets/images/graficas/grafica-1.webp", alt: "GÜIDO CAPUZZI — campaña" },
+            { src: "assets/images/graficas/grafica-5.webp", alt: "GÜIDO CAPUZZI — campaña" }
+        ]
+    };
     const GRAFICAS_INTERVALO = 5000;
 
-    // El <video> de Selvedge viene sin src en el HTML a propósito: si tuviera los dos
-    // <source>, el navegador se bajaría el que no corresponde. Se lo ponemos acá.
-    function initSelvedgeVideo() {
+    // Fondo del hero. El <picture> del HTML ya elige bien en la carga inicial; esto
+    // corrige el caso de cruzar el breakpoint después. Se fuerza el `media` del
+    // <source> a all / not all en vez de confiar en que el navegador vuelva a
+    // evaluar la media query solo, que al redimensionar no siempre pasa.
+    function aplicarHero(esMobile) {
+        const img = document.querySelector(".campaign-media");
+        if (!img) return;
+        const source = img.parentElement && img.parentElement.querySelector("source");
+        if (source) {
+            source.srcset = absUrl(HERO_GRAFICA.mobile);
+            source.media = esMobile ? "all" : "not all";
+        }
+        const src = absUrl(esMobile ? HERO_GRAFICA.mobile : HERO_GRAFICA.desktop);
+        if (img.getAttribute("src") !== src) img.src = src;
+    }
+
+    // El <video> de Selvedge viene sin src en el HTML a propósito: con los dos
+    // <source> el navegador se bajaría también el que no corresponde.
+    function aplicarSelvedgeVideo(esMobile) {
         const v = document.getElementById("selvedge-video");
-        if (!v || v.getAttribute("src")) return;
-        v.poster = absUrl(ES_MOBILE ? "assets/video/selvedge-loop-mobile.jpg" : "assets/video/selvedge-loop.jpg");
-        v.src = absUrl(ES_MOBILE ? "assets/video/selvedge-loop-mobile.mp4" : "assets/video/selvedge-loop.mp4");
+        if (!v) return;
+        const cfg = esMobile ? SELVEDGE_VIDEO.mobile : SELVEDGE_VIDEO.desktop;
+        const mp4 = absUrl(cfg.mp4);
+        if (v.getAttribute("src") === mp4) return;
+        v.poster = absUrl(cfg.poster);
+        v.src = mp4;
+        v.load();
         // autoplay no siempre dispara si el src se asigna después del parseo.
         const p = v.play();
-        if (p && typeof p.catch === "function") p.catch(function () { /* el poster queda */ });
+        if (p && typeof p.catch === "function") p.catch(function () { /* queda el poster */ });
     }
-    initSelvedgeVideo();
 
-    function initGraficas() {
+    // Monta el bloque de gráficas y devuelve la función que lo desarma, para poder
+    // reconstruirlo cuando cambia la plataforma sin dejar timers ni listeners vivos.
+    function montarGraficas(lista) {
         const stage = document.getElementById("graficas-stage");
-        if (!stage || stage.childElementCount > 0 || !GRAFICAS.length) return;
+        if (!stage || lista.length < 2) return null;
 
-        const slides = GRAFICAS.map(function (g, i) {
+        stage.innerHTML = "";
+        stage.classList.remove("is-medido");
+        stage.style.height = "";
+
+        const slides = lista.map(function (g, i) {
             const img = document.createElement("img");
             img.className = "grafica-slide" + (i === 0 ? " is-active" : "");
             img.src = absUrl(g.src);
@@ -5206,7 +5243,6 @@ document.addEventListener('DOMContentLoaded', () => {
             stage.appendChild(img);
             return img;
         });
-        if (slides.length < 2) return;
 
         let actual = 0;
         let timer = null;
@@ -5238,11 +5274,13 @@ document.addEventListener('DOMContentLoaded', () => {
         function sincronizar() {
             if (enPantalla && !document.hidden) { arrancar(); } else { frenar(); }
         }
+        let observer = null;
         if (typeof IntersectionObserver === "function") {
-            new IntersectionObserver(function (entries) {
+            observer = new IntersectionObserver(function (entries) {
                 entries.forEach(function (e) { enPantalla = e.isIntersecting; });
                 sincronizar();
-            }, { threshold: 0.15 }).observe(stage);
+            }, { threshold: 0.15 });
+            observer.observe(stage);
         } else {
             enPantalla = true;
             sincronizar();
@@ -5253,8 +5291,45 @@ document.addEventListener('DOMContentLoaded', () => {
         if (slides[0].complete) { ajustarAltoStage(); }
         else { slides[0].addEventListener("load", ajustarAltoStage, { once: true }); }
         window.addEventListener("resize", ajustarAltoStage);
+
+        return function desmontar() {
+            frenar();
+            if (observer) observer.disconnect();
+            document.removeEventListener("visibilitychange", sincronizar);
+            window.removeEventListener("resize", ajustarAltoStage);
+        };
     }
-    initGraficas();
+
+    let plataformaMontada = null;
+    let desmontarGraficas = null;
+
+    // Sólo hace trabajo cuando realmente se cruza el breakpoint; si no, sale.
+    // Eso permite colgarla del  sin costo.
+    function aplicarPlataforma() {
+        const esMobile = MQ_MOBILE.matches;
+        if (plataformaMontada === esMobile) return;
+        plataformaMontada = esMobile;
+
+        aplicarHero(esMobile);
+        aplicarSelvedgeVideo(esMobile);
+        if (desmontarGraficas) desmontarGraficas();
+        desmontarGraficas = montarGraficas(
+            esMobile ? GRAFICAS_POR_PLATAFORMA.mobile : GRAFICAS_POR_PLATAFORMA.desktop
+        );
+    }
+    aplicarPlataforma();
+
+    // Dos disparadores a propósito. El evento change de matchMedia es el correcto,
+    // pero no llega en todos los entornos (el preview headless cambia el viewport
+    // sin emitirlo, y algunos navegadores viejos tampoco lo mandan al rotar). El
+    // evento resize sí llega siempre; la guarda de arriba hace que no cueste nada.
+    if (typeof MQ_MOBILE.addEventListener === "function") {
+        MQ_MOBILE.addEventListener("change", aplicarPlataforma);
+    } else if (typeof MQ_MOBILE.addListener === "function") {
+        MQ_MOBILE.addListener(aplicarPlataforma);   // Safari viejo
+    }
+    window.addEventListener("resize", aplicarPlataforma);
+    window.addEventListener("orientationchange", aplicarPlataforma);
     // =========================================================================
     // MARQUEE — sincroniza body.header-active cuando el header se activa (negro)
     // =========================================================================
