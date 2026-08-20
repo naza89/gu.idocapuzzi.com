@@ -1383,11 +1383,27 @@ const siteHTML = `
         <!-- /legales-container -->
 
         <!-- ═══════════════════════════════════════
-             ARCHIVO — Índice (tiras horizontales)
+             ARCHIVO — Landing (film + grid disperso)
+             Sin header: la navegación entera vive en el botón MENU.
              ═══════════════════════════════════════ -->
         <section id="archivo-container" style="display:none;">
-            <div class="archivo-index" id="archivo-index">
-                <!-- Tiras inyectadas por JS desde window.ARCHIVE_DATA -->
+            <div class="av-landing" id="av-landing">
+                <!-- Capa que sigue al mouse (parallax). El wordmark queda afuera:
+                     en la referencia el título no se mueve, sólo las imágenes. -->
+                <div class="av-parallax" id="av-parallax">
+                    <!-- Fotos del shoot: posicionadas en % desde ARCHIVE_LANDING.grid -->
+                    <div class="av-grid" id="av-grid" aria-hidden="true"></div>
+
+                    <!-- Fashion film: arranca cubriendo el viewport y decrece al centro -->
+                    <div class="av-film" id="av-film">
+                        <video class="av-film-video" id="av-film-video" muted loop playsinline preload="metadata"></video>
+                    </div>
+                </div>
+
+                <!-- Wordmark centrado, por encima del film -->
+                <h1 class="av-wordmark" id="av-wordmark">
+                    <img src="/assets/brand/logo-guido-blanco.svg" alt="GÜIDO CAPUZZI" width="492" height="63" draggable="false">
+                </h1>
             </div>
         </section>
         <!-- /archivo-container -->
@@ -1395,25 +1411,57 @@ const siteHTML = `
     </div><!-- END SITE WRAPPER -->
 
     <!-- ═══════════════════════════════════════
-         ARCHIVO — Detalle (overlay full-viewport, scroll vertical→horizontal)
+         ARCHIVO — Colección (/archivo/colecciones/<slug>)
+         Overlay full-viewport con scroll propio. El scroll suavizado se aplica
+         sobre el scrollTop de este contenedor, así el position:sticky de la barra
+         sigue funcionando (a diferencia del transform-jacking de la referencia).
          ═══════════════════════════════════════ -->
-    <div id="archive-detail" class="archive-detail" style="display:none;" aria-hidden="true">
-        <div class="archive-detail-scroller">
-            <div class="archive-detail-spacer">
-                <div class="archive-detail-pin">
-                    <div class="archive-detail-track">
-                        <!-- Imágenes inyectadas por JS -->
-                    </div>
-                </div>
+    <div id="av-collection" class="av-collection" style="display:none;" aria-hidden="true">
+        <section class="av-col-hero" id="av-col-hero">
+            <div class="av-col-hero-media" id="av-col-hero-media"></div>
+            <h1 class="av-col-hero-title font-condensed" id="av-col-hero-title"></h1>
+            <a href="/archivo" class="av-col-brand" id="av-col-brand" aria-label="Volver a Archivo">
+                <img src="/assets/brand/logo-guido-blanco.svg" alt="GÜIDO CAPUZZI" width="492" height="63" draggable="false">
+            </a>
+        </section>
+
+        <section class="av-col-body">
+            <div class="av-col-bar font-condensed" id="av-col-bar">
+                <span class="av-col-bar-title" id="av-col-bar-title"></span>
+                <nav class="av-col-bar-nav">
+                    <button type="button" data-av-goto="looks">LOOKS</button>
+                    <button type="button" data-av-goto="detalles">DETALLES</button>
+                    <button type="button" data-av-goto="film">FILM</button>
+                </nav>
             </div>
-        </div>
-        <div class="archive-detail-ui">
-            <span class="archive-detail-title font-condensed"></span>
-            <div class="archive-detail-hint font-condensed">SCROLL <span class="archive-detail-arrow">&rarr;</span></div>
-            <button type="button" class="archive-detail-close font-condensed">CERRAR</button>
+            <div class="av-col-grid" id="av-looks"></div>
+            <div class="av-col-grid av-col-grid--wide" id="av-detalles"></div>
+            <div class="av-col-film" id="av-col-film"></div>
+        </section>
+    </div>
+    <!-- /av-collection -->
+
+    <!-- ═══════════════════════════════════════
+         ARCHIVO — Menú (drawer que sube) + botón MENU fijo
+         Van al final del body, fuera del wrapper: las secciones del sitio tienen
+         transform y eso rompe cualquier position:fixed interno (ya mordió dos veces).
+         ═══════════════════════════════════════ -->
+    <button type="button" id="av-menu-btn" class="av-menu-btn font-condensed" style="display:none;">MENU</button>
+
+    <div id="av-menu" class="av-menu" style="display:none;" aria-hidden="true">
+        <div class="av-menu-panel">
+            <a href="/" class="av-menu-brand" data-av-nav="home" aria-label="Ir al inicio">
+                <img src="/assets/brand/logo-guido-blanco.svg" alt="GÜIDO CAPUZZI" width="492" height="63" draggable="false">
+            </a>
+            <nav class="av-menu-nav font-condensed">
+                <span class="av-menu-mask"><button type="button" class="av-menu-item" data-av-nav="contenido">CONTENIDO</button></span>
+                <span class="av-menu-mask"><button type="button" class="av-menu-item" data-av-nav="shop">SHOP</button></span>
+                <span class="av-menu-mask"><button type="button" class="av-menu-item" data-av-nav="sobre">SOBRE</button></span>
+            </nav>
+            <button type="button" class="av-menu-close font-condensed">CERRAR</button>
         </div>
     </div>
-    <!-- /archive-detail -->
+    <!-- /av-menu -->
 
     <!-- ═══════════════════════════════════════
          COOKIE CONSENT BANNER

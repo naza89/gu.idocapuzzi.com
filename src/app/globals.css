@@ -1410,7 +1410,7 @@ body.state-contact #account-contact {
    Medidas extraídas del SVG y normalizadas a px (canvas 1425×900 / 390×844).
 
    Desktop
-     galería  x=0    w=744.8 (52.27%)  h = viewport − header, sticky, full-bleed
+     galería  x=0    w=744.8 (52.27%, topeado)  ratio 4:5, sticky, full-bleed
      flechas  ‹ x=38.4  › x=706.4  (38.4 de inset a cada lado), centradas vertical
      contador 1/8 en x=26.6 y=+44.8 respecto del tope de la galería
      info col x=757.8 (13px después de la galería)  w=482.2  → margen derecho 185
@@ -1435,14 +1435,23 @@ body.state-contact #account-contact {
 }
 
 /* ─── Galería: carrusel horizontal full-bleed, pegado bajo el header ───
-   En el SVG la galería mide 744.8 × 773.9, y 773.9 = 900.5 − 126.6, o sea
-   exactamente el viewport menos el header. Por eso va sticky a esa altura y
-   las fotos entran con object-fit:cover en vez de un ratio fijo. */
+   Ratio 4:5 (2026-08-19). Antes era `height: calc(100vh - header)`, que sobre un
+   ancho del 52.27% daba una caja casi cuadrada (0.92 en 1440×900, 1.00 en
+   1920×1080). Con object-fit:cover, una foto vertical 2:3 perdía entre 27% y 34%
+   del alto: en las de cuerpo entero se iban la cabeza y los pies, y ninguna
+   posición de recorte las hacía entrar (el modelo ocupa ~74% del cuadro y sólo
+   entraba el 66%). A 4:5 el recorte baja a 16.7% y el cuerpo entero entra.
+
+   El ancho se mantiene en el 52.27% de la spec: es lo que sostiene la proporción
+   del conjunto (full-bleed a la izquierda + columna de info + margen derecho).
+   Como consecuencia la caja mide 65.34% del ancho de alto, o sea más que el
+   viewport en cualquier pantalla real — por eso la galería **dejó de ser sticky**.
+   Un sticky más alto que el viewport se clava arriba y su pie no se ve nunca,
+   que es justo lo que queríamos evitar. Ahora la galería scrollea con la página. */
 .pdp-gallery {
     grid-column: 1;
-    position: sticky;
-    top: var(--header-height);
-    height: calc(100vh - var(--header-height));
+    position: relative;   /* ancla a las flechas y el contador, que van absolute */
+    aspect-ratio: 4 / 5;
     overflow: hidden;
     background-color: #eff3f4;
     user-select: none;
@@ -7151,249 +7160,532 @@ body.mobile-menu-open #mobile-menu {
     margin-left: 1.5rem;
 }
 
-/* Superíndice del año (2026) en títulos condensados */
-.archivo-sup {
-    font-size: 0.5em;
-    vertical-align: super;
-    line-height: 0;
-    margin-left: 0.12em;
-    font-weight: 700;
+/* ══════════════════════════════════════════
+   ARCHIVO — experiencia completa (landing · menú · colección)
+   Reemplaza al índice de tiras contact-sheet (2026-07-10).
+   Referencia: rafsimons.com + los SVG archivo_*.svg de la raíz.
+   Medidas del grid y del film tomadas de archivo_grid.svg (canvas 1920×868.7)
+   y expresadas en % / vw para que escalen solas.
+   ══════════════════════════════════════════ */
+
+/* Escala de la UI chica del Archivo. No usa --fs-section (17px): acá la tipografía
+   es full-bleed editorial. MENU y CERRAR quedan casados al wordmark del menú —
+   2.18vw es el cuerpo con el que la altura del texto iguala la del logo a 12.14vw
+   (relación del SVG: 491.989 / 62.9488). La barra de la colección va un 15% arriba. */
+:root {
+    --av-ui: clamp(20px, 2.18vw, 40px);
+    --av-bar: clamp(19px, 2.16vw, 41px);
+    --av-margin: 45px;
+    --av-gap: 40px;
+    /* Wordmark del menú y de la colección: se le da la MISMA altura en px que el
+       cuerpo de MENU/CERRAR. Como el SVG no tiene alto propio en CSS, se fija por
+       el ancho usando su relación de aspecto (491.989 / 62.9488 = 7.81568), y así
+       queda casado con --av-ui en cualquier viewport sin tener que tocar dos números. */
+    --av-brand-w: calc(var(--av-ui) * 7.81568);
 }
 
-/* ── Índice ── */
+/* El Archivo no tiene header ni marquee: la navegación entera es el botón MENU. */
+body.archivo-active #main-header,
+body.archivo-active #announcement-bar,
+body.av-collection-open #main-header,
+body.av-collection-open #announcement-bar {
+    display: none !important;
+}
+
+/* ── LANDING (/archivo) ── */
 #archivo-container {
     display: none;
-    min-height: 100vh;
-    background: #1A1A1A;
-    color: #FAFAFA;
-    /* Alto de las tiras — valor exacto de ERD (tiles 4:5 → 102×128) */
-    --archivo-strip-h: 128px;
-}
-
-.archivo-index {
-    /* Valor exacto ERD: pt-[288px] (su header es 88px; el nuestro marquee+header ≈ 92px) */
-    padding: 288px 0 120px;
-}
-
-.archivo-season {
-    margin-bottom: 64px;
-}
-.archivo-season:last-child {
-    margin-bottom: 0;
-}
-
-.archivo-season-title {
-    display: inline-block;
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0 0 16px 32px;
-    color: #FAFAFA;
-    /* Valor exacto ERD: 32px, condensed bold, line-height 32px */
-    font-size: 32px;
-    line-height: 32px;
-    letter-spacing: normal;
-    text-transform: uppercase;
-    cursor: pointer;
-    text-align: left;
-}
-
-.archivo-strip {
-    overflow: hidden;
-    padding: 0;
-}
-/* Carrusel infinito: el track lleva el contenido DUPLICADO y se anima de
-   translateX(0) a translateX(-50%) → loop perfecto. La duración la setea JS
-   según el ancho para que la velocidad sea constante entre tiras. */
-.archivo-strip-track {
-    display: flex;
-    width: max-content;
-    will-change: transform;
-    animation: archivo-marquee 40s linear infinite;
-}
-.archivo-strip:hover .archivo-strip-track {
-    animation-play-state: paused;
-}
-/* Traslada exactamente UNA copia (el track lleva N copias, seteadas por JS según
-   el viewport) → el caudal de imágenes es continuo y nunca se corta. */
-@keyframes archivo-marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(calc(-100% / var(--archivo-copies, 2))); }
-}
-
-.archivo-strip-item {
-    flex: 0 0 auto;
-    height: var(--archivo-strip-h, 128px);
-    /* Aspecto 4:5 fijo (como ERD) → tiles uniformes sin importar la foto. Gap 0. */
-    aspect-ratio: 4 / 5;
-    margin: 0;
-    padding: 0;
-    border: none;
-    background: none;
-    cursor: pointer;
-    overflow: hidden;
-}
-.archivo-strip-item img {
-    height: 100%;
-    width: 100%;
-    display: block;
-    object-fit: cover;
-    transition: opacity 240ms ease;
-}
-.archivo-strip-item:hover img {
-    opacity: 0.82;
-}
-
-/* Accesibilidad: sin animación, tira scrolleable a mano */
-@media (prefers-reduced-motion: reduce) {
-    .archivo-strip {
-        overflow-x: auto;
-    }
-    .archivo-strip-track {
-        animation: none;
-    }
-}
-
-/* ── Detalle (overlay full-viewport, scroll vertical→horizontal) ── */
-.archive-detail {
-    position: fixed;
-    inset: 0;
-    z-index: 3000;
     background: #1A1A1A;
 }
 
-body.archive-detail-open {
-    overflow: hidden;
-}
-body.archive-detail-open #main-header {
-    display: none;
-}
-
-.archive-detail-scroller {
-    position: absolute;
-    inset: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-.archive-detail-scroller::-webkit-scrollbar {
-    display: none;
-}
-
-.archive-detail-spacer {
+.av-landing {
     position: relative;
     width: 100%;
-}
-
-.archive-detail-pin {
-    position: sticky;
-    top: 0;
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
+    background: #1A1A1A;
 }
 
-.archive-detail-track {
-    display: flex;
-    height: 100%;
+/* Capa de parallax: se desplaza con el mouse (el JS le escribe --av-px/--av-py).
+   Medido en la referencia: ~2.4% del desplazamiento del cursor respecto del centro. */
+.av-parallax {
+    position: absolute;
+    inset: 0;
+    transform: translate3d(var(--av-px, 0px), var(--av-py, 0px), 0);
     will-change: transform;
 }
 
-.archive-detail-figure {
-    flex: 0 0 auto;
-    height: 100%;
-    margin: 0;
-}
-.archive-detail-figure img {
-    height: 100%;
-    width: auto;
-    display: block;
-    object-fit: cover;
-}
-
-/* UI fija del detalle: título, CERRAR, hint de scroll */
-.archive-detail-ui {
+/* Fotos del shoot dispersas. Posición y tamaño en % del viewport: las que tocan
+   un borde se ven cortadas a propósito, igual que en la referencia. */
+.av-grid {
     position: absolute;
     inset: 0;
-    z-index: 2;
-    pointer-events: none;
 }
 
-.archive-detail-title,
-.archive-detail-close {
+.av-grid-item {
     position: absolute;
-    bottom: 28px;
-    color: #FAFAFA;
-    font-size: clamp(1.1rem, 2.4vw, 1.7rem);
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    line-height: 1;
-}
-.archive-detail-title {
-    left: 32px;
-}
-.archive-detail-close {
-    right: 32px;
-    pointer-events: auto;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    transition: color 200ms ease;
-}
-.archive-detail-close:hover {
-    color: #AD1C1C;
+    overflow: hidden;
+    /* El blur es la identidad del estado de reposo; se va en hover. */
+    filter: blur(7px);
+    opacity: 0;
+    transform: scale(0.72);
+    transition: filter 0.55s ease, opacity 0.9s ease, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity, filter;
 }
 
-.archive-detail-hint {
+.av-grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    /* Escala apenas por encima de 1 para que el blur no deje borde translúcido. */
+    transform: scale(1.06);
+}
+
+.av-landing.is-revealed .av-grid-item {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Hover: el contenedor crece y suelta el blur. Medido en la referencia: la foto
+   apuntada pasa de ~63px a ~78px de ancho (≈1.24) y se ve nítida. */
+.av-landing.is-revealed .av-grid-item:hover {
+    transform: scale(1.24);
+    filter: blur(0px);
+    z-index: 4;
+}
+
+/* Fashion film: se queda en pantalla completa unos segundos y recién ahí decrece
+   radialmente hacia el centro, hasta su caja final (40.51vw, ratio 1.868 = cinema
+   flat). El escalado inicial lo calcula el JS (cuánto hace falta para cubrir el
+   viewport) y lo escribe inline; al soltarlo, esta regla lo devuelve a 1 con la
+   transición. Ya en su caja queda blurreado como las fotos, y el hover lo revela. */
+.av-film {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40.51vw;
+    aspect-ratio: 1.868;
+    --av-film-scale: 1;
+    transform: translate(-50%, -50%) scale(var(--av-film-scale));
+    transform-origin: center center;
+    transition: transform 2.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.55s ease;
+    will-change: transform, filter;
+    z-index: 2;
+}
+
+.av-landing.is-revealed .av-film {
+    filter: blur(7px);
+}
+
+.av-landing.is-revealed .av-film:hover {
+    --av-film-scale: 1.14;
+    filter: blur(0px);
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s ease;
+    z-index: 4;
+}
+
+.av-film-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Wordmark centrado, por encima del film (69.06% del ancho, medido del SVG). */
+.av-wordmark {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #FAFAFA;
-    font-size: clamp(1rem, 2vw, 1.4rem);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    transition: opacity 400ms ease;
-}
-.archive-detail-hint.is-hidden {
+    width: 69.06vw;
+    margin: 0;
+    z-index: 3;
+    pointer-events: none;
     opacity: 0;
-}
-.archive-detail-arrow {
-    display: inline-block;
-    margin-left: 0.5em;
+    transition: opacity 1s ease 0.5s;
 }
 
-/* Mobile: tiras más bajas + UI más compacta */
+.av-landing.is-revealed .av-wordmark {
+    opacity: 1;
+}
+
+.av-wordmark img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ── BOTÓN MENU (fijo, abajo al centro) ── */
+/* mix-blend-mode: difference → se invierte solo sobre fondo claro u oscuro,
+   sin tener que saber qué hay detrás en cada sección. */
+.av-menu-btn {
+    position: fixed;
+    left: 50%;
+    bottom: 34px;
+    transform: translateX(-50%);
+    z-index: 9000;
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    cursor: pointer;
+    color: #FAFAFA;
+    mix-blend-mode: difference;
+    font-size: var(--av-ui);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+/* ── MENÚ (drawer que sube) ── */
+.av-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    display: none;
+}
+
+.av-menu-panel {
+    position: absolute;
+    inset: 0;
+    background: #1A1A1A;
+    transform: translateY(100%);
+    transition: transform 0.85s cubic-bezier(0.76, 0, 0.24, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.av-menu.is-open .av-menu-panel {
+    transform: translateY(0);
+}
+
+.av-menu-brand {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--av-brand-w);
+    opacity: 0;
+    transition: opacity 0.5s ease 0.45s;
+}
+
+.av-menu.is-open .av-menu-brand {
+    opacity: 1;
+}
+
+.av-menu-brand img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.av-menu-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Interlínea 173px sobre cuerpo 179px en el SVG → 0.97. */
+    line-height: 0.97;
+}
+
+/* Cada ítem se revela subiendo dentro de su máscara (overflow hidden). */
+.av-menu-mask {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.04em;
+}
+
+.av-menu-item {
+    display: block;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #FAFAFA;
+    /* Los <button> no heredan la tipografía del padre: sin esto caen a Arial. */
+    font-family: inherit;
+    font-size: clamp(48px, 9.3vw, 200px);
+    font-weight: 700;
+    line-height: 0.97;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+    transform: translateY(110%);
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
+}
+
+.av-menu.is-open .av-menu-item {
+    transform: translateY(0);
+}
+
+.av-menu.is-open .av-menu-mask:nth-child(1) .av-menu-item { transition-delay: 0.28s, 0s; }
+.av-menu.is-open .av-menu-mask:nth-child(2) .av-menu-item { transition-delay: 0.36s, 0s; }
+.av-menu.is-open .av-menu-mask:nth-child(3) .av-menu-item { transition-delay: 0.44s, 0s; }
+
+/* Hover invertido: el ítem apuntado se apaga a gris y los otros quedan blancos.
+   Es el comportamiento de la referencia, verificado frame a frame. */
+.av-menu-item:hover {
+    color: #555555;
+}
+
+.av-menu-close {
+    position: absolute;
+    left: 50%;
+    bottom: 34px;
+    transform: translateX(-50%);
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    cursor: pointer;
+    color: #FAFAFA;
+    font-size: var(--av-ui);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.45s;
+}
+
+.av-menu.is-open .av-menu-close {
+    opacity: 1;
+}
+
+/* ── COLECCIÓN (/archivo/colecciones/<slug>) ── */
+.av-collection {
+    position: fixed;
+    inset: 0;
+    z-index: 8000;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #FAFAFA;
+    -webkit-overflow-scrolling: touch;
+    /* Sin barra: la página es full-bleed y 15px de scrollbar le comen el ancho
+       al hero y a la grilla. La referencia hace lo mismo (dibuja la suya). */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.av-collection::-webkit-scrollbar {
+    display: none;
+}
+
+body.av-collection-open {
+    overflow: hidden;
+}
+
+.av-col-hero {
+    position: relative;
+    height: 100vh;
+    height: 100dvh;
+    background: #1A1A1A;
+    overflow: hidden;
+}
+
+.av-col-hero-media,
+.av-col-hero-media img,
+.av-col-hero-media video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Placeholder mientras no hay material del shoot. */
+.av-col-hero-media:empty {
+    background: #525252;
+}
+
+.av-col-hero-title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: #FAFAFA;
+    font-size: clamp(80px, 17.38vw, 375px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.av-col-brand {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--av-brand-w);
+    z-index: 3;
+}
+
+.av-col-brand img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.av-col-body {
+    position: relative;
+    background: #FAFAFA;
+    padding-bottom: 0;
+}
+
+/* Barra sticky: el título de la colección a la izquierda y los tres accesos
+   rápidos a la derecha. Funciona con `sticky` porque el scroll suavizado se
+   aplica sobre el scrollTop de .av-collection, no con un transform. */
+.av-col-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 var(--av-margin);
+    background: #FAFAFA;
+    font-size: var(--av-bar);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #1A1A1A;
+}
+
+.av-col-bar-nav {
+    display: flex;
+    gap: 72px;
+}
+
+.av-col-bar-nav button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #1A1A1A;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    transition: color 0.3s ease;
+}
+
+.av-col-bar-nav button:hover,
+.av-col-bar-nav button.is-active {
+    color: #999999;
+}
+
+.av-col-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--av-gap);
+    padding: 0 var(--av-margin) var(--av-gap);
+}
+
+.av-col-grid figure {
+    margin: 0;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #525252;
+}
+
+/* Los detalles van apaisados (macro de avíos, costuras, etiquetas). */
+.av-col-grid--wide figure {
+    aspect-ratio: 5 / 4;
+}
+
+.av-col-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* El film cierra la colección ocupando el viewport entero. */
+.av-col-film {
+    position: relative;
+    height: 100vh;
+    height: 100dvh;
+    background: #1A1A1A;
+    overflow: hidden;
+}
+
+.av-col-film video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ── Mobile ── */
 @media (max-width: 768px) {
-    .archivo-index {
-        padding: 120px 0 64px;
+    :root {
+        --av-ui: 20px;
+        --av-bar: 20px;
+        --av-margin: 20px;
+        --av-gap: 12px;
+        /* --av-brand-w se deriva sola de --av-ui: no hace falta pisarla acá. */
     }
-    .archivo-season-title {
-        font-size: 22px;
-        line-height: 22px;
-        margin-left: 20px;
-        margin-bottom: 12px;
+
+    /* El film ocupa casi todo el ancho: a 40vw no se vería nada. */
+    .av-film {
+        width: 82vw;
     }
-    #archivo-container {
-        --archivo-strip-h: 96px;
+
+    .av-wordmark {
+        width: 84vw;
     }
-    .archivo-strip {
-        padding: 0;
+
+    .av-menu-brand,
+    .av-col-brand {
+        top: 28px;
     }
-    .archive-detail-title,
-    .archive-detail-close {
-        bottom: 20px;
-        font-size: 1.05rem;
+
+    .av-menu-item {
+        font-size: clamp(34px, 13vw, 72px);
     }
-    .archive-detail-title {
-        left: 20px;
+
+    .av-menu-btn,
+    .av-menu-close {
+        bottom: 22px;
     }
-    .archive-detail-close {
-        right: 20px;
+
+    .av-col-bar {
+        height: 48px;
+        padding: 0 var(--av-margin);
     }
+
+    .av-col-bar-nav {
+        gap: 20px;
+    }
+
+    /* Dos columnas: a tres, cada look queda ilegible. */
+    .av-col-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Sin animación de entrada para quien la pidió apagada. */
+@media (prefers-reduced-motion: reduce) {
+    .av-film,
+    .av-parallax,
+    .av-grid-item,
+    .av-wordmark,
+    .av-menu-panel,
+    .av-menu-item,
+    .av-menu-brand,
+    .av-menu-close {
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Mobile: link Archivo dentro del menú */
+@media (max-width: 768px) {
     /* Link Archivo dentro del menú mobile (visible por default, sin stagger) */
     .mobile-archivo-link {
         display: block;

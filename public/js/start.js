@@ -127,39 +127,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Products Data Source
     const products = [
         // REMERAS (12: 3 Güido + 3 Afligida + 3 Baby Tee + 2 Termal + 1 extra)
-        { slug: 'remera-guido-negro', sku: 'REM-LOGO-NBL', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO OVERSIZED', color: 'Negro', colorway: 'NEGRO LOGO BLANCO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-negra-front.png', 'assets/images/products/remera-güido-negra-back.png'] },
-        { slug: 'remera-guido-rojo', sku: 'REM-LOGO-NRO', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO OVERSIZED', color: 'Negro / Rojo', colorway: 'NEGRO LOGO ROJO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-güido-rojo-front.png', 'assets/images/products/remera-güido-rojo-back.png'] },
-        { slug: 'remera-guido-blanco', sku: 'REM-LOGO-BNE', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO OVERSIZED', color: 'Blanco', colorway: 'BLANCO LOGO NEGRO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-güido-blanca-front.png', 'assets/images/products/remera-güido-blanca-back.png'] },
-        { slug: 'remera-afligida-negro', sku: 'REM-AFL-NEG', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Negro', colorway: 'NEGRO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-negra-front.png', 'assets/images/products/remera-afligida-negra-back.png'] },
-        { slug: 'remera-afligida-navy', sku: 'REM-AFL-NAV', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Navy', colorway: 'NAVY', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-navy-front.png', 'assets/images/products/remera-afligida-navy-back.png'] },
-        { slug: 'remera-afligida-blanco', sku: 'REM-AFL-BLA', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanca-front.png', 'assets/images/products/remera-afligida-blanca-back.png'] },
+        { slug: 'remera-guido-negro', sku: 'REM-LOGO-NBL', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO OVERSIZED', color: 'Negro', colorway: 'NEGRO LOGO BLANCO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-guido-negro-1.webp', 'assets/images/products/remera-guido-negro-2.webp', 'assets/images/products/remera-guido-negro-3.webp', 'assets/images/products/remera-guido-negro-4.webp'] },
+        { slug: 'remera-guido-rojo', sku: 'REM-LOGO-NRO', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA LOGO GÜIDO OVERSIZED', color: 'Negro / Rojo', colorway: 'NEGRO LOGO ROJO', price: '$50.000', description: 'REMERA DE MANGA CORTA CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES HECHOS A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. CALCE RELAJADO CON HOMBROS CAÍDOS. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-guido-rojo-1.webp', 'assets/images/products/remera-guido-rojo-2.webp', 'assets/images/products/remera-guido-rojo-3.webp', 'assets/images/products/remera-guido-rojo-4.webp'] },
+        { slug: 'remera-guido-blanco', sku: 'REM-LOGO-BNE', category: 'REMERAS', name: 'REMERA GÜIDO OVERSIZED', title: 'REMERA GÜIDO OVERSIZED', color: 'Blanco', colorway: 'BLANCO LOGO NEGRO', price: '$50.000', description: 'REMERA OVERSIZED 100% ALGODÓN. ESTAMPA GÜIDO EN RELIEVE. LIMPIEZA VISUAL.', images: ['assets/images/products/remera-guido-blanco-1.webp', 'assets/images/products/remera-guido-blanco-2.webp', 'assets/images/products/remera-guido-blanco-3.webp', 'assets/images/products/remera-guido-blanco-4.webp', 'assets/images/products/remera-guido-blanco-5.webp', 'assets/images/products/remera-guido-blanco-6.webp'] },
+        { slug: 'remera-afligida-negro', sku: 'REM-AFL-NEG', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Negro', colorway: 'NEGRO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-negro-1.webp', 'assets/images/products/remera-afligida-negro-2.webp', 'assets/images/products/remera-afligida-negro-3.webp', 'assets/images/products/remera-afligida-negro-4.webp', 'assets/images/products/remera-afligida-negro-5.webp'] },
+        { slug: 'remera-afligida-navy', sku: 'REM-AFL-NAV', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Navy', colorway: 'NAVY', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-navy-1.webp', 'assets/images/products/remera-afligida-navy-2.webp', 'assets/images/products/remera-afligida-navy-3.webp', 'assets/images/products/remera-afligida-navy-4.webp', 'assets/images/products/remera-afligida-navy-5.webp'] },
+        { slug: 'remera-afligida-blanco', sku: 'REM-AFL-BLA', category: 'REMERAS', name: 'REMERA AFLIGIDA BAGGED TEE', title: 'REMERA AFLIGIDA BAGGED TEE', color: 'Blanco', colorway: 'BLANCO', price: '$55.000', description: 'REMERA DE MANGA CORTA, 100% ALGODÓN SUAVE. ROTURAS HECHAS A MANO DEBAJO DEL CUELLO Y EN LA COSTURA INFERIOR. INTERVENCIÓN CON SALPICADURAS DE PINTURA QUE HACEN CADA PRENDA ÚNICA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-afligida-blanco-1.webp', 'assets/images/products/remera-afligida-blanco-2.webp', 'assets/images/products/remera-afligida-blanco-3.webp', 'assets/images/products/remera-afligida-blanco-4.webp', 'assets/images/products/remera-afligida-blanco-5.webp'] },
 
         // MUSCULOSAS (2)
-        { slug: 'musculosa-negra', sku: 'MUS-DSB-NEG', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-negra-front.png', 'assets/images/products/musculosa-doble-simbolo-negra-back.png'] },
-        { slug: 'musculosa-blanca', sku: 'MUS-DSB-BLA', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-doble-simbolo-blanca-front.png', 'assets/images/products/musculosa-doble-simbolo-blanca-back.png'] },
+        { slug: 'musculosa-negra', sku: 'MUS-DSB-NEG', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-negra-1.webp', 'assets/images/products/musculosa-negra-2.webp'] },
+        { slug: 'musculosa-blanca', sku: 'MUS-DSB-BLA', category: 'TOPS / MUSCULOSAS', name: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', title: 'MUSCULOSA DOBLE SIMBOLO OVERSIZED', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'MUSCULOSA OVERSIZED 100% ALGODÓN SUAVE. CORTES DE MANGAS HECHOS A MANO, ÚNICOS EN CADA PRENDA. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO Y LA ESPALDA. HECHA EN ARGENTINA.', images: ['assets/images/products/musculosa-blanca-1.webp', 'assets/images/products/musculosa-blanca-2.webp'] },
 
         // JEANS (3)
-        { slug: 'jean-selvedge-suelto-indigo', sku: 'JEA-IND-SUE', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN DE DENIM SELVEDGE JAPONES SUELTO', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT SUELTO: LA MISMA SILUETA SUTILMENTE BOOTCUT DEL CORTE REGULAR, EN UN CALCE MÁS AMPLIO Y RELAJADO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-indigo-suelto-front.png', 'assets/images/products/jean-indigo-suelto-back.png', 'assets/images/products/jean-indigo-fold.png'] },
-        { slug: 'jean-selvedge-regular-indigo', sku: 'JEA-IND-REG', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE JAPONES REGULAR', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-indigo-bootcut-front.png', 'assets/images/products/jean-indigo-bootcut-back.png', 'assets/images/products/jean-indigo-fold.png'] },
-        { slug: 'jean-selvedge-regular-negro', sku: 'JEA-NEG-REG', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE ITALIANO FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE ITALIANO REGULAR', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM SELVEDGE ITALIANO DE CANDIANI, CRUDO DE 11 OZ. ESTE TEJIDO NACE EN LA PROVINCIA DE MILÁN, ITALIA. NEGRO PROFUNDO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-negro-bootcut-font.png', 'assets/images/products/jean-negro-bootcut-back.png', 'assets/images/products/jean-negro-fold.png'] },
+        { slug: 'jean-selvedge-suelto-indigo', sku: 'JEA-IND-SUE', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO', title: 'JEAN DE DENIM SELVEDGE JAPONES SUELTO', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT SUELTO: LA MISMA SILUETA SUTILMENTE BOOTCUT DEL CORTE REGULAR, EN UN CALCE MÁS AMPLIO Y RELAJADO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-selvedge-suelto-indigo-1.webp', 'assets/images/products/jean-selvedge-suelto-indigo-2.webp', 'assets/images/products/jean-selvedge-suelto-indigo-3.webp', 'assets/images/products/jean-selvedge-suelto-indigo-4.webp', 'assets/images/products/jean-selvedge-suelto-indigo-5.webp'] },
+        { slug: 'jean-selvedge-regular-indigo', sku: 'JEA-IND-REG', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE JAPONES REGULAR', color: 'Índigo', colorway: 'ÍNDIGO', price: '$240.000', description: 'DENIM SELVEDGE JAPONÉS DE NIHON MENPU, CRUDO DE 13 OZ. TEJIDO EN KOJIMA, OKAYAMA, LA CAPITAL DEL DENIM. ÍNDIGO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-selvedge-regular-indigo-1.webp', 'assets/images/products/jean-selvedge-regular-indigo-2.webp', 'assets/images/products/jean-selvedge-regular-indigo-3.webp', 'assets/images/products/jean-selvedge-regular-indigo-4.webp', 'assets/images/products/jean-selvedge-regular-indigo-5.webp', 'assets/images/products/jean-selvedge-regular-indigo-6.webp'] },
+        { slug: 'jean-selvedge-regular-negro', sku: 'JEA-NEG-REG', category: 'PANTALONES / JEANS', name: 'JEAN DE DENIM SELVEDGE ITALIANO FIT REGULAR', title: 'JEAN DE DENIM SELVEDGE ITALIANO REGULAR', color: 'Negro', colorway: 'NEGRO', price: '$240.000', description: 'DENIM SELVEDGE ITALIANO DE CANDIANI, CRUDO DE 11 OZ. ESTE TEJIDO NACE EN LA PROVINCIA DE MILÁN, ITALIA. NEGRO PROFUNDO DE TONO NATURAL, ÚNICO EN EL PAÍS. FIT REGULAR, SUTILMENTE BOOTCUT, QUE OFRECE UN CALCE RECTO Y CÓMODO. BOTONES Y REMACHES DE LA MARCA. BADANA DE CUERO EN LA PARTE POSTERIOR. HECHO EN ARGENTINA.', care: 'EL SELVEDGE CRUDO SE VIVE Y SE CUIDA. LAVALO LO MENOS POSIBLE Y SIEMPRE DEL REVÉS. RECOMENDAMOS EL LAVADO A MANO: SUMERGILO 30 A 45 MINUTOS EN AGUA FRÍA CON JABÓN NEUTRO, SIN FROTAR, Y ENJUAGÁ EN FRÍO HASTA QUITAR EL JABÓN. ESCURRILO CON CUIDADO, SIN RETORCER. SI USÁS LAVARROPAS, ELEGÍ EL CICLO MÁS DELICADO. SECALO COLGADO EN VERTICAL DESDE LA CINTURA, A LA SOMBRA. EVITÁ EL SOL Y, SOBRE TODO, LA SECADORA.', images: ['assets/images/products/jean-selvedge-regular-negro-1.webp', 'assets/images/products/jean-selvedge-regular-negro-2.webp', 'assets/images/products/jean-selvedge-regular-negro-3.webp', 'assets/images/products/jean-selvedge-regular-negro-4.webp', 'assets/images/products/jean-selvedge-regular-negro-5.webp'] },
 
         // BERMUDAS (2)
-        { slug: 'bermuda-double-knee-negro', sku: 'BER-DK-NEG', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE', title: 'BERMUDA SELVEDGE DOUBLE KNEE', color: 'Negro', colorway: 'NEGRO', price: '$175.000', description: 'WORKWEAR ESTILO.', images: ['assets/images/products/bermuda-DK-front.png', 'assets/images/products/bermuda-DK-back.png'] },
-        { slug: 'bermuda-patchwork-indigo', sku: 'BER-PAT-MIX', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$160.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-front.png', 'assets/images/products/bermuda-patchwork-back.png'] },
+        { slug: 'bermuda-double-knee-negro', sku: 'BER-DK-NEG', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE', title: 'BERMUDA SELVEDGE DOUBLE KNEE', color: 'Negro', colorway: 'NEGRO', price: '$175.000', description: 'WORKWEAR ESTILO.', images: ['assets/images/products/bermuda-double-knee-negro-1.webp', 'assets/images/products/bermuda-double-knee-negro-2.webp', 'assets/images/products/bermuda-double-knee-negro-3.webp', 'assets/images/products/bermuda-double-knee-negro-4.webp', 'assets/images/products/bermuda-double-knee-negro-5.webp', 'assets/images/products/bermuda-double-knee-negro-6.webp', 'assets/images/products/bermuda-double-knee-negro-7.webp'] },
+        { slug: 'bermuda-patchwork-indigo', sku: 'BER-PAT-MIX', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$160.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-indigo-1.webp', 'assets/images/products/bermuda-patchwork-indigo-2.webp', 'assets/images/products/bermuda-patchwork-indigo-3.webp', 'assets/images/products/bermuda-patchwork-indigo-4.webp'] },
 
         // INTERVENCIONES (4) — piezas 1/1
-        { slug: 'jean-pintor-wildcat', sku: 'JEA-1/1-SUR', category: 'INTERVENCIONES', name: 'JEAN PINTOR "WILDCAT"', title: 'JEAN PINTOR "WILDCAT" BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-archivo-1-front.png', 'assets/images/products/jean-archivo-1-back.png'] },
-        { slug: 'jean-pintor-faja', sku: 'JEA-1/1-ENC', category: 'INTERVENCIONES', name: 'JEAN PINTOR "FAJA"', title: 'JEAN PINTOR "FAJA" BOOTCUT', color: 'Negro Pintado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-archivo-2-front.png', 'assets/images/products/jean-archivo-2-back.png'] },
-        { slug: 'jean-encerado', sku: 'JEA-1/1-WAX', category: 'INTERVENCIONES', name: 'JEAN ENCERADO', title: 'JEAN ENCERADO BOOTCUT', color: 'Verde Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT, RECUBIERTO A MANO CON UNA MEZCLA<br>DE PARAFINA Y CERA DE ABEJAS APLICADA EN CALIENTE. EL ENCERADO<br>SELLA EL TEJIDO, LE DA CUERPO Y UN BRILLO OPACO QUE SE VA<br>QUEBRANDO CON EL USO. COSTURA INFERIOR ABIERTA PARA MAYOR<br>APERTURA SOBRE EL CALZADO. BOTONES Y REMACHES DE LA MARCA Y<br>BADANA DE CUERO NEGRA, EXCLUSIVA DE INTERVENCIONES. HECHO A<br>MANO EN ARGENTINA.", care: 'EL ENCERADO NO SE LAVA. LIMPIALO EN SECO, CON UN CEPILLO SUAVE O UN PAÑO APENAS HÚMEDO EN FRÍO Y SÓLO SOBRE LA MANCHA. NUNCA A MÁQUINA, NUNCA CON AGUA CALIENTE NI DETERGENTE: DISUELVEN LA CERA. SECALO COLGADO A LA SOMBRA, LEJOS DE ESTUFAS Y RADIADORES. CON EL USO LA CERA SE MARCA Y SE QUIEBRA EN LOS PLIEGUES — ESO ES PARTE DE LA PIEZA. SE PUEDE VOLVER A ENCERAR.', images: ['assets/images/products/jean-archivo-3-front.png', 'assets/images/products/jean-archivo-3-back.png'] },
-        { slug: 'bermuda-camo-woodland', sku: 'BER-1/1-CAM', category: 'INTERVENCIONES', name: 'BERMUDA CAMO "WOODLAND"', title: 'BERMUDA CAMO "WOODLAND"', color: 'Camo', colorway: '1/1', price: '$130.000', description: 'PANTALÓN CARGO MILITAR EN CAMUFLADO WOODLAND INTERVENIDO A<br>MANO. PIEZA 1/1. CORTADO A LA ALTURA DE LA BERMUDA Y ABIERTO<br>CON PANELES AGREGADOS SOBRE LA ENTREPIERNA, QUE LLEVAN EL<br>CALCE A UNA SILUETA MUCHO MÁS ANCHA. BAJO DESHILACHADO SIN<br>DOBLADILLO. BOLSILLOS CARGO ORIGINALES. AVÍOS Y ETIQUETAS DE<br>LA MARCA. HECHA A MANO EN ARGENTINA.', images: ['assets/images/products/bermuda-archivo-front.png', 'assets/images/products/bermuda-archivo-back.png'] },
+        { slug: 'jean-pintor-wildcat', sku: 'JEA-1/1-SUR', category: 'INTERVENCIONES', name: 'JEAN PINTOR "WILDCAT"', title: 'JEAN PINTOR "WILDCAT" BOOTCUT', color: 'Azul Lavado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-pintor-wildcat-1.webp', 'assets/images/products/jean-pintor-wildcat-2.webp', 'assets/images/products/jean-pintor-wildcat-3.webp', 'assets/images/products/jean-pintor-wildcat-4.webp', 'assets/images/products/jean-pintor-wildcat-5.webp'] },
+        { slug: 'jean-pintor-faja', sku: 'JEA-1/1-ENC', category: 'INTERVENCIONES', name: 'JEAN PINTOR "FAJA"', title: 'JEAN PINTOR "FAJA" BOOTCUT', color: 'Negro Pintado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-pintor-faja-1.webp', 'assets/images/products/jean-pintor-faja-2.webp'] },
+        { slug: 'jean-encerado', sku: 'JEA-1/1-WAX', category: 'INTERVENCIONES', name: 'JEAN ENCERADO', title: 'JEAN ENCERADO BOOTCUT', color: 'Verde Encerado', colorway: '1/1', price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT, RECUBIERTO A MANO CON UNA MEZCLA<br>DE PARAFINA Y CERA DE ABEJAS APLICADA EN CALIENTE. EL ENCERADO<br>SELLA EL TEJIDO, LE DA CUERPO Y UN BRILLO OPACO QUE SE VA<br>QUEBRANDO CON EL USO. COSTURA INFERIOR ABIERTA PARA MAYOR<br>APERTURA SOBRE EL CALZADO. BOTONES Y REMACHES DE LA MARCA Y<br>BADANA DE CUERO NEGRA, EXCLUSIVA DE INTERVENCIONES. HECHO A<br>MANO EN ARGENTINA.", care: 'EL ENCERADO NO SE LAVA. LIMPIALO EN SECO, CON UN CEPILLO SUAVE O UN PAÑO APENAS HÚMEDO EN FRÍO Y SÓLO SOBRE LA MANCHA. NUNCA A MÁQUINA, NUNCA CON AGUA CALIENTE NI DETERGENTE: DISUELVEN LA CERA. SECALO COLGADO A LA SOMBRA, LEJOS DE ESTUFAS Y RADIADORES. CON EL USO LA CERA SE MARCA Y SE QUIEBRA EN LOS PLIEGUES — ESO ES PARTE DE LA PIEZA. SE PUEDE VOLVER A ENCERAR.', images: ['assets/images/products/jean-encerado-1.webp', 'assets/images/products/jean-encerado-2.webp', 'assets/images/products/jean-encerado-3.webp', 'assets/images/products/jean-encerado-4.webp', 'assets/images/products/jean-encerado-5.webp'] },
+        { slug: 'bermuda-camo-woodland', sku: 'BER-1/1-CAM', category: 'INTERVENCIONES', name: 'BERMUDA CAMO "WOODLAND"', title: 'BERMUDA CAMO "WOODLAND"', color: 'Camo', colorway: '1/1', price: '$130.000', description: 'PANTALÓN CARGO MILITAR EN CAMUFLADO WOODLAND INTERVENIDO A<br>MANO. PIEZA 1/1. CORTADO A LA ALTURA DE LA BERMUDA Y ABIERTO<br>CON PANELES AGREGADOS SOBRE LA ENTREPIERNA, QUE LLEVAN EL<br>CALCE A UNA SILUETA MUCHO MÁS ANCHA. BAJO DESHILACHADO SIN<br>DOBLADILLO. BOLSILLOS CARGO ORIGINALES. AVÍOS Y ETIQUETAS DE<br>LA MARCA. HECHA A MANO EN ARGENTINA.', images: ['assets/images/products/bermuda-camo-woodland-1.webp', 'assets/images/products/bermuda-camo-woodland-2.webp', 'assets/images/products/bermuda-camo-woodland-3.webp'] },
 
         // REMERA BABY TEE (3 colorways - mujer)
-        { slug: 'baby-tee-negro', sku: 'REM-BBY-NEG', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE REGISTRADA', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-negra-front.png'] },
-        { slug: 'baby-tee-blanco', sku: 'REM-BBY-BLA', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE REGISTRADA', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-bbytee-blanca-front.png'] },
+        { slug: 'baby-tee-negro', sku: 'REM-BBY-NEG', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE REGISTRADA', color: 'Negro', colorway: 'NEGRO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/baby-tee-negro-1.webp', 'assets/images/products/baby-tee-negro-2.webp', 'assets/images/products/baby-tee-negro-3.webp', 'assets/images/products/baby-tee-negro-4.webp', 'assets/images/products/baby-tee-negro-5.webp'] },
+        { slug: 'baby-tee-blanco', sku: 'REM-BBY-BLA', category: 'REMERAS', name: 'REMERA BABY TEE REGISTRADA', title: 'REMERA BABY TEE REGISTRADA', color: 'Blanco', colorway: 'BLANCO', price: '$45.000', description: 'REMERA DE MUJER AL CUERPO CON CUELLO REDONDO, 100% ALGODÓN. DESGASTES SUTILES A MANO EN COSTURAS Y BORDES. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/baby-tee-blanco-1.webp', 'assets/images/products/baby-tee-blanco-2.webp', 'assets/images/products/baby-tee-blanco-3.webp', 'assets/images/products/baby-tee-blanco-4.webp', 'assets/images/products/baby-tee-blanco-5.webp'] },
 
         // REMERA MANGA LARGA TERMAL (2 colorways)
-        { slug: 'termal-negro', sku: 'REM-TRM-NEG', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA TERMAL', color: 'Negro', colorway: 'NEGRO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-negra-front.png', 'assets/images/products/remera-termal-negra-back.png'] },
-        { slug: 'termal-blanco', sku: 'REM-TRM-BLA', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA TERMAL', color: 'Blanco', colorway: 'BLANCO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/remera-termal-blanca-front.png', 'assets/images/products/remera-termal-blanca-back.png'] },
+        { slug: 'termal-negro', sku: 'REM-TRM-NEG', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA TERMAL', color: 'Negro', colorway: 'NEGRO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/termal-negro-1.webp', 'assets/images/products/termal-negro-2.webp', 'assets/images/products/termal-negro-3.webp', 'assets/images/products/termal-negro-4.webp', 'assets/images/products/termal-negro-5.webp'] },
+        { slug: 'termal-blanco', sku: 'REM-TRM-BLA', category: 'REMERAS', name: 'REMERA MANGA LARGA TERMAL', title: 'REMERA MANGA LARGA TERMAL', color: 'Blanco', colorway: 'BLANCO', price: '$70.000', description: 'REMERA DE MANGA LARGA DE TELA WAFFLE PESADA, 100% ALGODÓN. CON MANGAS EXTRA LARGAS PARA UN CALCE EN CAPAS, PUÑOS RIBB CON AGUJEROS PARA EL PULGAR. COSTURAS EXPUESTAS Y DESGASTADAS EN CONTRASTE. ESTAMPA EN SERIGRAFÍA SOBRE EL PECHO. HECHA EN ARGENTINA.', images: ['assets/images/products/termal-blanco-1.webp', 'assets/images/products/termal-blanco-2.webp', 'assets/images/products/termal-blanco-3.webp', 'assets/images/products/termal-blanco-4.webp', 'assets/images/products/termal-blanco-5.webp', 'assets/images/products/termal-blanco-6.webp'] },
     ];
 
     // -------------------------------------------------------------------------
@@ -1248,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'archive':
                 url = stateObj.archiveSlug
-                    ? `${URL_ARCHIVE}?archive=${encodeURIComponent(stateObj.archiveSlug)}`
+                    ? `${URL_ARCHIVE}/colecciones/${encodeURIComponent(stateObj.archiveSlug)}`
                     : URL_ARCHIVE;
                 break;
             default:
@@ -1293,6 +1293,10 @@ document.addEventListener('DOMContentLoaded', () => {
             exitEl.style.transition = '';
         }
         // 2. ESTADO
+        // El Archivo no tiene header (toda su navegación es el botón MENU): al entrar
+        // o salir de su contenedor hay que prender/apagar ese chrome. Se hace acá
+        // porque transitionState es el único paso obligatorio de todo cambio de sección.
+        setArchivoChrome(!!enterEl && enterEl.id === 'archivo-container');
         applyStateFn();
         // 3. ENTER — emerge desde abajo con peso
         if (enterEl) {
@@ -3626,33 +3630,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const archivoTrigger = document.getElementById('archivo-trigger');
     if (archivoTrigger) archivoTrigger.addEventListener('click', (e) => {
         e.preventDefault();
-        if (archiveDetailOpen) closeArchiveDetail(/* skipHistory */ true);
-        showArchiveIndex(false);
+        if (avCollectionOpen) closeCollection(/* skipHistory */ true);
+        showArchiveLanding(false);
     });
     const mobileArchivoLink = document.querySelector('.mobile-archivo-link');
     if (mobileArchivoLink) mobileArchivoLink.addEventListener('click', (e) => {
         e.preventDefault();
         closeMobileMenu();
-        if (archiveDetailOpen) closeArchiveDetail(/* skipHistory */ true);
-        showArchiveIndex(false);
+        if (avCollectionOpen) closeCollection(/* skipHistory */ true);
+        showArchiveLanding(false);
     });
-    // Abrir el detalle al clickear una foto o el título de una temporada (delegado).
+    // Botón MENU + CERRAR del drawer.
+    const avMenuBtn = document.getElementById('av-menu-btn');
+    if (avMenuBtn) avMenuBtn.addEventListener('click', () => openArchiveMenu());
     document.addEventListener('click', (e) => {
-        const opener = e.target.closest('[data-archive-open]');
-        if (!opener) return;
+        if (e.target.closest('.av-menu-close')) closeArchiveMenu();
+    });
+    // Ítems del menú (delegado: CONTENIDO / SHOP / SOBRE).
+    document.addEventListener('click', (e) => {
+        const item = e.target.closest('[data-av-nav]');
+        if (!item) return;
         e.preventDefault();
-        openArchiveDetail(opener.getAttribute('data-archive-open'), false);
+        archiveMenuNavigate(item.getAttribute('data-av-nav'));
     });
-    // CERRAR (delegado, el botón vive en el overlay).
+    // Accesos rápidos de la barra de la colección (LOOKS / DETALLES / FILM).
     document.addEventListener('click', (e) => {
-        if (e.target.closest('.archive-detail-close')) {
-            e.preventDefault();
-            closeArchiveDetail(false);
-        }
+        const goto = e.target.closest('[data-av-goto]');
+        if (!goto) return;
+        e.preventDefault();
+        collectionScrollTo(goto.getAttribute('data-av-goto'));
     });
-    // Escape cierra el detalle.
+    // El wordmark de la colección vuelve a la landing.
+    const avColBrand = document.getElementById('av-col-brand');
+    if (avColBrand) avColBrand.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeCollection(false);
+    });
+    // Escape: primero cierra el menú; si no hay menú, sale de la colección.
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && archiveDetailOpen) closeArchiveDetail(false);
+        if (e.key !== 'Escape') return;
+        if (avMenuOpen) { closeArchiveMenu(); return; }
+        if (avCollectionOpen) closeCollection(false);
     });
 
     // Login Validation
@@ -5166,103 +5184,169 @@ document.addEventListener('DOMContentLoaded', () => {
     // Restore state from a history state object (called by popstate)
     // =========================================================================
     // --- ARCHIVO ---
-    // Índice (/archivo): una tira horizontal por temporada.
-    // Detalle (/archivo?archive=slug): overlay full-viewport; el scroll vertical
-    //   del usuario se traduce en scroll horizontal de la tira (sticky + spacer).
-    // No usa una body-class de estado propia (getActiveSection lo detecta por
-    //   visibilidad del contenedor), así no hay que tocar las remove-lists.
+    // Tres pantallas, sin header (toda la navegación es el botón MENU):
+    //   1. Landing (/archivo): el fashion film arranca cubriendo el viewport y
+    //      decrece radialmente hacia el centro, revelando el grid disperso de
+    //      fotos del shoot (blurreadas; el blur se va en hover) y el wordmark.
+    //   2. Menú: drawer que sube, con los ítems revelándose enmascarados.
+    //   3. Colección (/archivo/colecciones/<slug>): hero full-viewport, panel
+    //      blanco con barra sticky LOOKS/DETALLES/FILM y grid de 3 columnas.
+    // No usa una body-class de estado propia para el ruteo: getActiveSection lo
+    // detecta por visibilidad del contenedor (así no hay que tocar remove-lists).
     // =========================================================================
     const ARCHIVE = (typeof window !== 'undefined' && Array.isArray(window.ARCHIVE_DATA))
         ? window.ARCHIVE_DATA : [];
+    const ARCHIVE_LANDING = (typeof window !== 'undefined' && window.ARCHIVE_LANDING)
+        ? window.ARCHIVE_LANDING : { film: {}, grid: [] };
 
     function findArchiveCollection(slug) {
         return ARCHIVE.find(c => c.slug === slug) || null;
     }
 
     // Tile placeholder on-brand (fondo #1A1A1A, marco rojo, número) mientras no
-    // haya fotos reales. Se reemplaza poniendo `src` en cada imagen de archive-data.js.
-    function archivePlaceholderSrc(n) {
-        // Aspecto 4:5 fijo (igual que las tiles de ERD) para que el marco entre completo.
-        const W = 800, H = 1000;
+    // haya fotos reales. Se reemplaza poniendo `src` en archive-data.js.
+    function archivePlaceholderSrc(n, w, h) {
+        const W = w || 800, H = h || 1000;
         const num = String(n).padStart(2, '0');
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`
             + `<rect width="100%" height="100%" fill="#1A1A1A"/>`
             + `<rect x="16" y="16" width="${W - 32}" height="${H - 32}" fill="none" stroke="#AD1C1C" stroke-width="3"/>`
-            + `<text x="50%" y="50%" fill="#FAFAFA" font-family="Arial, Helvetica, sans-serif" font-size="${Math.round(W * 0.2)}" font-weight="bold" text-anchor="middle" dominant-baseline="central" opacity="0.8">${num}</text>`
+            + `<text x="50%" y="50%" fill="#FAFAFA" font-family="Arial, Helvetica, sans-serif" font-size="${Math.round(Math.min(W, H) * 0.2)}" font-weight="bold" text-anchor="middle" dominant-baseline="central" opacity="0.8">${num}</text>`
             + `</svg>`;
         return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
     }
 
-    function archiveImgSrc(img, i) {
-        if (img && img.src) return img.src;
-        return archivePlaceholderSrc(i + 1);
+    // Los paths de archive-data.js se normalizan a absolutos: en /archivo/colecciones/ss26
+    // un 'assets/...' relativo resolvería contra /archivo/colecciones/ y daría 404.
+    function archiveImgSrc(img, i, w, h) {
+        if (img && img.src) return absUrl(img.src);
+        return archivePlaceholderSrc(i + 1, w, h);
     }
 
-    // Título con año en superíndice (ej: "LOOKBOOK" + sup "2026").
-    function archiveTitleHTML(col) {
-        const base = (col.titulo || '').toUpperCase();
-        const sup = col.tituloSup ? `<sup class="archivo-sup">${col.tituloSup}</sup>` : '';
-        return `${base}${sup}`;
+    // Prende/apaga el chrome propio del Archivo: sin header, con botón MENU.
+    // Lo llama transitionState en cada cambio de sección.
+    function setArchivoChrome(on) {
+        body.classList.toggle('archivo-active', !!on);
+        const btn = document.getElementById('av-menu-btn');
+        if (btn) btn.style.display = on ? 'block' : 'none';
+        if (!on) { closeArchiveMenu(/* immediate */ true); avDesiredTitle = null; }
     }
 
-    const ARCHIVE_MARQUEE_SPEED = 55; // px por segundo (velocidad del carrusel)
-    let archiveResizeBound = false;
-    const archiveStripBase = {}; // slug -> { main, dup } HTML de una copia
+    // En un deep-link, Next aplica la metadata del layout DESPUÉS de hidratar y
+    // pisa el título que seteamos al restaurar la ruta. Lo reponemos una vez.
+    let avDesiredTitle = null;
+    function avSetTitle(t) {
+        avDesiredTitle = t;
+        document.title = t;
+        setTimeout(() => { if (avDesiredTitle === t) document.title = t; }, 600);
+    }
 
-    let archiveIndexRendered = false;
-    function renderArchiveIndex() {
-        if (archiveIndexRendered) return;
-        const host = document.getElementById('archivo-index');
+    // ── Landing ──────────────────────────────────────────────────────────────
+    let archiveLandingRendered = false;
+
+    function renderArchiveLanding() {
+        if (archiveLandingRendered) return;
+        const host = document.getElementById('av-grid');
+        const video = document.getElementById('av-film-video');
         if (!host) return;
-        const buildItem = (col, img, i, dup) => {
-            const src = archiveImgSrc(img, i);
-            const loading = (!dup && i < 3) ? 'eager' : 'lazy';
-            const w = (img && img.w) || 1200, h = (img && img.h) || 1600;
-            const extra = dup ? ' aria-hidden="true" tabindex="-1"' : ` aria-label="Abrir ${col.titulo} ${col.tituloSup || ''}"`;
-            return `<button type="button" class="archivo-strip-item" data-archive-open="${col.slug}"${extra}>`
-                + `<img src="${src}" alt="${dup ? '' : ((img && img.alt) || '')}" width="${w}" height="${h}" loading="${loading}" decoding="async" draggable="false">`
-                + `</button>`;
-        };
-        host.innerHTML = ARCHIVE.map(col => {
-            const main = col.imagenes.map((img, i) => buildItem(col, img, i, false)).join('');
-            const dup = col.imagenes.map((img, i) => buildItem(col, img, i, true)).join('');
-            archiveStripBase[col.slug] = { main, dup };
-            // Arranca con 1 copia; setupArchiveMarquees agrega las que hagan falta.
-            return `<div class="archivo-season">`
-                + `<button type="button" class="archivo-season-title font-condensed" data-archive-open="${col.slug}">${archiveTitleHTML(col)}</button>`
-                + `<div class="archivo-strip"><div class="archivo-strip-track" data-slug="${col.slug}">${main}</div></div>`
+
+        const grid = Array.isArray(ARCHIVE_LANDING.grid) ? ARCHIVE_LANDING.grid : [];
+        host.innerHTML = grid.map((g, i) => {
+            const src = archiveImgSrc(g, i, 800, 1200);
+            // El stagger arranca cuando el film ya empezó a achicarse.
+            const delay = (0.55 + i * 0.1).toFixed(2);
+            return `<div class="av-grid-item" style="left:${g.x}%;top:${g.y}%;width:${g.w}%;height:${g.h}%;transition-delay:0s,${delay}s,${delay}s">`
+                + `<img src="${src}" alt="${g.alt || ''}" loading="eager" decoding="async" draggable="false">`
                 + `</div>`;
         }).join('');
-        archiveIndexRendered = true;
+
+        const film = ARCHIVE_LANDING.film || {};
+        if (video && film.src) {
+            if (film.poster) video.setAttribute('poster', absUrl(film.poster));
+            video.src = absUrl(film.src);
+        }
+
+        // Parallax: sólo con mouse fino y sin reduced-motion. El listener va en el
+        // contenedor, que sólo recibe eventos mientras el Archivo está visible.
+        const container = document.getElementById('archivo-container');
+        const conMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+            && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (container && conMouse) {
+            container.addEventListener('mousemove', avOnPointerMove, { passive: true });
+        }
+        archiveLandingRendered = true;
     }
 
-    // Duplica el contenido las veces necesarias para que UNA copia supere el ancho
-    // del viewport (carrusel continuo sin cortes) y setea velocidad constante.
-    function setupArchiveMarquees() {
-        const vw = window.innerWidth;
-        document.querySelectorAll('#archivo-index .archivo-strip-track').forEach(track => {
-            const slug = track.getAttribute('data-slug');
-            const base = archiveStripBase[slug];
-            if (!base) return;
-            // Medir el ancho de una copia (el transform no afecta scrollWidth).
-            track.innerHTML = base.main;
-            const oneCopy = track.scrollWidth;
-            if (oneCopy <= 0) return;
-            // Copias: cubrir el viewport + 1 extra para que el loop nunca deje hueco.
-            const copies = Math.max(2, Math.ceil(vw / oneCopy) + 1);
-            let html = base.main;
-            for (let k = 1; k < copies; k++) html += base.dup;
-            track.innerHTML = html;
-            track.style.setProperty('--archivo-copies', copies);
-            track.style.animationDuration = (oneCopy / ARCHIVE_MARQUEE_SPEED) + 's';
-        });
+    // El decrecimiento radial: el film arranca escalado lo suficiente para cubrir
+    // el viewport, se queda así unos segundos, y recién ahí vuelve a 1 (su caja de
+    // 40.51vw). El factor se calcula sobre offsetWidth/Height, que son las medidas
+    // SIN transform aplicado.
+    const AV_HOLD_MS = 2500; // cuánto se queda en pantalla completa antes de decrecer
+    let avIntroTimer = null;
+
+    function playLandingIntro() {
+        const landing = document.getElementById('av-landing');
+        const film = document.getElementById('av-film');
+        const video = document.getElementById('av-film-video');
+        if (!landing || !film) return;
+
+        if (avIntroTimer) { clearTimeout(avIntroTimer); avIntroTimer = null; }
+        landing.classList.remove('is-revealed');
+
+        const w = film.offsetWidth, h = film.offsetHeight;
+        if (w > 0 && h > 0) {
+            const cover = Math.max(window.innerWidth / w, window.innerHeight / h);
+            film.style.transition = 'none';
+            film.style.setProperty('--av-film-scale', String(cover));
+            void film.offsetWidth; // flush: fija el estado inicial sin animarlo
+            film.style.transition = '';
+        }
+        if (video) {
+            const p = video.play();
+            if (p && typeof p.catch === 'function') p.catch(() => { /* autoplay bloqueado: queda el poster */ });
+        }
+
+        avIntroTimer = setTimeout(() => {
+            avIntroTimer = null;
+            // Soltamos el valor inline en vez de escribir '1': el CSS lo devuelve a 1
+            // con su transición Y deja de pisar al :hover, que también escribe la
+            // variable (un inline style le gana a cualquier regla).
+            film.style.removeProperty('--av-film-scale');
+            landing.classList.add('is-revealed');
+        }, AV_HOLD_MS);
     }
 
-    function showArchiveIndex(skipHistory) {
-        document.title = 'Archivo — GÜIDO CAPUZZI';
+    // Parallax del mouse sobre las imágenes. Medido en la referencia: los contenedores
+    // se desplazan ~2.4% de lo que se corre el cursor respecto del centro, y el
+    // wordmark no se mueve (por eso la capa .av-parallax lo deja afuera).
+    const AV_PARALLAX = 0.024;
+    let avPx = 0, avPy = 0, avPxTarget = 0, avPyTarget = 0, avParallaxRaf = null;
+
+    function avParallaxTick() {
+        const layer = document.getElementById('av-parallax');
+        if (!layer) { avParallaxRaf = null; return; }
+        avPx += (avPxTarget - avPx) * 0.08;
+        avPy += (avPyTarget - avPy) * 0.08;
+        layer.style.setProperty('--av-px', avPx.toFixed(2) + 'px');
+        layer.style.setProperty('--av-py', avPy.toFixed(2) + 'px');
+        if (Math.abs(avPxTarget - avPx) < 0.1 && Math.abs(avPyTarget - avPy) < 0.1) {
+            avParallaxRaf = null;
+            return;
+        }
+        avParallaxRaf = requestAnimationFrame(avParallaxTick);
+    }
+
+    function avOnPointerMove(e) {
+        avPxTarget = (e.clientX - window.innerWidth / 2) * AV_PARALLAX;
+        avPyTarget = (e.clientY - window.innerHeight / 2) * AV_PARALLAX;
+        if (!avParallaxRaf) avParallaxRaf = requestAnimationFrame(avParallaxTick);
+    }
+
+    function showArchiveLanding(skipHistory) {
+        avSetTitle('Archivo — GÜIDO CAPUZZI');
         const container = document.getElementById('archivo-container');
         if (!container) return;
-        renderArchiveIndex();
+        renderArchiveLanding();
         const active = container.style.display && container.style.display !== 'none';
 
         const enter = () => {
@@ -5279,153 +5363,255 @@ document.addEventListener('DOMContentLoaded', () => {
             ].forEach(sec => {
                 if (sec && sec !== container) { sec.style.display = 'none'; sec.style.opacity = '0'; }
             });
-            // Fondo oscuro (#1A1A1A) → header en modo claro: logo blanco + links #FAFAFA
-            header.style.backgroundColor = 'transparent';
-            header.style.color = 'var(--color-white)';
-            if (headerLogo) headerLogo.classList.add('visible');
             window.scrollTo(0, 0);
-            // Medir anchos y setear velocidad del carrusel una vez visible el contenedor.
-            requestAnimationFrame(() => requestAnimationFrame(setupArchiveMarquees));
-            if (!archiveResizeBound) {
-                window.addEventListener('resize', setupArchiveMarquees);
-                archiveResizeBound = true;
-            }
+            // Después de que termine la transición de entrada de la sección (420ms).
+            setTimeout(playLandingIntro, 440);
         };
 
         if (!active) {
-            transitionState(getActiveSection(), container, 'flex', enter);
+            transitionState(getActiveSection(), container, 'block', enter);
+        } else {
+            setArchivoChrome(true);
+            playLandingIntro();
         }
         if (!skipHistory) pushHistory({ state: 'archive', archiveSlug: null });
     }
 
-    // --- Detalle (overlay) + mecánica scroll vertical→horizontal ---
-    let archiveDetailOpen = false;
-    let archiveScrollRAF = null;
-    let archiveHintDismissed = false;
+    // ── Menú (drawer) ────────────────────────────────────────────────────────
+    let avMenuOpen = false;
 
-    function renderArchiveDetail(col) {
-        const track = document.querySelector('#archive-detail .archive-detail-track');
-        const titleEl = document.querySelector('#archive-detail .archive-detail-title');
-        if (!track) return;
-        track.innerHTML = col.imagenes.map((img, i) => {
-            const src = archiveImgSrc(img, i);
-            const loading = i < 3 ? 'eager' : 'lazy';
-            const w = (img && img.w) || 1200, h = (img && img.h) || 1600;
-            return `<figure class="archive-detail-figure">`
-                + `<img src="${src}" alt="${(img && img.alt) || ''}" width="${w}" height="${h}" loading="${loading}" decoding="async" draggable="false">`
-                + `</figure>`;
-        }).join('');
-        if (titleEl) titleEl.innerHTML = archiveTitleHTML(col);
+    function openArchiveMenu() {
+        const menu = document.getElementById('av-menu');
+        if (!menu || avMenuOpen) return;
+        menu.style.display = 'block';
+        menu.setAttribute('aria-hidden', 'false');
+        void menu.offsetWidth; // fuerza reflow para que la transición arranque
+        menu.classList.add('is-open');
+        avMenuOpen = true;
     }
 
-    function archiveLayout() {
-        const detail = document.getElementById('archive-detail');
-        if (!detail || detail.style.display === 'none') return;
-        const track = detail.querySelector('.archive-detail-track');
-        const spacer = detail.querySelector('.archive-detail-spacer');
-        const pin = detail.querySelector('.archive-detail-pin');
-        if (!track || !spacer || !pin) return;
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const maxX = Math.max(0, track.scrollWidth - vw);
-        detail.__archiveMaxX = maxX;
-        spacer.style.height = (maxX + vh) + 'px';
-        pin.style.height = vh + 'px';
-        archiveApplyTransform();
+    function closeArchiveMenu(immediate) {
+        const menu = document.getElementById('av-menu');
+        if (!menu || !avMenuOpen) return;
+        menu.classList.remove('is-open');
+        menu.setAttribute('aria-hidden', 'true');
+        avMenuOpen = false;
+        if (immediate) {
+            menu.style.display = 'none';
+        } else {
+            setTimeout(() => { if (!avMenuOpen) menu.style.display = 'none'; }, 880);
+        }
     }
 
-    function archiveApplyTransform() {
-        const detail = document.getElementById('archive-detail');
-        if (!detail) return;
-        const scroller = detail.querySelector('.archive-detail-scroller');
-        const track = detail.querySelector('.archive-detail-track');
-        if (!scroller || !track) return;
-        const maxX = detail.__archiveMaxX || 0;
-        const x = Math.min(Math.max(0, scroller.scrollTop), maxX);
-        track.style.transform = `translate3d(${-x}px,0,0)`;
+    function archiveMenuNavigate(target) {
+        closeArchiveMenu();
+        // Si el menú se abrió desde la colección, hay que bajar ese overlay antes de
+        // navegar: es un fixed con z-index 8000 y taparía la sección de destino.
+        // skipHistory=true porque el destino empuja su propia entrada de historial.
+        if ((target === 'home' || target === 'shop') && avCollectionOpen) {
+            closeCollection(/* skipHistory */ true);
+        }
+        if (target === 'home') {
+            // El wordmark del menú vuelve al home. Sale del Archivo, así que
+            // transitionState apaga solo el chrome propio (header y marquee vuelven).
+            enableHomeState(null, /* skipHistory */ false);
+            return;
+        }
+        if (target === 'shop') {
+            enableShopState(null, 'VER TODO', /* skipHistory */ false);
+            return;
+        }
+        if (target === 'sobre') {
+            // La página SOBRE (historia de GÜIDO) todavía no existe — pendiente.
+            console.info('[archivo] SOBRE: página pendiente de crear');
+            return;
+        }
+        if (target === 'contenido') {
+            const first = ARCHIVE[0];
+            if (first) openCollection(first.slug, /* skipHistory */ false);
+        }
     }
 
-    function archiveDismissHint() {
-        if (archiveHintDismissed) return;
-        archiveHintDismissed = true;
-        const hint = document.querySelector('#archive-detail .archive-detail-hint');
-        if (hint) hint.classList.add('is-hidden');
-    }
+    // ── Colección ────────────────────────────────────────────────────────────
+    let avCollectionOpen = false;
+    let avCollectionSlug = null;
 
-    function archiveOnScroll() {
-        if (archiveScrollRAF) return;
-        archiveScrollRAF = requestAnimationFrame(() => {
-            archiveScrollRAF = null;
-            archiveApplyTransform();
-            archiveDismissHint();
-        });
-    }
+    function renderCollection(col) {
+        const heroMedia = document.getElementById('av-col-hero-media');
+        const heroTitle = document.getElementById('av-col-hero-title');
+        const barTitle = document.getElementById('av-col-bar-title');
+        const looks = document.getElementById('av-looks');
+        const detalles = document.getElementById('av-detalles');
+        const filmHost = document.getElementById('av-col-film');
 
-    // Scroll horizontal (trackpad/rueda con deltaX, o shift+rueda): lo traducimos
-    // al scroll vertical del scroller, que es el que mueve la tira. Así funcionan
-    // AMBOS ejes. El scroll vertical puro se maneja nativo (mantiene la inercia).
-    function archiveOnWheel(e) {
-        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-            const detail = document.getElementById('archive-detail');
-            const scroller = detail && detail.querySelector('.archive-detail-scroller');
-            if (scroller) {
-                scroller.scrollTop += e.deltaX;
-                e.preventDefault();
+        if (heroTitle) heroTitle.textContent = col.titulo || '';
+        if (barTitle) barTitle.textContent = col.titulo || '';
+
+        if (heroMedia) {
+            const hero = col.hero || {};
+            if (hero.src) {
+                heroMedia.innerHTML = `<video src="${absUrl(hero.src)}"${hero.poster ? ` poster="${absUrl(hero.poster)}"` : ''} muted loop playsinline autoplay></video>`;
+            } else if (hero.poster) {
+                heroMedia.innerHTML = `<img src="${absUrl(hero.poster)}" alt="${hero.alt || ''}" decoding="async">`;
+            } else {
+                heroMedia.innerHTML = '';
             }
         }
+
+        const tiles = (arr, w, h) => (arr || []).map((img, i) => {
+            const src = archiveImgSrc(img, i, w, h);
+            const loading = i < 3 ? 'eager' : 'lazy';
+            return `<figure><img src="${src}" alt="${(img && img.alt) || ''}" width="${(img && img.w) || w}" height="${(img && img.h) || h}" loading="${loading}" decoding="async" draggable="false"></figure>`;
+        }).join('');
+
+        if (looks) looks.innerHTML = tiles(col.looks, 1200, 1500);
+        if (detalles) detalles.innerHTML = tiles(col.detalles, 1500, 1200);
+
+        if (filmHost) {
+            const film = col.film || {};
+            filmHost.innerHTML = film.src
+                ? `<video src="${absUrl(film.src)}"${film.poster ? ` poster="${absUrl(film.poster)}"` : ''} muted loop playsinline preload="none" controls></video>`
+                : '';
+        }
     }
 
-    function openArchiveDetail(slug, skipHistory) {
+    function openCollection(slug, skipHistory) {
         const col = findArchiveCollection(slug);
-        const detail = document.getElementById('archive-detail');
-        if (!col || !detail) { showArchiveIndex(false); return; }
+        const el = document.getElementById('av-collection');
+        if (!col || !el) { showArchiveLanding(false); return; }
 
-        renderArchiveDetail(col);
-        document.title = `${col.titulo} ${col.tituloSup || ''} — Archivo — GÜIDO CAPUZZI`.replace(/\s+/g, ' ').trim();
+        renderCollection(col);
+        avSetTitle(`${col.titulo} — Archivo — GÜIDO CAPUZZI`);
 
-        detail.style.display = 'block';
-        detail.setAttribute('aria-hidden', 'false');
-        body.classList.add('archive-detail-open');
+        el.style.display = 'block';
+        el.setAttribute('aria-hidden', 'false');
+        body.classList.add('av-collection-open');
+        el.scrollTop = 0;
+        avCollectionOpen = true;
+        avCollectionSlug = slug;
 
-        const scroller = detail.querySelector('.archive-detail-scroller');
-        const hint = detail.querySelector('.archive-detail-hint');
-        archiveHintDismissed = false;
-        if (hint) hint.classList.remove('is-hidden');
-        if (scroller) scroller.scrollTop = 0;
+        // El botón MENU sigue disponible dentro de la colección.
+        const btn = document.getElementById('av-menu-btn');
+        if (btn) btn.style.display = 'block';
 
-        archiveLayout();
-        requestAnimationFrame(archiveLayout);
-        // Recalcular cuando cargan las imágenes (scrollWidth puede cambiar).
-        detail.querySelectorAll('img').forEach(img => {
-            if (!img.complete) img.addEventListener('load', archiveLayout, { once: true });
-        });
-
-        if (scroller) {
-            scroller.addEventListener('scroll', archiveOnScroll, { passive: true });
-            scroller.addEventListener('wheel', archiveOnWheel, { passive: false });
-        }
-        window.addEventListener('resize', archiveLayout);
-        archiveDetailOpen = true;
-
+        bindCollectionScroll(el);
         if (!skipHistory) pushHistory({ state: 'archive', archiveSlug: slug });
     }
 
-    function closeArchiveDetail(skipHistory) {
-        const detail = document.getElementById('archive-detail');
-        if (!detail) return;
-        const wasOpen = archiveDetailOpen;
-        const scroller = detail.querySelector('.archive-detail-scroller');
-        if (scroller) {
-            scroller.removeEventListener('scroll', archiveOnScroll);
-            scroller.removeEventListener('wheel', archiveOnWheel);
-        }
-        window.removeEventListener('resize', archiveLayout);
-        detail.style.display = 'none';
-        detail.setAttribute('aria-hidden', 'true');
-        body.classList.remove('archive-detail-open');
-        archiveDetailOpen = false;
-        document.title = 'Archivo — GÜIDO CAPUZZI';
+    function closeCollection(skipHistory) {
+        const el = document.getElementById('av-collection');
+        if (!el) return;
+        const wasOpen = avCollectionOpen;
+        unbindCollectionScroll(el);
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+        body.classList.remove('av-collection-open');
+        avCollectionOpen = false;
+        avCollectionSlug = null;
+        avSetTitle('Archivo — GÜIDO CAPUZZI');
         if (!skipHistory && wasOpen) history.back();
+    }
+
+    // ── Scroll suavizado de la colección ─────────────────────────────────────
+    // Réplica del ritmo de la referencia (Locomotive Scroll con lerp 0.05 y
+    // multiplier 0.5: poco recorrido por click de rueda y una cola larguísima).
+    // Diferencia deliberada: allá se transforma el contenido y se rompe el scroll
+    // nativo (adiós Ctrl+F, position:sticky, teclado y mobile — su propia página
+    // cae a nativo en celular). Acá el lerp maneja el scrollTop del contenedor,
+    // así el ritmo es el mismo pero no se rompe nada.
+    const AV_EASE = 0.05;   // factor de interpolación por frame
+    const AV_MULT = 0.5;    // multiplier del sitio de referencia
+    const AV_MOUSE_MULT = (navigator.platform || '').indexOf('Win') > -1 ? 1 : 0.4;
+    const AV_STOP_EPS = 0.5;
+
+    let avTarget = 0, avCurrent = 0, avRaf = null, avStartTs = 0, avSelfScroll = false;
+
+    function avSmoothEnabled() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+        // En touch la inercia nativa ya es buena y el jacking la arruina.
+        return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    }
+
+    function avOnWheel(e) {
+        const el = document.getElementById('av-collection');
+        if (!el) return;
+        e.preventDefault();
+        let d = e.wheelDeltaY || -1 * e.deltaY;
+        if (e.deltaMode === 1) d *= 16; // deltaMode en líneas (Firefox)
+        d *= AV_MOUSE_MULT;
+        avTarget -= d * AV_MULT;
+        avClampTarget(el);
+        avStartLoop();
+    }
+
+    function avClampTarget(el) {
+        const max = Math.max(0, el.scrollHeight - el.clientHeight);
+        if (avTarget < 0) avTarget = 0;
+        if (avTarget > max) avTarget = max;
+    }
+
+    function avStartLoop() {
+        if (avRaf) return;
+        avStartTs = Date.now();
+        avRaf = requestAnimationFrame(avTick);
+    }
+
+    function avTick() {
+        const el = document.getElementById('av-collection');
+        if (!el || !avCollectionOpen) { avRaf = null; return; }
+        avCurrent = (1 - AV_EASE) * avCurrent + AV_EASE * avTarget;
+        avSelfScroll = true;
+        el.scrollTop = avCurrent;
+        avSelfScroll = false;
+        if (Math.abs(avTarget - avCurrent) < AV_STOP_EPS && Date.now() - avStartTs > 100) {
+            avCurrent = Math.round(avTarget);
+            avSelfScroll = true;
+            el.scrollTop = avCurrent;
+            avSelfScroll = false;
+            avRaf = null;
+            return;
+        }
+        avRaf = requestAnimationFrame(avTick);
+    }
+
+    // Si el scroll lo movió otra cosa (teclado, barra, Ctrl+F, touch), resincronizar
+    // para que el próximo movimiento de rueda arranque de donde está de verdad.
+    function avOnScroll() {
+        if (avSelfScroll || avRaf) return;
+        const el = document.getElementById('av-collection');
+        if (!el) return;
+        avCurrent = avTarget = el.scrollTop;
+    }
+
+    function collectionScrollTo(key) {
+        const el = document.getElementById('av-collection');
+        if (!el) return;
+        const map = { looks: 'av-looks', detalles: 'av-detalles', film: 'av-col-film' };
+        const section = document.getElementById(map[key]);
+        const bar = document.getElementById('av-col-bar');
+        if (!section) return;
+        const barH = bar ? bar.offsetHeight : 0;
+        const dest = section.offsetTop - barH;
+        if (!avSmoothEnabled()) {
+            el.scrollTo({ top: dest, behavior: 'smooth' });
+            return;
+        }
+        avCurrent = el.scrollTop;
+        avTarget = dest;
+        avClampTarget(el);
+        avStartLoop();
+    }
+
+    function bindCollectionScroll(el) {
+        avCurrent = avTarget = 0;
+        el.addEventListener('scroll', avOnScroll, { passive: true });
+        if (avSmoothEnabled()) el.addEventListener('wheel', avOnWheel, { passive: false });
+    }
+
+    function unbindCollectionScroll(el) {
+        el.removeEventListener('scroll', avOnScroll);
+        el.removeEventListener('wheel', avOnWheel);
+        if (avRaf) { cancelAnimationFrame(avRaf); avRaf = null; }
     }
 
     function restoreState(stateObj) {
@@ -5457,11 +5643,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'archive':
                 if (stateObj.archiveSlug) {
-                    showArchiveIndex(/* skipHistory */ true);
-                    openArchiveDetail(stateObj.archiveSlug, /* skipHistory */ true);
+                    showArchiveLanding(/* skipHistory */ true);
+                    openCollection(stateObj.archiveSlug, /* skipHistory */ true);
                 } else {
-                    closeArchiveDetail(/* skipHistory */ true);
-                    showArchiveIndex(/* skipHistory */ true);
+                    closeCollection(/* skipHistory */ true);
+                    showArchiveLanding(/* skipHistory */ true);
                 }
                 break;
             default:
@@ -5532,13 +5718,15 @@ document.addEventListener('DOMContentLoaded', () => {
             history.replaceState({ state: 'legales' }, '', window.location.href);
             return;
         }
-        if (path === '/archivo' || path === '/archivo/') {
-            const archiveSlug = params.get('archive');
-            showArchiveIndex(/* skipHistory */ true);
-            // Dejamos el índice como entrada base para que CERRAR/back siempre vuelva a él.
+        if (path === '/archivo' || path.startsWith('/archivo/')) {
+            // /archivo/colecciones/<slug>, con soporte del formato viejo ?archive=<slug>
+            const m = path.match(/^\/archivo\/colecciones\/([^/]+)\/?$/);
+            const archiveSlug = (m && decodeURIComponent(m[1])) || params.get('archive');
+            showArchiveLanding(/* skipHistory */ true);
+            // La landing queda como entrada base para que CERRAR/back siempre vuelva a ella.
             history.replaceState({ state: 'archive', archiveSlug: null }, '', URL_ARCHIVE);
             if (archiveSlug && findArchiveCollection(archiveSlug)) {
-                openArchiveDetail(archiveSlug, /* skipHistory */ false);
+                openCollection(archiveSlug, /* skipHistory */ false);
             }
             return;
         }
