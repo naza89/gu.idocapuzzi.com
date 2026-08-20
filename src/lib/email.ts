@@ -11,7 +11,36 @@
 import { Resend } from 'resend';
 import { createAdminClient } from '@/lib/supabase';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/**
+ * Cliente de Resend, construido perezosamente.
+ *
+ * ⚠️ NO construir a nivel de módulo. `new Resend(undefined)` TIRA
+ * ("Missing API key"), y este archivo lo importan los DOS webhooks del camino
+ * del dinero (`/api/webhooks/nave` y `/api/webhooks/oca`). Un throw en el
+ * import se lleva puesta la ruta entera: sin `RESEND_API_KEY`, NAVE no podría
+ * avisar que una orden se pagó — no es que fallaría el mail, es que fallaría
+ * el procesamiento del pago.
+ *
+ * Con la construcción diferida, la falta de la clave degrada sólo el envío del
+ * mail, que es lo que corresponde, y queda registrada en el log.
+ *
+ * Lo encontró el primer run del CI (2026-08-20): `next build` sin
+ * `RESEND_API_KEY` fallaba con "Failed to collect page data for
+ * /api/webhooks/oca". En local y en Vercel no se veía porque la variable
+ * siempre estaba.
+ */
+let resendCliente: Resend | null = null;
+
+function getResend(): Resend | null {
+    if (resendCliente) return resendCliente;
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+        console.error('[email] RESEND_API_KEY no configurada — no se envía el mail');
+        return null;
+    }
+    resendCliente = new Resend(apiKey);
+    return resendCliente;
+}
 
 const LOGO_URL = 'https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png';
 const FONT_CN  = 'https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversCnBold.ttf';
@@ -271,6 +300,9 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
 </html>
     `.trim();
 
+    const resend = getResend();
+    if (!resend) return;   // getResend ya logueó el motivo
+
     const { error: sendError } = await resend.emails.send({
         from: 'GÜIDO CAPUZZI <ventas@guidocapuzzi.com>',
         to: cliente.email,
@@ -439,6 +471,9 @@ export async function sendShippingStatusEmail(
 </body>
 </html>
     `.trim();
+
+    const resend = getResend();
+    if (!resend) return;   // getResend ya logueó el motivo
 
     const { error: sendError } = await resend.emails.send({
         from: 'GÜIDO CAPUZZI <ventas@guidocapuzzi.com>',

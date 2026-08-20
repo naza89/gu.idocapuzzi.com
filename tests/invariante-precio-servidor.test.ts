@@ -148,6 +148,48 @@ describe('los guards de estado del camino del dinero siguen puestos', () => {
     });
 });
 
+describe('un secreto faltante no puede tumbar una ruta entera', () => {
+    // Lo encontró el primer run del CI (2026-08-20): `new Resend(...)` estaba a
+    // nivel de módulo en src/lib/email.ts, y ese archivo lo importan los DOS
+    // webhooks del camino del dinero. Sin RESEND_API_KEY, el constructor tira y
+    // el import se lleva puesta la ruta: NAVE no podría avisar que una orden se
+    // pagó. No es que fallaba el mail — fallaba el procesamiento del pago.
+    //
+    // En local y en Vercel nunca se vio porque la variable siempre estuvo.
+
+    test('email.ts no construye el cliente de Resend a nivel de módulo', () => {
+        const codigo = codigoSinComentarios('src/lib/email.ts');
+
+        const constructoresTopLevel = [...codigo.matchAll(/^(?:const|let|var)\s+\w+\s*(?::[^=]+)?=\s*new\s+Resend\s*\(/gm)];
+        assert.equal(
+            constructoresTopLevel.length, 0,
+            'volvió `new Resend(...)` a nivel de módulo: sin RESEND_API_KEY el import tira y se cae el webhook entero'
+        );
+        assert.match(codigo, /function getResend\(\)/, 'desapareció la construcción diferida del cliente de Resend');
+    });
+
+    test('cada envío chequea que el cliente exista antes de usarlo', () => {
+        const codigo = codigoSinComentarios('src/lib/email.ts');
+        const envios = [...codigo.matchAll(/resend\.emails\.send\(/g)].length;
+        const guards = [...codigo.matchAll(/if\s*\(!resend\)\s*return/g)].length;
+        assert.ok(envios > 0, 'no se encontró ningún envío de mail — cambió la forma del módulo');
+        assert.equal(guards, envios, `hay ${envios} envíos y sólo ${guards} guards de cliente nulo`);
+    });
+
+    test('ningún módulo del camino del dinero construye un SDK a nivel de módulo', () => {
+        // Generaliza el caso de Resend: cualquier `new Cliente(process.env.X)`
+        // en el scope de un módulo que importen las rutas es la misma trampa.
+        for (const ruta of ['src/lib/email.ts', 'src/lib/supabase.ts', 'src/lib/nave/client.ts', 'src/lib/oca/client.ts']) {
+            const codigo = codigoSinComentarios(ruta);
+            const sospechosos = [...codigo.matchAll(/^(?:const|let|var)\s+\w+\s*(?::[^=]+)?=\s*new\s+\w+\s*\([^)]*process\.env/gm)];
+            assert.equal(
+                sospechosos.length, 0,
+                `${ruta} construye un cliente con process.env a nivel de módulo: si la variable falta, el import tira y cae la ruta`
+            );
+        }
+    });
+});
+
 describe('ninguna credencial de servidor queda expuesta al browser', () => {
     const SECRETOS = [
         'SUPABASE_SERVICE_ROLE_KEY', 'NAVE_CLIENT_SECRET', 'OCA_CLAVE',
