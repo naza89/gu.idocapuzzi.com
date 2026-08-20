@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "verificar:catalogo": "node --env-file-if-exists=.env.local scripts/verificar-catalogo.mjs",
     "vendor:supabase": "node scripts/vendor-supabase.mjs"
   },
   "dependencies": {
