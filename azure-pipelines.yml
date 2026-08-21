@@ -19,10 +19,14 @@
 # Environment con approval gate.
 #
 # ── Nota de Mercedino que aplica acá ─────────────────────────────────────────
-# `UsePythonVersion@0` sólo usa el tool cache; `NodeTool@0` sí descarga la
-# versión que le pidas. Así que la divergencia que apareció en Mercedino entre
-# Azure y Actions no debería pasar acá. Si algún día Test falla en Azure y no en
-# Actions, mirar primero la versión de Node que resolvió cada uno.
+# `UsePythonVersion@0` sólo usa el tool cache; `UseNode@1` sí descarga la versión
+# que le pidas. Así que la divergencia que apareció en Mercedino entre Azure y
+# Actions no debería pasar acá. Si algún día Test falla en Azure y no en Actions,
+# mirar primero la versión de Node que resolvió cada uno.
+#
+# ⚠️ Es `UseNode@1`, NO `NodeTool@0`: la v0 quedó deprecada (6 warnings en el
+# primer run, dos por job). Ojo al migrar, porque el input se RENOMBRÓ de
+# `versionSpec` a `version` — copiar la task sin cambiar eso la rompe.
 
 trigger:
   branches:
@@ -48,10 +52,10 @@ stages:
       - job: lint
         displayName: ESLint + TypeScript
         steps:
-          - task: NodeTool@0
+          - task: UseNode@1
             displayName: Node $(NODE_VERSION)
             inputs:
-              versionSpec: $(NODE_VERSION)
+              version: $(NODE_VERSION)
 
           - task: Cache@2
             displayName: Caché de npm
@@ -77,9 +81,9 @@ stages:
       - job: test
         displayName: Tests + catálogo
         steps:
-          - task: NodeTool@0
+          - task: UseNode@1
             inputs:
-              versionSpec: $(NODE_VERSION)
+              version: $(NODE_VERSION)
 
           - task: Cache@2
             inputs:
@@ -106,9 +110,9 @@ stages:
       - job: build
         displayName: next build
         steps:
-          - task: NodeTool@0
+          - task: UseNode@1
             inputs:
-              versionSpec: $(NODE_VERSION)
+              version: $(NODE_VERSION)
 
           - task: Cache@2
             inputs:
