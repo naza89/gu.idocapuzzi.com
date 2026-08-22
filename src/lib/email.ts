@@ -42,30 +42,66 @@ function getResend(): Resend | null {
     return resendCliente;
 }
 
-const LOGO_URL = 'https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png';
-const FONT_CN  = 'https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversCnBold.ttf';
-const FONT_REG = 'https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversRegular.ttf';
+/**
+ * Logo de los mails — PNG rasterizado de `public/assets/brand/logo-guido-registrado.svg`
+ * (1000×116, alpha, ~13KB), subido al bucket `assets` el 2026-08-21.
+ *
+ * ⚠️ NO apuntar esto a un `.svg`. Gmail lo strippea y Outlook no lo soporta:
+ * el logo desaparecería en la mayoría de los clientes. El SVG de marca es la
+ * fuente; lo que se sirve al mail tiene que ser raster.
+ *
+ * Reemplaza a `mail_smtp.png`, que era el logo dibujado en **Univers** (subido
+ * el 2026-02-18, anterior al cambio de marca del 2026-08-06). Al ser una imagen,
+ * no tenía fallback que lo salvara: era el único lugar donde la tipografía vieja
+ * seguía visible de verdad.
+ *
+ * Para regenerarlo tras un cambio de marca:
+ *   node -e "require('sharp')(require('fs').readFileSync('public/assets/brand/logo-guido-registrado.svg'),{density:600}).resize(1000,116).png().toFile('logo.png')"
+ */
+const LOGO_URL = 'https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail-logo-registrado.png';
 
-// ─── Shared CSS ─────────────────────────────────────────────────────────────
+/**
+ * CSS compartido por los dos templates.
+ *
+ * ⚠️ NO agregar `@font-face` acá. Se sacó a propósito (2026-08-21):
+ *
+ * 1. No funciona. Gmail (web y apps), Outlook desktop y Yahoo strippean
+ *    `@font-face` por completo. Sólo lo renderiza Apple Mail / iOS Mail. Los
+ *    mails ya venían cayendo al fallback en la enorme mayoría de los casos.
+ * 2. Licencia. Servir Helvetica Neue desde el bucket público de Supabase es
+ *    exactamente el web-embedding que falta licenciar con Monotype — el
+ *    bloqueante de lanzamiento abierto. No se extiende a una segunda
+ *    superficie hasta resolverlo.
+ *
+ * Hasta el 2026-08-21 esto cargaba UniversCnBold.ttf y UniversRegular.ttf
+ * desde Supabase Storage, con la marca ya migrada a Helvetica desde el
+ * 2026-08-06. Los títulos caían en 'Arial Narrow', que no es la marca en
+ * ningún escenario.
+ *
+ * Los stacks de abajo resuelven sin descargar nada: en macOS/iOS
+ * 'HelveticaNeue-CondensedBold' engancha la condensada real del sistema; en
+ * Windows/Gmail cae a Arial Narrow.
+ *
+ * ⚠️ NO agregar 'Helvetica Neue Condensed' ni 'Helvetica Neue' a la cadena.
+ * En Windows esos nombres SÍ resuelven (por fuente instalada o por la tabla de
+ * sustitución) y se comen el fallback: nunca se llega a Arial Narrow y el texto
+ * sale en ancho normal. Medido con el mismo texto y estilos: la cadena con
+ * 'Helvetica Neue Condensed' daba 423px (= Arial); sin él da 349px, idéntico a
+ * forzar 'Arial Narrow'. El nombre PostScript no matchea nada en Windows, que
+ * es justamente lo que lo hace seguro como primer nombre.
+ *
+ * **Todo el texto va en condensed**, no sólo los títulos — decisión de marca de
+ * Naza (2026-08-21). Por eso las 13 declaraciones son idénticas: en email no se
+ * puede confiar en la herencia de `font-family`, así que se declara en cada
+ * regla en vez de sólo en `body`.
+ */
 
 function emailBaseStyles(): string {
     return `
-    @font-face {
-      font-family: 'UniversCn';
-      src: url('${FONT_CN}') format('truetype');
-      font-weight: 700;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'Univers';
-      src: url('${FONT_REG}') format('truetype');
-      font-weight: 400;
-      font-style: normal;
-    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: #efefef;
-      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-weight: 400;
       color: #1a1a1a;
       -webkit-font-smoothing: antialiased;
@@ -75,19 +111,19 @@ function emailBaseStyles(): string {
     .logo-img { display: block; width: 500px; max-width: 100%; height: auto; }
     .body { padding: 48px 48px 40px; }
     .eyebrow {
-      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-size: 10px; font-weight: 400;
       letter-spacing: 0.25em; text-transform: uppercase;
       color: #999; margin-bottom: 16px;
     }
     .heading {
-      font-family: 'UniversCn', 'Arial Narrow', Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-weight: 700; font-size: 56px;
       letter-spacing: 0.02em; line-height: 1.0;
       color: #1a1a1a; margin-bottom: 24px; text-transform: uppercase;
     }
     .copy {
-      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-size: 13px; font-weight: 400;
       line-height: 1.8; color: #555;
       margin-bottom: 36px; max-width: 440px;
@@ -95,7 +131,7 @@ function emailBaseStyles(): string {
     table { border-collapse: collapse; width: 100%; }
     .items-header th {
       padding: 0 0 10px; border-bottom: 1px solid #1a1a1a;
-      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-size: 10px; font-weight: 400;
       letter-spacing: 0.14em; text-transform: uppercase; color: #999;
     }
@@ -104,22 +140,22 @@ function emailBaseStyles(): string {
     .items-header th:last-child { text-align: right; }
     .item-row td { padding: 12px 0; border-bottom: 1px solid #ebebeb; vertical-align: top; }
     .item-name {
-      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-size: 13px; color: #1a1a1a; line-height: 1.4; margin: 0;
     }
     .item-variant {
-      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-size: 11px; color: #999;
       letter-spacing: 0.04em; text-transform: uppercase; margin: 2px 0 0;
     }
-    .item-qty { text-align: center; font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #1a1a1a; }
-    .item-price { text-align: right; font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #1a1a1a; white-space: nowrap; }
-    .totals-row td { padding: 5px 0; font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; }
+    .item-qty { text-align: center; font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif; font-size: 13px; color: #1a1a1a; }
+    .item-price { text-align: right; font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif; font-size: 13px; color: #1a1a1a; white-space: nowrap; }
+    .totals-row td { padding: 5px 0; font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif; font-size: 12px; }
     .totals-label { color: #999; }
     .totals-value { text-align: right; color: #1a1a1a; }
     .total-row td {
       padding: 14px 0 0; border-top: 1px solid #e0e0e0;
-      font-family: 'UniversCn', 'Arial Narrow', Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-size: 18px; font-weight: 700;
       letter-spacing: 0.04em; text-transform: uppercase; color: #1a1a1a;
     }
@@ -127,13 +163,13 @@ function emailBaseStyles(): string {
     .divider { border: none; border-top: 1px solid #e0e0e0; margin: 36px 0 0; }
     .footer { padding: 0 48px 48px; }
     .footer-note {
-      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-size: 11px; font-weight: 400; line-height: 1.8; color: #aaa;
     }
     .footer-note a { color: #1a1a1a; text-decoration: none; }
     .footer-domain {
       margin-top: 6px;
-      font-family: 'Univers', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
       font-size: 10px; color: #ccc;
     }
     .accent-bar { height: 4px; background-color: #ad1c1c; }

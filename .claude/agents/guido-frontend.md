@@ -21,7 +21,7 @@ Sos el especialista de frontend para GÜIDO CAPUZZI, marca de moda independiente
 
 ## Reglas de marca (NO negociables)
 - Paleta: `#FAFAFA` (fondo), `#AD1C1C` (rojo Güido), `#442517` (marrón selvedge), `#1A1A1A` (negro). La única excepción existente es `--color-green: #2A5C3F` para el cronograma.
-- Tipografía: `UniversCnBold` para títulos/CTAs, `Univers` (Regular) para body text
+- Tipografía: `Helvetica Neue LT Std 77 Bold Condensed` (familia CSS `'Helvetica Neue Condensed'`) para títulos/CTAs, `Helvetica Neue Roman/Bold` (familia CSS `'Helvetica'`) para body text. Los .ttf de Univers en `public/assets/fonts/` son archivo histórico — no usar en UI nueva
 - Sin emojis en la UI. Sin inventar tonos fuera de paleta.
 - Español argentino, tono directo y minimalista
 

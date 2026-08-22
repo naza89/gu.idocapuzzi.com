@@ -42,34 +42,63 @@
     }
     .change-tag.fix { background: #AD1C1C; color: white; }
     .change-tag.new { background: #1A1A1A; color: white; }
+
+    /* ─── SÓLO PARA ESTE PREVIEW ───────────────────────────────────────
+       La Helvetica Neue LT Std 77 Bold Condensed, embebida en base64 para
+       que este archivo se pueda abrir en cualquier lado y muestre la
+       tipografía REAL de la marca.
+
+       ⚠️ Esto vive únicamente en el harness del preview. NO está dentro de
+       los bloques de template de abajo, así que cuando copiás uno para
+       pegarlo en Supabase no se lo lleva. Y es correcto que no se lo lleve:
+       Gmail, Outlook y Yahoo strippean @font-face, así que en el mail real
+       esta fuente NO se ve. Usá el botón de arriba a la derecha para
+       alternar entre las dos vistas.
+       ────────────────────────────────────────────────────────────────── */
+    @font-face {
+      font-family: 'HelveticaNeue-CondensedBold';
+      src: url('data:font/woff2;base64,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') format('woff2');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    /* Vista "como lo ve Gmail": fuerza el fallback real de los clientes */
+    html.vista-gmail [style*="HelveticaNeue-CondensedBold"] {
+      font-family: 'Arial Narrow', Arial, sans-serif !important;
+    }
+
+    #toggle-fuente {
+      position: fixed; top: 16px; right: 16px; z-index: 999;
+      background: #1A1A1A; color: #FAFAFA; border: none;
+      padding: 10px 16px; cursor: pointer;
+      font-family: Arial, sans-serif; font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    }
+    #aviso-fuente {
+      position: fixed; top: 56px; right: 16px; z-index: 999;
+      max-width: 260px; text-align: right;
+      font-family: Arial, sans-serif; font-size: 10px;
+      line-height: 1.5; color: #555;
+    }
+
   </style>
 </head>
 <body>
+
+  <button id="toggle-fuente">Ver como Gmail</button>
+  <p id="aviso-fuente">Mostrando <strong>Helvetica Neue LT Std 77 Bold Condensed</strong> (la real). En el mail enviado, Gmail/Outlook no la cargan.</p>
+
 
   <!-- ============================================================
        TEMPLATE 1 — ACTIVACIÓN DE CUENTA (CORREGIDO)
        ============================================================ -->
     <div style="max-width:600px;margin:0 auto;">
-      <style>
-        @font-face {
-          font-family: 'UniversCn';
-          src: url('https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversCnBold.ttf') format('truetype');
-          font-weight: 700;
-          font-style: normal;
-        }
-        @font-face {
-          font-family: 'Univers';
-          src: url('https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/UniversRegular.ttf') format('truetype');
-          font-weight: 400;
-          font-style: normal;
-        }
-      </style>
 
       <div style="max-width:600px;background:#fafafa;">
 
         <div style="padding:48px 48px 36px;border-bottom:1px solid #e0e0e0;">
           <img
-            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png"
+            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail-logo-registrado.png"
             alt="Güido Capuzzi"
             width="500"
             style="display:block;width:500px;max-width:100%;height:auto;"
@@ -77,15 +106,15 @@
         </div>
 
         <div style="padding:48px 48px 40px;">
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
             Activación de cuenta
           </p>
 
-          <h1 style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 24px;text-transform:uppercase;">
+          <h1 style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 24px;text-transform:uppercase;">
             Activá tu<br>cuenta.
           </h1>
 
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:400px;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:400px;">
             Se creó una nueva cuenta asociada a este correo electrónico.<br>
             Hacé clic en el botón para verificarla y activarla.<br>
             Si no fuiste vos, podés ignorar este mensaje sin problema.
@@ -93,7 +122,7 @@
 
           <div style="margin-bottom:40px;">
             <a href="#"
-               style="display:inline-block;background-color:#1a1a1a;color:#fafafa;text-decoration:none;font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 40px;">
+               style="display:inline-block;background-color:#1a1a1a;color:#fafafa;text-decoration:none;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 40px;">
               Activá tu cuenta
             </a>
           </div>
@@ -102,11 +131,11 @@
         </div>
 
         <div style="padding:0 48px 48px;">
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
             Este enlace vence en 24 horas y solo puede usarse una vez.<br>
             Si no solicitaste esta acción, no es necesario hacer nada.
           </p>
-          <p style="margin-top:14px;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;color:#ccc;word-break:break-all;line-height:1.6;">
+          <p style="margin-top:14px;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;font-weight:400;color:#ccc;word-break:break-all;line-height:1.6;">
             Si el botón no funciona, copiá y pegá este enlace en tu navegador:<br>
             https://güidocapuzzi.com/auth/confirm?token=xxxxxxxx
           </p>
@@ -135,7 +164,7 @@
 
         <div style="padding:48px 48px 36px;border-bottom:1px solid #e0e0e0;">
           <img
-            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png"
+            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail-logo-registrado.png"
             alt="Güido Capuzzi"
             width="500"
             style="display:block;width:500px;max-width:100%;height:auto;"
@@ -143,15 +172,15 @@
         </div>
 
         <div style="padding:48px 48px 40px;">
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
             Restablecé tu contraseña
           </p>
 
-          <h1 style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 24px;text-transform:uppercase;">
+          <h1 style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 24px;text-transform:uppercase;">
             Modificá tu<br>contraseña.
           </h1>
 
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:400px;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:400px;">
             Se inició un cambio de contraseña asociado a este correo electrónico.<br>
             Hacé clic en el botón para modificarla y guardarla.<br>
             Si no fuiste vos, podés ignorar este mensaje sin problema.
@@ -159,7 +188,7 @@
 
           <div style="margin-bottom:40px;">
             <a href="#"
-               style="display:inline-block;background-color:#1a1a1a;color:#fafafa;text-decoration:none;font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 40px;">
+               style="display:inline-block;background-color:#1a1a1a;color:#fafafa;text-decoration:none;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 40px;">
               Cambiá tu contraseña
             </a>
           </div>
@@ -168,11 +197,11 @@
         </div>
 
         <div style="padding:0 48px 48px;">
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
             Este enlace vence en 24 horas y solo puede usarse una vez.<br>
             Si no solicitaste esta acción, no es necesario hacer nada.
           </p>
-          <p style="margin-top:14px;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;color:#ccc;word-break:break-all;line-height:1.6;">
+          <p style="margin-top:14px;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;font-weight:400;color:#ccc;word-break:break-all;line-height:1.6;">
             Si el botón no funciona, copiá y pegá este enlace en tu navegador:<br>
             https://güidocapuzzi.com/auth/reset?token=xxxxxxxx
           </p>
@@ -201,7 +230,7 @@
 
         <div style="padding:48px 48px 36px;border-bottom:1px solid #e0e0e0;">
           <img
-            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail_smtp.png"
+            src="https://zwzzrqjmnrlkltuijjjf.supabase.co/storage/v1/object/public/assets/mail-logo-registrado.png"
             alt="Güido Capuzzi"
             width="500"
             style="display:block;width:500px;max-width:100%;height:auto;"
@@ -209,15 +238,15 @@
         </div>
 
         <div style="padding:48px 48px 40px;">
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:#999;margin:0 0 16px;">
             Confirmación de compra
           </p>
 
-          <h1 style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 6px;text-transform:uppercase;">
+          <h1 style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:56px;letter-spacing:0.02em;line-height:1.0;color:#1a1a1a;margin:0 0 6px;text-transform:uppercase;">
             Orden #1042<br>confirmada.
           </h1>
 
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:440px;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.8;color:#555;margin:0 0 36px;max-width:440px;">
             Hola Nazareno, tu pedido fue recibido y el pago fue confirmado.<br>
             En breve nos ponemos en contacto para coordinar el envío.
           </p>
@@ -226,27 +255,27 @@
           <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
             <thead>
               <tr>
-                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:left;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Producto</th>
-                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:center;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Cant.</th>
-                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:right;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Precio</th>
+                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:left;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Producto</th>
+                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:center;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Cant.</th>
+                <th style="padding:0 0 10px;border-bottom:1px solid #1A1A1A;text-align:right;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#999;">Precio</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;">
-                  <p style="margin:0;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;line-height:1.4;">Remera Logo</p>
-                  <p style="margin:2px 0 0;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">Natural · S</p>
+                  <p style="margin:0;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;color:#1A1A1A;line-height:1.4;">Remera Logo</p>
+                  <p style="margin:2px 0 0;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:11px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">Natural · S</p>
                 </td>
-                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:center;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;">1</td>
-                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:right;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;white-space:nowrap;">$55.000</td>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:center;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;">1</td>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:right;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;white-space:nowrap;">$55.000</td>
               </tr>
               <tr>
                 <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;">
-                  <p style="margin:0;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;line-height:1.4;">Campera Selvedge</p>
-                  <p style="margin:2px 0 0;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">Indigo · M</p>
+                  <p style="margin:0;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;color:#1A1A1A;line-height:1.4;">Campera Selvedge</p>
+                  <p style="margin:2px 0 0;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:11px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">Indigo · M</p>
                 </td>
-                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:center;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;">1</td>
-                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:right;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;white-space:nowrap;">$220.000</td>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:center;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;">1</td>
+                <td style="padding:12px 0;border-bottom:1px solid #EBEBEB;text-align:right;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:13px;color:#1A1A1A;vertical-align:top;white-space:nowrap;">$220.000</td>
               </tr>
             </tbody>
           </table>
@@ -254,16 +283,16 @@
           <!-- Totales -->
           <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;">
             <tr>
-              <td style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#999;padding:5px 0;">Subtotal</td>
-              <td style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#1A1A1A;text-align:right;padding:5px 0;">$275.000</td>
+              <td style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:12px;color:#999;padding:5px 0;">Subtotal</td>
+              <td style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:12px;color:#1A1A1A;text-align:right;padding:5px 0;">$275.000</td>
             </tr>
             <tr>
-              <td style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#999;padding:5px 0;">OCA — Envío a domicilio</td>
-              <td style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#1A1A1A;text-align:right;padding:5px 0;">$8.500</td>
+              <td style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:12px;color:#999;padding:5px 0;">OCA — Envío a domicilio</td>
+              <td style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:12px;color:#1A1A1A;text-align:right;padding:5px 0;">$8.500</td>
             </tr>
             <tr>
-              <td style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-size:18px;font-weight:700;color:#1A1A1A;padding:14px 0 0;border-top:1px solid #E0E0E0;letter-spacing:0.04em;text-transform:uppercase;">Total</td>
-              <td style="font-family:'UniversCn','Arial Narrow',Arial,sans-serif;font-size:18px;font-weight:700;color:#AD1C1C;text-align:right;padding:14px 0 0;border-top:1px solid #E0E0E0;white-space:nowrap;">$283.500</td>
+              <td style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:18px;font-weight:700;color:#1A1A1A;padding:14px 0 0;border-top:1px solid #E0E0E0;letter-spacing:0.04em;text-transform:uppercase;">Total</td>
+              <td style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:18px;font-weight:700;color:#AD1C1C;text-align:right;padding:14px 0 0;border-top:1px solid #E0E0E0;white-space:nowrap;">$283.500</td>
             </tr>
           </table>
 
@@ -271,11 +300,11 @@
         </div>
 
         <div style="padding:0 48px 48px;">
-          <p style="font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
+          <p style="font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:11px;font-weight:400;line-height:1.8;color:#aaa;margin:0;">
             Ante cualquier consulta respondé este email a
             <a href="mailto:ventas@guidocapuzzi.com" style="color:#1A1A1A;text-decoration:none;">ventas@guidocapuzzi.com</a>
           </p>
-          <p style="margin-top:6px;font-family:'Univers','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#ccc;">
+          <p style="margin-top:6px;font-family:'HelveticaNeue-CondensedBold','Arial Narrow',Arial,sans-serif;font-size:10px;color:#ccc;">
             GÜIDO CAPUZZI — güidocapuzzi.com
           </p>
         </div>
@@ -286,5 +315,19 @@
     </div>
   </div>
 
+
+  <script>
+    (function () {
+      var btn = document.getElementById('toggle-fuente');
+      var aviso = document.getElementById('aviso-fuente');
+      var real = 'Mostrando <strong>Helvetica Neue LT Std 77 Bold Condensed</strong> (la real). En el mail enviado, Gmail/Outlook no la cargan.';
+      var gmail = 'Mostrando <strong>Arial Narrow</strong> — el fallback que ve la mayoría de los destinatarios (Gmail, Outlook, Yahoo).';
+      btn.addEventListener('click', function () {
+        var esGmail = document.documentElement.classList.toggle('vista-gmail');
+        btn.textContent = esGmail ? 'Ver fuente real' : 'Ver como Gmail';
+        aviso.innerHTML = esGmail ? gmail : real;
+      });
+    })();
+  </script>
 </body>
 </html>

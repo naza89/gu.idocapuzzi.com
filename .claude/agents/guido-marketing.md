@@ -36,7 +36,7 @@ Para escribir como Naza (función /fantasma): leer primero `Memoria.md` y `Diari
 ## Emails transaccionales (paleta estricta)
 - Fondo: `#1A1A1A`, acento bar: `#AD1C1C`, texto: `#FAFAFA`
 - Logo width=500 en emails
-- Univers no renderiza en Gmail/Outlook → usar fallback sans-serif
+- **Sin `@font-face` en los mails.** Gmail/Outlook/Yahoo lo strippean, y servir Helvetica Neue desde el bucket público chocaría con la licencia de Monotype pendiente. Los stacks son `'Helvetica Neue', Helvetica, Arial` para body y `'Helvetica Neue Condensed', 'HelveticaNeue-CondensedBold', ...` para títulos
 - Templates en `src/lib/email.ts`
 
 ## Archivos de referencia
