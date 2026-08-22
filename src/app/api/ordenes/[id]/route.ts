@@ -96,12 +96,28 @@ export async function GET(
             return NextResponse.json({ error: 'Orden no encontrada' }, { status: 404 });
         }
 
-        // ── Verify payment with NAVE if order is still pago_pendiente ──
-        // nave_payment_id (real payment ID) is set by the webhook.
-        // nave_payment_request_id (from crear-pago) does NOT work for status verification.
-        // Only verify if the webhook has already set the real payment_id.
+        // ── Red de seguridad: verificar el pago contra NAVE ──
+        //
+        // Dos caminos, en orden de confianza:
+        //
+        //   A. `nave_payment_id` presente → el webhook llegó. Verificamos el PAGO.
+        //   B. `nave_payment_id` ausente  → el webhook NUNCA llegó. Verificamos la
+        //      INTENCIÓN con `nave_payment_request_id`, que sí tenemos desde
+        //      `crear-pago`.
+        //
+        // ⚠️ El camino B es el que faltaba. Hasta el 2026-08-21 esta red exigía
+        // `nave_payment_id`, que lo setea el webhook — o sea que no podía cubrir el
+        // caso "el webhook nunca llegó", que es exactamente para lo que existía.
+        // Lo destapó el E2E: NAVE cobró la orden 63 y no llamó nunca (tenían dada
+        // de alta la URL del apex, que 307-redirecciona). Esta función se ejecutó 7
+        // veces y las 7 fueron no-ops.
+        //
+        // Ambos caminos FALLAN CERRADO: si no se puede afirmar el éxito, la orden
+        // NO se marca pagada. Marcar de más es peor que no marcar.
         let runPostPayActions = false;
+
         if (data.estado === 'pago_pendiente' && data.nave_payment_id) {
+            // ── A. El webhook llegó: verificamos el pago real ──
             try {
                 const { verifyPaymentStatus } = await import('@/lib/nave/client');
                 const paymentData = await verifyPaymentStatus(data.nave_payment_id);
@@ -110,7 +126,6 @@ export async function GET(
                 if (status === 'APPROVED') {
                     console.log('[GET ordenes] Pago verificado APPROVED, procesando...');
 
-                    // Update order to pagado
                     await supabase
                         .from('ordenes')
                         .update({
@@ -128,6 +143,54 @@ export async function GET(
                 }
             } catch (verifyErr) {
                 console.error('[GET ordenes] Error verificando pago NAVE:', verifyErr);
+            }
+        } else if (data.estado === 'pago_pendiente' && data.nave_payment_request_id) {
+            // ── B. El webhook nunca llegó: verificamos la INTENCIÓN ──
+            try {
+                const { verifyPaymentRequestStatus, extraerEstadoIntencion } =
+                    await import('@/lib/nave/client');
+
+                const intencion = await verifyPaymentRequestStatus(data.nave_payment_request_id);
+                const estadoIntencion = extraerEstadoIntencion(intencion);
+
+                // Se loguea la respuesta cruda: la forma exacta del payload no está
+                // documentada con un ejemplo, y este log es lo que permite ajustar
+                // el parseo si NAVE devuelve otra estructura.
+                console.log('[GET ordenes] Intención sin webhook — respuesta NAVE:', {
+                    payment_request_id: data.nave_payment_request_id,
+                    estadoParseado: estadoIntencion,
+                    payload: JSON.stringify(intencion).slice(0, 600),
+                });
+
+                if (estadoIntencion === 'SUCCESS_PROCESSED') {
+                    console.log('[GET ordenes] ✅ Intención SUCCESS_PROCESSED — reconciliando sin webhook');
+
+                    const actualizacion: Record<string, unknown> = {
+                        estado: 'pagado',
+                        pagado_at: new Date().toISOString(),
+                        nave_status: estadoIntencion,
+                    };
+
+                    // Si la respuesta trae el payment_id real, lo guardamos: sirve
+                    // para conciliar después y para no repetir esta consulta.
+                    if (typeof intencion.payment_id === 'string' && intencion.payment_id) {
+                        actualizacion.nave_payment_id = intencion.payment_id;
+                    }
+
+                    await supabase.from('ordenes').update(actualizacion).eq('id', id);
+
+                    data.estado = 'pagado';
+                    runPostPayActions = true;
+                } else if (estadoIntencion === null) {
+                    console.error(
+                        '[GET ordenes] ⚠️ No se pudo determinar el estado de la intención — ' +
+                        'la orden NO se marca pagada. Revisar el payload logueado arriba.'
+                    );
+                } else {
+                    console.log('[GET ordenes] Intención en estado', estadoIntencion, '— no se reconcilia');
+                }
+            } catch (verifyErr) {
+                console.error('[GET ordenes] Error verificando la intención NAVE:', verifyErr);
             }
         }
 

@@ -244,3 +244,90 @@ export async function verifyPaymentStatus(
 
     return res.json();
 }
+
+// ─── Verify Payment REQUEST Status ───────────────────────
+
+/**
+ * Estado de una INTENCIÓN de pago (payment_request), que es distinto del estado
+ * del pago en sí. Ver docs/NAVE_CHECKOUT_API_DOCS.md §10 y §11.
+ *
+ * ⚠️ Por qué existe esta función, además de `verifyPaymentStatus`:
+ *
+ * `verifyPaymentStatus` necesita el `payment_id` real, y ese dato **sólo llega
+ * por el webhook**. Eso hacía que la red de seguridad del GET de
+ * `/api/ordenes/[id]` fuera circular: no podía cubrir el caso "el webhook nunca
+ * llegó", que es exactamente para lo que estaba escrita.
+ *
+ * El `payment_request_id` sí lo tenemos desde `crear-pago` (guardado en
+ * `ordenes.nave_payment_request_id`), así que este endpoint permite resolver el
+ * estado sin depender del webhook.
+ *
+ * Lo encontró el E2E del 2026-08-21: NAVE cobró la orden 63 y nunca llamó al
+ * webhook (tenían dada de alta la URL del apex, que 307-redirecciona). La orden
+ * quedó en `pago_pendiente`, sin mail, sin stock descontado, y las 7 llamadas de
+ * la red de seguridad fueron no-ops.
+ */
+export interface NavePaymentRequestStatus {
+    id?: string;
+    external_payment_id?: string;
+    /** Forma esperada según los docs. Se parsea defensivamente — ver `extraerEstadoIntencion`. */
+    status?: string | { name?: string };
+    state?: string;
+    payment_id?: string;
+    [k: string]: unknown;
+}
+
+/**
+ * Normaliza el estado de la intención a un string, tolerando las formas que
+ * puede devolver la API (`status` string, `status.name`, o `state`).
+ *
+ * Devuelve `null` si no se pudo determinar — y el llamador NO debe asumir éxito
+ * en ese caso.
+ */
+export function extraerEstadoIntencion(data: NavePaymentRequestStatus): string | null {
+    if (typeof data?.status === 'string') return data.status;
+    if (data?.status && typeof data.status === 'object' && typeof data.status.name === 'string') {
+        return data.status.name;
+    }
+    if (typeof data?.state === 'string') return data.state;
+    return null;
+}
+
+/**
+ * Consulta el estado de una intención de pago por su `payment_request_id`.
+ *
+ * Los docs indican `GET /api/payment_requests/{id}`, pero `verifyPaymentStatus`
+ * usa el prefijo `/ranty-payments/...`, así que la API no es consistente entre
+ * secciones. Probamos la ruta documentada y, si da 404, la variante — en vez de
+ * fallar por un prefijo.
+ */
+export async function verifyPaymentRequestStatus(
+    paymentRequestId: string
+): Promise<NavePaymentRequestStatus> {
+    const token = await getNaveToken();
+
+    const rutas = [
+        `${getApiUrl()}/api/payment_requests/${paymentRequestId}`,
+        `${getApiUrl()}/ranty-payments/payment_requests/${paymentRequestId}`,
+    ];
+
+    let ultimoError = '';
+
+    for (const url of rutas) {
+        const res = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            signal: AbortSignal.timeout(20000),
+        });
+
+        if (res.ok) return res.json();
+
+        ultimoError = `${res.status} en ${url}: ${(await res.text().catch(() => '')).slice(0, 200)}`;
+        if (res.status !== 404) break;
+    }
+
+    throw new Error(`NAVE verify payment_request failed (${ultimoError})`);
+}
