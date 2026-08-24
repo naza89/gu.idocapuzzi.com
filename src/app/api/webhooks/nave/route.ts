@@ -24,6 +24,7 @@ import { verifyPaymentStatus } from '@/lib/nave/client';
 import { sendOrderConfirmationEmail } from '@/lib/email';
 import { crearEnvioOCA } from '@/lib/oca/crear-envio';
 import { safeEqualStr } from '@/lib/security';
+import { TIPO_ENVIO_RETIRO } from '@/lib/envios';
 
 interface NaveWebhookPayload {
     payment_id: string;
@@ -131,7 +132,7 @@ async function processWebhook(
         // STEP 2: Traer la orden objetivo
         const { data: orden, error: ordenErr } = await supabase
             .from('ordenes')
-            .select('id, estado, total_centavos, nave_payment_id')
+            .select('id, estado, total_centavos, nave_payment_id, tipo_envio')
             .eq('id', externalPaymentId)
             .single();
 
@@ -317,7 +318,15 @@ async function processWebhook(
                 .eq('id', externalPaymentId)
                 .single();
 
-            if (!ocaCheck?.id_orden_retiro_oca) {
+            if (orden.tipo_envio === TIPO_ENVIO_RETIRO) {
+                // Retiro coordinado: no hay envío que despachar. Sin este guard,
+                // OCA genera una etiqueta real y sale un correo a buscar el
+                // paquete por una compra que se entrega en mano.
+                console.log(
+                    '[webhook/nave] ⏭️ Retiro coordinado — no se crea envío OCA. Orden:',
+                    externalPaymentId
+                );
+            } else if (!ocaCheck?.id_orden_retiro_oca) {
                 try {
                     const ocaResult = await crearEnvioOCA(externalPaymentId, false);
                     if (ocaResult.success) {

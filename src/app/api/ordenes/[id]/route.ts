@@ -24,6 +24,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
+import { TIPO_ENVIO_RETIRO } from '@/lib/envios';
 
 interface PatchOrdenBody {
     tipo_envio?: string;
@@ -280,6 +281,38 @@ export async function PATCH(
         if (!tipo_envio || precio_envio === undefined || precio_envio === null) {
             return NextResponse.json(
                 { error: 'tipo_envio y precio_envio son obligatorios' },
+                { status: 400 }
+            );
+        }
+
+        // El retiro coordinado es el ÚNICO envío que puede valer $0, y siempre
+        // vale $0. Las dos direcciones importan:
+        //
+        //   · Un envío de OCA con precio 0 sería envío gratis por un despacho
+        //     que igual hay que pagarle a OCA.
+        //   · Un retiro con precio > 0 le cobraría al cliente un envío que no
+        //     existe.
+        //
+        // Esto NO cierra del todo el agujero de `precio_envio`: un envío de OCA
+        // todavía puede llegar con un precio menor al cotizado. Cerrarlo requiere
+        // persistir la cotización y compararla — sigue como P0 pre-go-live, ver
+        // docs/internal/RETIRO_EN_MANO_PLAN.md.
+        const precioEnvioNum = Number(precio_envio);
+        if (!Number.isFinite(precioEnvioNum) || precioEnvioNum < 0) {
+            return NextResponse.json(
+                { error: 'precio_envio inválido' },
+                { status: 400 }
+            );
+        }
+        if (tipo_envio === TIPO_ENVIO_RETIRO && precioEnvioNum !== 0) {
+            return NextResponse.json(
+                { error: 'El retiro coordinado no puede tener costo de envío' },
+                { status: 400 }
+            );
+        }
+        if (tipo_envio !== TIPO_ENVIO_RETIRO && precioEnvioNum === 0) {
+            return NextResponse.json(
+                { error: 'Un envío de OCA no puede tener costo cero' },
                 { status: 400 }
             );
         }

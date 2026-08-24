@@ -1,8 +1,8 @@
 # Tercera opción de envío — retiro en mano
 
-> **Estado:** planificado, **NO implementado**. Escrito el 2026-08-21.
-> **Precondición dura:** no tocar nada de esto hasta que **pase el E2E del camino de compra**.
-> El cambio central vive dentro del webhook de pagos de NAVE; meterlo antes contamina la prueba.
+> **Estado: IMPLEMENTADO el 2026-08-22.** Este documento queda como registro del
+> diagnóstico. Lo que se construyó difiere en un punto: Naza eligió que la opción sea
+> **visible para todos**, no gateada. Ver `src/lib/envios.ts` y `tests/tipos-envio.test.ts`.
 
 ## El problema
 

@@ -10,6 +10,7 @@
 
 import { Resend } from 'resend';
 import { createAdminClient } from '@/lib/supabase';
+import { etiquetaTipoEnvio } from '@/lib/envios';
 
 /**
  * Cliente de Resend, construido perezosamente.
@@ -247,9 +248,10 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
 
     const items = (orden.items_orden as ItemOrden[]) || [];
 
-    const tipoEnvio = orden.tipo_envio === 'sucursal'
-        ? 'OCA — Retiro en sucursal'
-        : 'OCA — Envío a domicilio';
+    // Ojo: esto era un ternario, y un ternario tiene dos ramas. Con un tercer
+    // tipo de envío (`retiro_local`) el mail le decía al cliente que su compra
+    // viajaba a domicilio cuando en realidad la pasaba a buscar.
+    const tipoEnvio = etiquetaTipoEnvio(orden.tipo_envio);
 
     const itemsHTML = items.map(item => `
         <tr class="item-row">
