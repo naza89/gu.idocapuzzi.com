@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { slug: 'bermuda-patchwork-indigo', sku: 'BER-PAT-MIX', category: 'BERMUDAS / SHORTS', name: 'BERMUDA DE DENIM SELVEDGE PATCHWORK', title: 'BERMUDA SELVEDGE PATCHWORK', color: 'Índigo/Negro', colorway: 'ÍNDIGO/NEGRO', price: '$190.000', description: 'CONSTRUCCIÓN PATCHWORK.', images: ['assets/images/products/bermuda-patchwork-indigo-1.webp', 'assets/images/products/bermuda-patchwork-indigo-2.webp', 'assets/images/products/bermuda-patchwork-indigo-3.webp', 'assets/images/products/bermuda-patchwork-indigo-4.webp'] },
 
         // INTERVENCIONES (4) — piezas 1/1
-        { slug: 'jean-pintor-wildcat', sku: 'JEA-1/1-SUR', category: 'INTERVENCIONES', name: 'JEAN PINTOR "WILDCAT"', title: 'JEAN PINTOR "WILDCAT" BOOTCUT', color: 'Azul Lavado', colorway: '1/1', sizes: ['M'], price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-pintor-wildcat-1.webp', 'assets/images/products/jean-pintor-wildcat-2.webp', 'assets/images/products/jean-pintor-wildcat-3.webp', 'assets/images/products/jean-pintor-wildcat-4.webp', 'assets/images/products/jean-pintor-wildcat-5.webp'] },
+        { slug: 'jean-pintor-wildcat', sku: 'JEA-1/1-SUR', soldOut: true, category: 'INTERVENCIONES', name: 'JEAN PINTOR "WILDCAT"', title: 'JEAN PINTOR "WILDCAT" BOOTCUT', color: 'Azul Lavado', colorway: '1/1', sizes: ['M'], price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO CON LAVADO NATURAL Y CORTE BOOTCUT. EL COLOR<br>BUSCA REINTERPRETAR EL LEGADO DE LA SUELA ROJA, FUNDIENDO<br>EL CELESTE CLÁSICO EN UN ROJO VIBRANTE. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA", images: ['assets/images/products/jean-pintor-wildcat-1.webp', 'assets/images/products/jean-pintor-wildcat-2.webp', 'assets/images/products/jean-pintor-wildcat-3.webp', 'assets/images/products/jean-pintor-wildcat-4.webp', 'assets/images/products/jean-pintor-wildcat-5.webp'] },
         { slug: 'jean-pintor-faja', sku: 'JEA-1/1-ENC', category: 'INTERVENCIONES', name: 'JEAN PINTOR "FAJA"', title: 'JEAN PINTOR "FAJA" BOOTCUT', color: 'Negro Pintado', colorway: '1/1', sizes: ['M'], price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT. PINTADO Y ENCERADO A MANO. COSTURA INFERIOR<br>ABIERTA PARA MAYOR APERTURA SOBRE EL CALZADO. BOTONES Y<br>REMACHES DE LA MARCA Y BADANA DE CUERO NEGRA, EXCLUSIVA DE<br>INTERVENCIONES. HECHO A MANO EN ARGENTINA.", images: ['assets/images/products/jean-pintor-faja-1.webp', 'assets/images/products/jean-pintor-faja-2.webp'] },
         { slug: 'jean-encerado', sku: 'JEA-1/1-WAX', category: 'INTERVENCIONES', name: 'JEAN ENCERADO', title: 'JEAN ENCERADO BOOTCUT', color: 'Verde Encerado', colorway: '1/1', sizes: ['M'], price: '$150.000', description: "JEAN LEVI'S 517 INTERVENIDO A MANO. PIEZA 1/1. DENIM<br>CLÁSICO DE CORTE BOOTCUT, RECUBIERTO A MANO CON UNA MEZCLA<br>DE PARAFINA Y CERA DE ABEJAS APLICADA EN CALIENTE. EL ENCERADO<br>SELLA EL TEJIDO, LE DA CUERPO Y UN BRILLO OPACO QUE SE VA<br>QUEBRANDO CON EL USO. COSTURA INFERIOR ABIERTA PARA MAYOR<br>APERTURA SOBRE EL CALZADO. BOTONES Y REMACHES DE LA MARCA Y<br>BADANA DE CUERO NEGRA, EXCLUSIVA DE INTERVENCIONES. HECHO A<br>MANO EN ARGENTINA.", care: 'EL ENCERADO NO SE LAVA. LIMPIALO EN SECO, CON UN CEPILLO SUAVE O UN PAÑO APENAS HÚMEDO EN FRÍO Y SÓLO SOBRE LA MANCHA. NUNCA A MÁQUINA, NUNCA CON AGUA CALIENTE NI DETERGENTE: DISUELVEN LA CERA. SECALO COLGADO A LA SOMBRA, LEJOS DE ESTUFAS Y RADIADORES. CON EL USO LA CERA SE MARCA Y SE QUIEBRA EN LOS PLIEGUES — ESO ES PARTE DE LA PIEZA. SE PUEDE VOLVER A ENCERAR.', images: ['assets/images/products/jean-encerado-1.webp', 'assets/images/products/jean-encerado-2.webp', 'assets/images/products/jean-encerado-3.webp', 'assets/images/products/jean-encerado-4.webp', 'assets/images/products/jean-encerado-5.webp'] },
         { slug: 'bermuda-camo-woodland', sku: 'BER-1/1-CAM', category: 'INTERVENCIONES', name: 'BERMUDA CAMO "WOODLAND"', title: 'BERMUDA CAMO "WOODLAND"', color: 'Camo', colorway: '1/1', sizes: ['M'], price: '$130.000', description: 'PANTALÓN CARGO MILITAR EN CAMUFLADO WOODLAND INTERVENIDO A<br>MANO. PIEZA 1/1. CORTADO A LA ALTURA DE LA BERMUDA Y ABIERTO<br>CON PANELES AGREGADOS SOBRE LA ENTREPIERNA, QUE LLEVAN EL<br>CALCE A UNA SILUETA MUCHO MÁS ANCHA. BAJO DESHILACHADO SIN<br>DOBLADILLO. BOLSILLOS CARGO ORIGINALES. AVÍOS Y ETIQUETAS DE<br>LA MARCA. HECHA A MANO EN ARGENTINA.', images: ['assets/images/products/bermuda-camo-woodland-1.webp', 'assets/images/products/bermuda-camo-woodland-2.webp', 'assets/images/products/bermuda-camo-woodland-3.webp'] },
@@ -208,60 +208,120 @@ document.addEventListener('DOMContentLoaded', () => {
     // pasada de descripciones por producto.
     // -------------------------------------------------------------------------
     const CONTACTO_TALLES = 'Ante cualquier consulta, escribinos a <a href="mailto:info@guidocapuzzi.com">info@guidocapuzzi.com</a>.';
+    /* ─── TABLAS DE TALLE ────────────────────────────────────────────────
+       Medidas REALES, relevadas por Naza en el depósito el 2026-08-22.
+       Antes de eso los números eran placeholders: progresiones aritméticas
+       perfectas (+2 de largo, +3 de pecho) que no salían de medir nada.
+
+       LAS LETRAS SIGUEN AL MOCKUP, no al orden en que uno mediría. En los
+       SVG de las remeras, B es el largo y C la manga — por eso el orden de
+       `cols` es Pecho · Largo · Manga · Ancho y no el intuitivo. Si se toca
+       el orden hay que mirar el SVG primero: la tabla y el dibujo comparten
+       las letras.
+
+       "Ancho" (antes "Hombro") es el ancho de la prenda, no el hombro.
+
+       ESCALADO: la modista confirmó +1 cm de largo y +1 cm por lado de ancho
+       por talle, o sea +2 en las medidas tomadas en plano. Se verificó con
+       dos talles medidos en oversize (XS/S) y boxy (S/M): se cumple. Por eso
+       el resto se extrapola desde una sola prenda medida.
+
+       Todas las medidas en centímetros, con la prenda apoyada en plano.
+       ──────────────────────────────────────────────────────────────────── */
     const SIZE_CHARTS = {
         oversize: {
             svg: '/assets/size-charts/oversize_sc.svg',
             desc: ['Nuestra remera oversize puede usarla cualquier persona y está diseñada para un calce holgado y amplio. Para un calce más regular, podés elegir un talle menos.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano, en centímetros.'],
-            cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
-            rows: { XS: [68, 54, 50, 22], S: [70, 57, 52, 23], M: [72, 60, 54, 24], L: [74, 63, 56, 25] }
+            cols: ['A. Pecho', 'B. Largo', 'C. Manga', 'D. Ancho'],
+            // XS y S medidos. M y L extrapolados (+2 pecho, +1 largo, +1 manga, +2 ancho).
+            rows: { XS: [50, 72, 26, 55], S: [52, 73, 27, 57], M: [54, 74, 28, 59], L: [56, 75, 29, 61] }
         },
         boxy: {
             svg: '/assets/size-charts/boxy_sc.svg',
             desc: ['Remera de corte boxy con calce relajado. Para un calce más ajustado, podés elegir un talle menos.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
-            cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
-            rows: { XS: [69, 55, 51, 22], S: [71, 58, 53, 23], M: [73, 61, 55, 24], L: [75, 64, 57, 25] }
+            cols: ['A. Pecho', 'B. Largo', 'C. Manga', 'D. Ancho'],
+            // S y M medidos. XS y L extrapolados.
+            rows: { XS: [49, 61, 22, 54], S: [51, 62, 23, 56], M: [53, 63, 24, 58], L: [55, 64, 25, 60] }
         },
         bbyt: {
             svg: '/assets/size-charts/bbyt_sc.svg',
             desc: ['Remera baby tee de mujer, al cuerpo. Calce entallado y corto.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
-            cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
-            rows: { XS: [54, 42, 36, 18], S: [56, 45, 38, 19], M: [58, 48, 40, 20], L: [60, 51, 42, 21] }
+            cols: ['A. Pecho', 'B. Largo', 'C. Manga', 'D. Ancho'],
+            // S medido. El resto extrapolado.
+            rows: { XS: [32.5, 45, 14, 37], S: [34.5, 46, 15, 39], M: [36.5, 47, 16, 41], L: [38.5, 48, 17, 43] }
         },
         termal: {
             svg: '/assets/size-charts/termal_sc.svg',
             desc: ['Remera manga larga termal, pensada para un calce en capas con mangas extra largas.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
-            cols: ['A. Largo', 'B. Pecho', 'C. Hombro', 'D. Manga'],
-            rows: { XS: [70, 54, 50, 62], S: [72, 57, 52, 63], M: [74, 60, 54, 64], L: [76, 63, 56, 65] }
+            cols: ['A. Pecho', 'B. Largo', 'C. Manga', 'D. Ancho'],
+            // S medido. El resto extrapolado.
+            rows: { XS: [48, 57, 64, 49], S: [50, 58, 65, 51], M: [52, 59, 66, 53], L: [54, 60, 67, 55] }
         },
         musculosa: {
             svg: '/assets/size-charts/musculosa_sc.svg',
             desc: ['Musculosa oversize sin mangas, calce holgado. Para un calce más ajustado, podés elegir un talle menos.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
             cols: ['A. Largo', 'B. Pecho', 'C. Hombro'],
+            // ⚠️ PLACEHOLDER: la musculosa no se midió (queda para cuando se
+            // active la categoría). Las letras y el nombre "Hombro" también
+            // están sin revisar contra el SVG. Su PDP está bloqueada por
+            // RESTRICTED_CATEGORIES, así que esta tabla hoy no es alcanzable.
             rows: { XS: [70, 56, 40], S: [72, 59, 42], M: [74, 62, 44], L: [76, 65, 46] }
         },
         suelto: {
             svg: '/assets/size-charts/suelto_sc.svg',
             desc: ['Nuestro jean de corte suelto puede usarlo cualquier persona y está diseñado para un calce holgado y amplio. Para un calce más ajustado, podés elegir un talle menos.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano, en centímetros.'],
             cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
-            rows: { XS: [102, 74, 100, 28, 22], S: [104, 78, 104, 29, 23], M: [106, 82, 108, 30, 24], L: [108, 86, 112, 31, 25] }
+            // XS medido. S/M/L extrapolados con el salto S→M del jean regular
+            // (+3 cintura, +2 cadera, +1 largo, +2 botamanga), que es el par de
+            // talles reales más confiable que tenemos para denim.
+            rows: { XS: [104, 36.5, 45, 20, 22], S: [105, 39.5, 47, 20, 24], M: [106, 42.5, 49, 20, 26], L: [107, 45.5, 51, 21.5, 28] }
         },
         regular: {
             svg: '/assets/size-charts/regular_sc.svg',
             desc: ['Nuestro jean de corte regular está diseñado para un calce recto y cómodo. Para un calce más suelto, podés elegir un talle más.', 'Para ayudarte a encontrar tu talle, te damos las medidas exactas, tomadas con la prenda apoyada en plano, en centímetros.'],
             cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
-            rows: { XS: [100, 74, 98, 28, 22], S: [102, 78, 102, 29, 23], M: [104, 82, 106, 30, 24], L: [106, 86, 110, 31, 25] }
-        },
-        levis: {
-            svg: '/assets/size-charts/levis_sc.svg',
-            desc: ['Pieza única 1/1 intervenida a mano sobre un jean Levi\'s 517 de corte bootcut.', 'Las medidas corresponden a la prenda intervenida, tomadas con la prenda apoyada en plano, en centímetros.'],
-            cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
-            rows: { XS: [104, 76, 100, 29, 24], S: [106, 80, 104, 30, 25], M: [108, 84, 108, 31, 26], L: [110, 88, 112, 32, 27] }
+            // S, M y L MEDIDOS los tres. Sólo XS es extrapolado, restando el
+            // salto S→M. Es la única tabla con tres talles reales.
+            rows: { XS: [104, 38, 44, 20, 18], S: [105, 41, 46, 20, 20], M: [106, 44, 48, 20, 22], L: [108, 47, 50, 21.5, 22] }
         },
         bermudas: {
             svg: '/assets/size-charts/bermudas_sc.svg',
             desc: ['Bermuda de denim selvedge de inspiración workwear, calce holgado.', 'Todas las medidas están tomadas con la prenda apoyada en plano, en centímetros.'],
             cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
+            // ⚠️ PLACEHOLDER: las bermudas de producción no se midieron (quedan
+            // para cuando se active la categoría). Su PDP está bloqueada por
+            // RESTRICTED_CATEGORIES. No confundir con la bermuda camo 1/1, que
+            // sí está medida y tiene tabla propia acá abajo.
             rows: { XS: [52, 76, 100, 28, 30], S: [54, 80, 104, 29, 31], M: [56, 84, 108, 30, 32], L: [58, 88, 112, 31, 33] }
+        },
+
+        /* ─── PIEZAS 1/1 ──────────────────────────────────────────────────
+           Cada intervención es única y existe sólo en talle M, así que lleva
+           su propia tabla de una fila con las medidas de ESA prenda. No se
+           extrapola nada: no hay otros talles que extrapolar.
+
+           Se resuelven por slug exacto en getSizeChart(), antes que los
+           calces genéricos. Sin esto, la bermuda camo caería en la tabla
+           `bermudas` (por el prefijo del slug) y mostraría medidas de otra
+           prenda.
+           ──────────────────────────────────────────────────────────────── */
+        'jean-pintor-faja': {
+            svg: '/assets/size-charts/levis_sc.svg',
+            desc: ['Pieza única 1/1 intervenida a mano sobre un jean Levi\'s 517 de corte bootcut.', 'Las medidas son las de esta prenda en particular, tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
+            rows: { M: [109, 43, 53, 19, 21] }
+        },
+        'jean-encerado': {
+            svg: '/assets/size-charts/levis_sc.svg',
+            desc: ['Pieza única 1/1 intervenida a mano sobre un jean Levi\'s 517 de corte bootcut, recubierto con cera.', 'Las medidas son las de esta prenda en particular, tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
+            rows: { M: [111, 40, 52, 18, 19] }
+        },
+        'bermuda-camo-woodland': {
+            svg: '/assets/size-charts/bermudas_sc.svg',
+            desc: ['Pieza única 1/1 intervenida a mano sobre un pantalón cargo militar, cortado a la altura de la bermuda.', 'Las medidas son las de esta prenda en particular, tomadas con la prenda apoyada en plano, en centímetros.'],
+            cols: ['A. Largo', 'B. Cintura', 'C. Cadera', 'D. Tiro', 'E. Botamanga'],
+            rows: { M: [67, 43, 51, 20, 29] }
         }
     };
 
@@ -290,6 +350,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Resuelve producto → calce (por prefijo de slug, orden importa) → config
     function getSizeChart(product) {
         const slug = (product && product.slug) || '';
+
+        // Una prenda vendida no muestra tabla: no hay nada que elegir.
+        if (product && product.soldOut) return null;
+
+        // Tabla propia de la pieza, si la tiene (1/1). Va ANTES que los
+        // prefijos: `bermuda-camo-woodland` empieza con "bermuda" y si no,
+        // caería en la tabla de las bermudas de producción.
+        if (SIZE_CHARTS[slug]) return SIZE_CHARTS[slug];
+
         let fit = null;
         if (slug.startsWith('remera-guido')) fit = 'oversize';
         else if (slug.startsWith('remera-afligida')) fit = 'boxy';
@@ -1421,8 +1490,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // la fila, pero sólo las que el producto tiene de verdad son
             // clickeables. Las demás quedan atenuadas y sin pointer-events, así
             // no se puede mandar al carrito un SKU que no existe en la base.
-            const sizesDisponibles = getSizes(product);
-            const sizeActivo = getDefaultSize(product);
+            // Una prenda vendida no ofrece ningún talle: se dibujan los cuatro
+            // atenuados, como cualquier talle sin stock, y ninguno queda activo.
+            const sizesDisponibles = product.soldOut ? [] : getSizes(product);
+            const sizeActivo = product.soldOut ? null : getDefaultSize(product);
             const sizeBtnsHTML = TALLES_DEFAULT.map(talle => {
                 const disponible = sizesDisponibles.includes(talle);
                 const clases = `size-btn${talle === sizeActivo ? ' active' : ''}${disponible ? '' : ' size-btn--na'}`;
@@ -1437,6 +1508,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const sizeChart = getSizeChart(product);
             const sizeGuideTrigger = sizeChart ? '<button class="size-guide-trigger font-condensed" id="size-guide-open">TABLA DE TALLES</button>' : '';
             const sizeGuideOverlay = sizeChart ? buildSizeGuide(product, sizeChart, isArchive, sizeActivo) : '';
+
+            /* ─── Selector de colorway dentro de la PDP ──────────────────
+               Se dibujan los chips de TODOS los colorways del mismo producto
+               (agrupados por `name`, igual que la grilla del Shop), no sólo el
+               que se está viendo. Clickear uno salta a su PDP.
+
+               El activo es un <span> y los otros <button>: así el que ya estás
+               viendo no es clickeable y no hace falta ningún guard en el
+               handler. Reusa `.pdp-colorway-chip`, que ya existe — el layout
+               en fila va inline para no tocar globals.css.
+               ──────────────────────────────────────────────────────────── */
+            const hermanos = products.filter(p => p.name === product.name);
+            const chipsHTML = hermanos.map(cw => {
+                const color = cw.swatch || SWATCH_COLORS[cw.color] || '#1A1A1A';
+                const etiqueta = cw.colorLabel || cw.colorway || cw.color || '';
+                if (cw.slug === product.slug) {
+                    return `<span class="pdp-colorway-chip" style="--chip: ${color}; outline: 1px solid #1A1A1A; outline-offset: 2px;" aria-current="true" title="${etiqueta}"></span>`;
+                }
+                return `<button type="button" class="pdp-colorway-chip pdp-colorway-chip--link" style="--chip: ${color}; padding: 0; cursor: pointer;" data-index="${products.indexOf(cw)}" aria-label="Ver ${etiqueta}" title="${etiqueta}"></button>`;
+            }).join('');
+            const chipsWrapHTML = `<div style="display: flex; align-items: center; gap: 7px;">${chipsHTML}</div>`;
+
+            // Botón principal. Una pieza vendida no se puede añadir.
+            const addBtnHTML = product.soldOut
+                ? '<button class="add-to-cart-btn font-condensed" disabled aria-disabled="true" style="opacity: 0.45; pointer-events: none;"><span class="btn-label">VENDIDO</span></button>'
+                : '<button class="add-to-cart-btn font-condensed" id="pdp-add-btn"><span class="hover-fill"></span><span class="btn-label">AÑADIR AL CARRITO</span></button>';
 
             // Bloque de cuidados (denim) — subtítulo CUIDADO + texto, debajo del botón AÑADIR.
             const careHTML = product.care ? `
@@ -1455,7 +1552,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="pdp-colorway-block">
                             <span class="pdp-colorway font-condensed">COLOR: ${product.colorLabel || product.color || product.colorway}</span>
-                            <span class="pdp-colorway-chip" style="--chip: ${product.swatch || SWATCH_COLORS[product.color] || '#1A1A1A'}"></span>
+                            ${chipsWrapHTML}
                         </div>
                         <div class="pdp-selectors">
                             <div class="selector-group">
@@ -1464,7 +1561,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${sizeGuideTrigger}
                             </div>
                         </div>
-                        <button class="add-to-cart-btn font-condensed" id="pdp-add-btn"><span class="hover-fill"></span><span class="btn-label">AÑADIR AL CARRITO</span></button>
+                        ${addBtnHTML}
                         <p class="pdp-description">${product.description || 'DESCRIPCIÓN NO DISPONIBLE.'}</p>
                         ${careHTML}
                     </div>
@@ -1564,6 +1661,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeSizeBtn = productPage.querySelector('.size-btn.active');
         let selectedSize = activeSizeBtn ? activeSizeBtn.textContent : '';
         let selectedQty = 1;
+
+        // 0. Colorway → saltar a la PDP de ese color.
+        //    Sólo los chips NO activos son <button>, así que no hace falta
+        //    chequear si es el que ya se está viendo.
+        productPage.querySelectorAll('.pdp-colorway-chip--link').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const idx = chip.dataset.index;
+                if (idx !== undefined) enablePDPState(idx);
+            });
+        });
 
         // 1. Size Selection — los talles sin stock ya vienen con pointer-events:none,
         //    pero se chequea igual: un click sintético no puede seleccionarlos.
@@ -1821,6 +1928,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const first = group.colorways[0];
         const idx = products.indexOf(first);
         const restricted = isRestricted(first);
+        // Un grupo se muestra VENDIDO sólo si TODOS sus colorways lo están.
+        // Las 1/1 son grupos de uno, así que en la práctica es la pieza sola.
+        const vendido = group.colorways.every(cw => cw.soldOut);
         const imageSrc = absUrl(first.images && first.images[0]);
         const hoverSrc = absUrl(first.images && first.images[1]);
 
@@ -1848,7 +1958,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="product-info">
                             <span class="product-name"><span class="pn-full">${group.name}</span><span class="pn-short">${SHORT_NAMES[group.name] || group.name}</span></span>
-                            <span class="product-price">${restricted ? 'PRÓXIMAMENTE' : group.price}</span>
+                            <span class="product-price">${restricted ? 'PRÓXIMAMENTE' : (vendido ? 'VENDIDO' : group.price)}</span>
                         </div>${swatches}
                     </div>`;
     }
