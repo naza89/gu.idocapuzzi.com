@@ -160,7 +160,11 @@ export async function GET(
                 console.log('[GET ordenes] Intención sin webhook — respuesta NAVE:', {
                     payment_request_id: data.nave_payment_request_id,
                     estadoParseado: estadoIntencion,
-                    payload: JSON.stringify(intencion).slice(0, 600),
+                    // 2500 y no 600: con 600 el payload se cortaba antes de `transactions`,
+                    // que es donde podrían venir las cuotas y el medio de pago. NAVE no
+                    // los documenta en ningún endpoint, así que la única forma de saber
+                    // si los manda es mirar una respuesta real completa.
+                    payload: JSON.stringify(intencion).slice(0, 2500),
                 });
 
                 if (estadoIntencion === 'SUCCESS_PROCESSED') {
@@ -239,11 +243,17 @@ export async function GET(
                     .select('id');
 
                 if (emailClaimed && emailClaimed.length > 0) {
-                    import('@/lib/email').then(({ sendOrderConfirmationEmail }) =>
+                    // Los dos mails cuelgan del mismo claim: la confirmación al
+                    // cliente y el aviso interno al equipo. Cada uno atrapa su
+                    // propio error para que uno no se lleve puesto al otro.
+                    import('@/lib/email').then(({ sendOrderConfirmationEmail, sendInternalOrderNotification }) => {
                         sendOrderConfirmationEmail(id).catch((emailErr) =>
                             console.error('[GET ordenes] Error email:', emailErr)
-                        )
-                    ).catch(() => console.warn('[GET ordenes] Email module not available'));
+                        );
+                        sendInternalOrderNotification(id).catch((notifErr) =>
+                            console.error('[GET ordenes] Error aviso interno:', notifErr)
+                        );
+                    }).catch(() => console.warn('[GET ordenes] Email module not available'));
                 } else {
                     console.log('[GET ordenes] ⏭️ Email ya enviado');
                 }

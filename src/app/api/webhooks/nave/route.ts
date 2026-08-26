@@ -21,7 +21,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { after } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { verifyPaymentStatus } from '@/lib/nave/client';
-import { sendOrderConfirmationEmail } from '@/lib/email';
+import { sendOrderConfirmationEmail, sendInternalOrderNotification } from '@/lib/email';
 import { crearEnvioOCA } from '@/lib/oca/crear-envio';
 import { safeEqualStr } from '@/lib/security';
 import { TIPO_ENVIO_RETIRO } from '@/lib/envios';
@@ -304,6 +304,16 @@ async function processWebhook(
                 if (emailClaimed && emailClaimed.length > 0) {
                     await sendOrderConfirmationEmail(externalPaymentId);
                     console.log('[webhook/nave] ✅ Email enviado — orden:', externalPaymentId);
+
+                    // Aviso interno al equipo. Va pegado al mismo claim para que
+                    // salga una sola vez por orden sin una columna nueva. En su
+                    // propio try: que falle el aviso interno no puede impedir
+                    // nada de lo que sigue.
+                    try {
+                        await sendInternalOrderNotification(externalPaymentId);
+                    } catch (notifErr) {
+                        console.error('[webhook/nave] Error en aviso interno:', notifErr);
+                    }
                 } else {
                     console.log('[webhook/nave] ⏭️ Email ya enviado — orden:', externalPaymentId);
                 }

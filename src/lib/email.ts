@@ -6,11 +6,12 @@
  * Templates disponibles:
  *   sendOrderConfirmationEmail(ordenId)              → Confirmación de compra (trigger: webhook NAVE APPROVED)
  *   sendShippingStatusEmail(ordenId, idEstado, ...) → Actualizaciones de estado del envío OCA
+ *   sendInternalOrderNotification(ordenId)           → Aviso INTERNO al equipo por cada venta
  */
 
 import { Resend } from 'resend';
 import { createAdminClient } from '@/lib/supabase';
-import { etiquetaTipoEnvio } from '@/lib/envios';
+import { etiquetaTipoEnvio, esRetiroEnMano, TIPO_ENVIO_SUCURSAL } from '@/lib/envios';
 
 /**
  * Cliente de Resend, construido perezosamente.
@@ -289,7 +290,9 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
 
       <p class="copy">
         Hola ${cliente.nombre}, tu pedido fue recibido y el pago fue confirmado.<br>
-        En breve nos ponemos en contacto para coordinar el envío.
+        ${esRetiroEnMano(orden.tipo_envio)
+            ? 'Elegiste retirarlo en persona, así que no hay envío. Te escribimos a este mismo mail para coordinar lugar y horario.<br>Si preferís adelantarte, respondé este mensaje o escribinos a <a href="mailto:ventas@guidocapuzzi.com">ventas@guidocapuzzi.com</a>.'
+            : 'En breve nos ponemos en contacto para coordinar el envío.'}
       </p>
 
       <!-- Items -->
@@ -369,6 +372,266 @@ interface Sucursal {
     provincia?: string;
     latitud?: number;
     longitud?: number;
+}
+
+// ─── Template: Aviso interno de venta ─────────────────────────────────────────
+
+/**
+ * Destinatarios del aviso interno de venta.
+ *
+ * Configurables por env var (`NOTIF_VENTAS_EMAILS`, separados por coma) para no
+ * tener que deployar si cambia el equipo. El default son las dos casillas del
+ * pedido original: Naza y Fede.
+ */
+function destinatariosInternos(): string[] {
+    const crudo = process.env.NOTIF_VENTAS_EMAILS;
+    if (crudo) {
+        const lista = crudo.split(',').map((e) => e.trim()).filter(Boolean);
+        if (lista.length > 0) return lista;
+    }
+    return ['ncgc@guidocapuzzi.com', 'fmgc@guidocapuzzi.com'];
+}
+
+type DireccionOrden = {
+    calle: string | null;
+    numero: string | null;
+    piso: string | null;
+    depto: string | null;
+    ciudad: string | null;
+    provincia: string | null;
+    codigo_postal: string | null;
+};
+
+/**
+ * Aviso interno: se dispara con cada compra pagada, hacia el equipo.
+ *
+ * NO es un mail al cliente. Prioriza que se pueda leer de un vistazo en el
+ * teléfono: qué se vendió, en qué talle, cómo se entrega y si hay algo que hacer.
+ *
+ * ⚠️ Idempotencia: NO tiene flag propio. Se dispara pegado al mismo claim atómico
+ * de `email_sent` que manda la confirmación al cliente, así que sale exactamente
+ * una vez por orden sin agregar una columna. La contra es que si falla este mail
+ * no hay reintento — igual que el del cliente. Si más adelante hace falta
+ * reintentarlo por separado, ahí sí conviene una columna propia.
+ *
+ * ⚠️ Sobre las cuotas: NAVE **no las informa**. `GET /ranty-payments/payments/{id}`
+ * devuelve sólo `status`, `updated_date`, `lifecycle_stages` y `available_balance`
+ * (ver docs/NAVE_CHECKOUT_API_DOCS.md §9). No hay marca de tarjeta, medio de pago
+ * ni plan de cuotas. Por eso el bloque de pago dice explícitamente que el dato no
+ * viene, en vez de afirmar "contado" sin saberlo.
+ */
+export async function sendInternalOrderNotification(ordenId: string): Promise<void> {
+    const supabase = createAdminClient();
+
+    const { data: orden, error } = await supabase
+        .from('ordenes')
+        .select(`
+            numero_orden,
+            estado,
+            total_centavos,
+            subtotal_centavos,
+            costo_envio_centavos,
+            tipo_envio,
+            id_sucursal_oca,
+            nave_status,
+            nave_monto_ars,
+            clientes (nombre, apellido, email, telefono),
+            direcciones_envio (calle, numero, piso, depto, ciudad, provincia, codigo_postal),
+            items_orden (nombre_producto, color, talle, cantidad, precio_unitario_centavos)
+        `)
+        .eq('id', ordenId)
+        .single();
+
+    if (error || !orden) {
+        console.error('[email interno] Orden no encontrada:', ordenId, error?.message);
+        return;
+    }
+
+    const cliente = orden.clientes as unknown as (ClienteOrden & { telefono?: string }) | null;
+    const direccion = orden.direcciones_envio as unknown as DireccionOrden | null;
+    const items = (orden.items_orden as ItemOrden[]) || [];
+
+    const esRetiro = esRetiroEnMano(orden.tipo_envio);
+    const entrega = etiquetaTipoEnvio(orden.tipo_envio);
+
+    // Bloque de entrega: qué hay que hacer con este paquete.
+    let detalleEntrega: string;
+    if (esRetiro) {
+        detalleEntrega = 'El cliente no paga envío. Hay que escribirle para coordinar lugar y horario.';
+    } else if (orden.tipo_envio === TIPO_ENVIO_SUCURSAL) {
+        detalleEntrega = orden.id_sucursal_oca
+            ? `Sucursal OCA N° ${orden.id_sucursal_oca}`
+            : 'Sucursal OCA (sin ID registrado)';
+    } else if (direccion) {
+        const linea1 = [direccion.calle, direccion.numero].filter(Boolean).join(' ');
+        const piso = [direccion.piso, direccion.depto].filter(Boolean).join(' ');
+        detalleEntrega = [
+            linea1 + (piso ? ` — ${piso}` : ''),
+            [direccion.ciudad, direccion.provincia].filter(Boolean).join(', '),
+            direccion.codigo_postal ? `CP ${direccion.codigo_postal}` : '',
+        ].filter(Boolean).join('<br>');
+    } else {
+        detalleEntrega = 'Sin dirección registrada — revisar la orden.';
+    }
+
+    const itemsHTML = items.map(item => `
+        <tr class="item-row">
+          <td>
+            <p class="item-name">${item.nombre_producto}</p>
+            <p class="item-variant">${item.color} &middot; TALLE ${item.talle}</p>
+          </td>
+          <td class="item-qty">${item.cantidad}</td>
+          <td class="item-price">${formatARS(item.precio_unitario_centavos * item.cantidad)}</td>
+        </tr>
+    `).join('');
+
+    // Banner de acción: sólo cuando hay algo que hacer a mano.
+    const bannerRetiro = esRetiro ? `
+      <div class="alerta">
+        <p class="alerta-titulo">Acción requerida — retiro coordinado</p>
+        <p class="alerta-texto">
+          Escribile a ${cliente?.email || 'el cliente'} para acordar lugar y horario.
+          No se genera envío en OCA.
+        </p>
+      </div>` : '';
+
+    const montoCobrado = orden.nave_monto_ars != null
+        ? `$${Number(orden.nave_monto_ars).toLocaleString('es-AR')}`
+        : '—';
+
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    ${emailBaseStyles()}
+    .alerta {
+      border-left: 4px solid #ad1c1c;
+      background-color: #f6efef;
+      padding: 14px 18px;
+      margin: 0 0 28px;
+    }
+    .alerta-titulo {
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: #ad1c1c; margin: 0 0 6px;
+    }
+    .alerta-texto {
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
+      font-size: 12px; line-height: 1.6; color: #555; margin: 0;
+    }
+    .bloque { margin: 0 0 24px; }
+    .bloque-titulo {
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
+      font-size: 10px; font-weight: 400;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: #999; margin: 0 0 6px;
+    }
+    .bloque-texto {
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
+      font-size: 13px; line-height: 1.6; color: #1a1a1a; margin: 0;
+    }
+    .bloque-nota {
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
+      font-size: 11px; line-height: 1.6; color: #999; margin: 4px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <img class="logo-img" src="${LOGO_URL}" alt="GÜIDO CAPUZZI" width="500">
+    </div>
+
+    <div class="body">
+      <p class="eyebrow">Venta nueva</p>
+      <h1 class="heading">Orden #${orden.numero_orden}</h1>
+
+      ${bannerRetiro}
+
+      <div class="bloque">
+        <p class="bloque-titulo">Cliente</p>
+        <p class="bloque-texto">
+          ${cliente?.nombre || ''} ${cliente?.apellido || ''}<br>
+          ${cliente?.email || '—'}${cliente?.telefono ? `<br>${cliente.telefono}` : ''}
+        </p>
+      </div>
+
+      <div class="bloque">
+        <p class="bloque-titulo">Entrega</p>
+        <p class="bloque-texto"><strong>${entrega}</strong><br>${detalleEntrega}</p>
+      </div>
+
+      <table>
+        <thead class="items-header">
+          <tr>
+            <th>Producto</th>
+            <th>Cant.</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody>${itemsHTML}</tbody>
+      </table>
+
+      <table style="margin-top:16px;">
+        <tr class="totals-row">
+          <td class="totals-label">Subtotal</td>
+          <td class="totals-value">${formatARS(orden.subtotal_centavos)}</td>
+        </tr>
+        <tr class="totals-row">
+          <td class="totals-label">${entrega}</td>
+          <td class="totals-value">${formatARS(orden.costo_envio_centavos || 0)}</td>
+        </tr>
+        <tr class="total-row">
+          <td>Total</td>
+          <td class="total-amount">${formatARS(orden.total_centavos)}</td>
+        </tr>
+      </table>
+
+      <hr class="divider" style="margin:28px 0 24px;">
+
+      <div class="bloque">
+        <p class="bloque-titulo">Pago</p>
+        <p class="bloque-texto">
+          NAVE &middot; ${orden.nave_status || orden.estado}<br>
+          Cobrado: ${montoCobrado}
+        </p>
+        <p class="bloque-nota">
+          NAVE no informa el plan de cuotas ni el medio de pago en su API.
+          Para saber si fue en cuotas hay que mirar el panel de NAVE.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p class="footer-note">Aviso interno automático — no responder.</p>
+      <p class="footer-domain">güidocapuzzi.com</p>
+    </div>
+
+    <div class="accent-bar"></div>
+  </div>
+</body>
+</html>`;
+
+    const resend = getResend();
+    if (!resend) return;
+
+    const { error: sendError } = await resend.emails.send({
+        from: 'GÜIDO CAPUZZI <ventas@guidocapuzzi.com>',
+        to: destinatariosInternos(),
+        subject: `Venta #${orden.numero_orden} — ${formatARS(orden.total_centavos)}${esRetiro ? ' — RETIRO A COORDINAR' : ''}`,
+        html,
+    });
+
+    if (sendError) {
+        console.error('[email interno] Error al enviar:', sendError);
+        return;
+    }
+
+    console.log('[email interno] ✅ Aviso de venta enviado — orden:', orden.numero_orden);
 }
 
 export async function sendShippingStatusEmail(
