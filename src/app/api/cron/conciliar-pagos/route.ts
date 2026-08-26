@@ -77,11 +77,26 @@ function autorizado(req: NextRequest): boolean {
     return false;
 }
 
-/** Base URL para el fetch interno. En Vercel siempre está `VERCEL_URL`. */
-function baseUrl(req: NextRequest): string {
-    if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
-    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-    return new URL(req.url).origin;
+/**
+ * Dominio público, en punycode porque el real lleva diéresis.
+ *
+ * ⚠️ Va con `www`. El apex 307-redirecciona, que es exactamente lo que dejó a
+ * NAVE sin poder entregar sus webhooks.
+ */
+const SITIO = 'https://www.xn--gidocapuzzi-thb.com';
+
+/**
+ * Base URL para el fetch interno.
+ *
+ * ⚠️ NO usar `VERCEL_URL`. Apunta a la URL única del deployment
+ * (`gc-xxxx.vercel.app`), que está detrás de Deployment Protection: devuelve la
+ * página HTML de autenticación **con status 200**, así que el fetch parece
+ * exitoso y revienta recién al parsear el JSON. Es exactamente lo que pasó en
+ * la primera corrida real: las 3 órdenes dieron
+ * `SyntaxError: Unexpected token '<', "<!DOCTYPE "...`.
+ */
+function baseUrl(): string {
+    return process.env.NEXT_PUBLIC_SITE_URL || SITIO;
 }
 
 export async function GET(req: NextRequest) {
@@ -117,7 +132,7 @@ export async function GET(req: NextRequest) {
 
     console.log(`[cron/conciliar] Revisando ${pendientes.length} orden(es) pendiente(s)`);
 
-    const base = baseUrl(req);
+    const base = baseUrl();
     const resultados: { numero_orden: number; estado: string }[] = [];
 
     // Secuencial a propósito: cada iteración pega contra la API de NAVE, y un
@@ -132,6 +147,20 @@ export async function GET(req: NextRequest) {
             if (!res.ok) {
                 console.error(`[cron/conciliar] Orden ${orden.numero_orden}: HTTP ${res.status}`);
                 resultados.push({ numero_orden: orden.numero_orden, estado: `error_http_${res.status}` });
+                continue;
+            }
+
+            // Un 200 no alcanza: si el fetch cae en una página de Vercel (login
+            // de Deployment Protection, 404 del SPA) vuelve HTML con status 200
+            // y el JSON.parse revienta con un error que no dice nada. Mejor
+            // detectarlo acá y decir qué pasó.
+            const tipo = res.headers.get('content-type') || '';
+            if (!tipo.includes('application/json')) {
+                console.error(
+                    `[cron/conciliar] Orden ${orden.numero_orden}: la respuesta no es JSON (content-type: ${tipo}). ` +
+                    `¿Está bien la URL base? Usando: ${base}`
+                );
+                resultados.push({ numero_orden: orden.numero_orden, estado: 'error_no_json' });
                 continue;
             }
 
