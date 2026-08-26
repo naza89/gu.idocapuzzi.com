@@ -1903,8 +1903,10 @@ body.state-contact #account-contact {
     letter-spacing: 0;
     font-size: 0.78rem;
 }
+/* La columna de talles va al MISMO cuerpo que los datos. Estaba en 1rem contra
+   los 0.82rem de las celdas y se veía desproporcionada. */
 .size-guide-table tbody th {
-    font-size: 1rem;
+    font-size: 0.82rem;
 }
 /* cross-highlight: al hover de una celda se enciende su fila y su columna */
 .size-guide-table td.sg-hl,
@@ -7001,7 +7003,10 @@ body.mobile-menu-open #mobile-menu {
     }
 
     .pdp-care-text {
-        font-family: 'Helvetica', sans-serif;
+        /* Condensed, igual que en desktop y que .pdp-description. Estaba en
+           'Helvetica' (la cara de texto), así que el bloque CUIDADO cambiaba de
+           tipografía al pasar a mobile — la única regla de la PDP que lo hacía. */
+        font-family: 'Helvetica Neue Condensed', sans-serif;
         font-size: 12px;
         line-height: 18px;
     }
