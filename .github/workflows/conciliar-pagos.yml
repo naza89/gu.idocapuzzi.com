@@ -1,0 +1,79 @@
+# Conciliación de pagos — GÜIDO CAPUZZI
+#
+# Llama cada 10 minutos a /api/cron/conciliar-pagos, que busca las órdenes que
+# quedaron en `pago_pendiente` y las reconcilia contra NAVE.
+#
+# ─── POR QUÉ ACÁ Y NO EN VERCEL CRON ─────────────────────────────────────────
+#
+# Vercel Cron sería lo natural, pero el proyecto está en el plan **Hobby**, que
+# sólo permite **una ejecución por día**. Una conciliación diaria no sirve para
+# esto: un cliente que paga y cierra la pestaña esperaría hasta 24 horas por su
+# mail de confirmación, y su prenda seguiría figurando en venta todo ese tiempo.
+#
+# Peor: un `vercel.json` con un schedule que el plan no admite hace que Vercel
+# **rechace el deployment entero, sin crearlo**. Se descubrió en carne propia el
+# 2026-08-26 — dos pushes a `main` no generaron ningún build y la web se quedó
+# sin poder deployar hasta sacar el archivo. Si algún día se pasa a Pro, se
+# puede volver a Vercel Cron; hasta entonces, no agregar `crons` a vercel.json.
+#
+# GitHub Actions no tiene ese límite y el repo ya lo usa para el CI.
+#
+# ⚠️ El horario de los `schedule` de GitHub Actions es **best-effort**: cuando la
+# cola está cargada puede atrasarse varios minutos. Para esto da igual — lo que
+# importa es que ninguna orden pagada quede sin reconciliar, no la puntualidad.
+#
+# ─── LO QUE HAY QUE CONFIGURAR ───────────────────────────────────────────────
+#
+# Un secret del repo (Settings → Secrets and variables → Actions):
+#   · CRON_SECRET — el mismo valor que la env var `CRON_SECRET` en Vercel.
+
+name: Conciliar pagos
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  # Para dispararlo a mano desde la pestaña Actions.
+  workflow_dispatch:
+
+# Si una corrida se atrasa, no encimar dos: la conciliación es idempotente, pero
+# no tiene sentido pegarle dos veces seguidas a la API de NAVE.
+concurrency:
+  group: conciliar-pagos
+  cancel-in-progress: false
+
+jobs:
+  conciliar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al endpoint de conciliación
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::Falta el secret CRON_SECRET. Sin él el endpoint responde 401 y no se concilia nada."
+            exit 1
+          fi
+
+          echo "Llamando a /api/cron/conciliar-pagos ..."
+          cuerpo=$(mktemp)
+          codigo=$(curl -sS -m 120 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -o "$cuerpo" -w '%{http_code}' \
+            "https://www.xn--gidocapuzzi-thb.com/api/cron/conciliar-pagos")
+
+          echo "HTTP $codigo"
+          cat "$cuerpo"
+          echo
+
+          if [ "$codigo" != "200" ]; then
+            echo "::error::La conciliación devolvió HTTP $codigo"
+            exit 1
+          fi
+
+          # Si reconcilió algo, alguien pagó y NADIE lo había registrado: ni el
+          # webhook de NAVE ni la página de confirmación. Queda como warning
+          # visible en el run para no tener que abrir los logs de Vercel.
+          reconciliadas=$(grep -o '"reconciliadas":[0-9]*' "$cuerpo" | grep -o '[0-9]*$')
+          if [ -n "$reconciliadas" ] && [ "$reconciliadas" -gt 0 ]; then
+            echo "::warning::$reconciliadas orden(es) reconciliadas por el cron — el webhook de NAVE sigue sin llegar"
+          fi

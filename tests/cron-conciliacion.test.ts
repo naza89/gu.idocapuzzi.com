@@ -20,19 +20,37 @@ const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const leer = (rel: string) => readFileSync(path.join(RAIZ, rel), 'utf8');
 
 const CRON = 'src/app/api/cron/conciliar-pagos/route.ts';
-const VERCEL_JSON = 'vercel.json';
 
 describe('el cron está efectivamente programado', () => {
-    test('vercel.json declara el cron', () => {
-        const cfg = JSON.parse(leer(VERCEL_JSON));
-        assert.ok(Array.isArray(cfg.crons) && cfg.crons.length > 0, 'no hay crons declarados');
-        const job = cfg.crons.find((c: { path: string }) => c.path === '/api/cron/conciliar-pagos');
-        assert.ok(job, 'el cron de conciliación no está en vercel.json: la ruta existiría pero no la llamaría nadie');
-        assert.match(job.schedule, /^\S+ \S+ \S+ \S+ \S+$/, 'el schedule no parece una expresión cron');
+    const WORKFLOW = '.github/workflows/conciliar-pagos.yml';
+
+    test('el workflow de GitHub Actions existe y tiene schedule', () => {
+        const yml = leer(WORKFLOW);
+        assert.match(yml, /on:/);
+        assert.match(yml, /schedule:/);
+        assert.match(yml, /cron: '\*\/10 \* \* \* \*'/, 'el schedule dejó de ser cada 10 minutos');
+        assert.match(yml, /conciliar-pagos/, 'el workflow no apunta al endpoint');
     });
 
-    test('la ruta declarada en vercel.json existe', () => {
-        assert.doesNotThrow(() => leer(CRON), 'vercel.json apunta a una ruta que no existe');
+    test('el workflow falla si falta el secret, en vez de pasar en silencio', () => {
+        // Un curl sin token devuelve 401 y el job saldría verde igual: la
+        // conciliación estaría muerta y nadie se enteraría.
+        const yml = leer(WORKFLOW);
+        assert.match(yml, /CRON_SECRET/);
+        assert.match(yml, /exit 1/);
+    });
+
+    test('NO hay crons en vercel.json — el plan es Hobby', () => {
+        // Hobby sólo admite una ejecución diaria, y un schedule inválido hace
+        // que Vercel RECHACE el deployment entero sin crearlo. Pasó el
+        // 2026-08-26: dos pushes a main sin generar un solo build.
+        let vercelJson;
+        try { vercelJson = leer('vercel.json'); } catch { return; }
+        const cfg = JSON.parse(vercelJson);
+        assert.ok(
+            !cfg.crons || cfg.crons.length === 0,
+            'vercel.json declara crons: en Hobby eso bloquea TODOS los deploys'
+        );
     });
 });
 
