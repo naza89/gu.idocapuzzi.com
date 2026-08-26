@@ -3463,13 +3463,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Animación de entrada de la confirmación.
+     *
+     * ⚠️ ESTA PANTALLA NO PUEDE DEPENDER DE LA ANIMACIÓN PARA SER VISIBLE.
+     * Es la que le dice al cliente que su pago salió bien; si no pinta, el
+     * cliente cree que perdió la plata.
+     *
+     * El problema real (2026-08-26): si el documento está OCULTO, las
+     * transiciones CSS no avanzan — quedan en `playState=running` pero
+     * congeladas en su valor inicial, que acá es `opacity: 0`. Agregar la clase
+     * `.visible` no alcanza: la clase entra, pero la transición hacia
+     * `opacity: 1` nunca corre y la pantalla se queda en blanco hasta que el
+     * usuario toca y fuerza el repaint.
+     *
+     * Y pasa en el caso más común de todos: pagar con MODO desde el celular.
+     * El usuario sale del navegador a la app del banco, NAVE lo redirige de
+     * vuelta, y la página carga con el navegador todavía en segundo plano.
+     *
+     * Por eso hay tres redes:
+     *   1. Si el documento está oculto → estado final YA, sin animación.
+     *   2. `visibilitychange` → si vuelve visible y todavía no pintó, forzar.
+     *   3. Failsafe a los 3s → forzar pase lo que pase.
+     */
     function runConfirmationAnimation() {
         const container = document.getElementById('confirmacion-inner');
         const line = document.getElementById('confirmacion-line');
         const ordenEl = document.getElementById('confirmacion-orden');
         const rows = document.querySelectorAll('.confirmacion-anim-row');
+        const seccion = document.getElementById('confirmation-container');
 
         if (!container) return;
+
+        /**
+         * Salta al estado final sin transición.
+         *
+         * Apaga `transition` antes de tocar las clases y lo restaura después:
+         * si quedara una transición pendiente sobre un documento oculto,
+         * volveríamos al mismo problema. `offsetWidth` fuerza el reflow para
+         * que el navegador no agrupe los dos cambios en un solo frame.
+         */
+        const aplicarEstadoFinal = () => {
+            const tocados = [container, line, ordenEl, seccion, ...rows].filter(Boolean);
+            tocados.forEach(el => { el.style.transition = 'none'; });
+
+            container.classList.add('visible');
+            if (line) line.classList.add('expand');
+            if (ordenEl) ordenEl.classList.add('visible');
+            rows.forEach(el => el.classList.add('visible'));
+            // La sección la anima transitionState con estilos inline que después
+            // limpia; si eso quedó a mitad de camino, se fuerza acá.
+            if (seccion) seccion.style.opacity = '1';
+
+            void container.offsetWidth;
+            tocados.forEach(el => { el.style.transition = ''; });
+        };
+
+        const yaPinto = () => container.classList.contains('visible');
+
+        // Red 1 — el documento está oculto: nada de animación.
+        if (document.hidden) {
+            aplicarEstadoFinal();
+            return;
+        }
+
+        // Red 2 — si se oculta a mitad de la animación y vuelve, forzar.
+        document.addEventListener('visibilitychange', function alVolver() {
+            if (document.hidden) return;
+            document.removeEventListener('visibilitychange', alVolver);
+            if (!yaPinto()) aplicarEstadoFinal();
+        });
 
         // T=0: Container fades in
         setTimeout(() => { container.classList.add('visible'); }, 200);
@@ -3484,6 +3547,13 @@ document.addEventListener('DOMContentLoaded', () => {
         rows.forEach((el, i) => {
             setTimeout(() => { el.classList.add('visible'); }, 1080 + (i * 160));
         });
+
+        // Red 3 — failsafe. La animación completa termina cerca de los 2.2s;
+        // a los 3s ya no hay excusa para seguir en blanco.
+        setTimeout(() => {
+            const ultima = rows.length ? rows[rows.length - 1] : container;
+            if (!ultima.classList.contains('visible')) aplicarEstadoFinal();
+        }, 3000);
     }
 
     // --- CHECKOUT LOGIC ---
