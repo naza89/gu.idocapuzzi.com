@@ -23,6 +23,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { TIPO_ENVIO_RETIRO } from '@/lib/envios';
 
@@ -246,14 +247,42 @@ export async function GET(
                     // Los dos mails cuelgan del mismo claim: la confirmación al
                     // cliente y el aviso interno al equipo. Cada uno atrapa su
                     // propio error para que uno no se lleve puesto al otro.
-                    import('@/lib/email').then(({ sendOrderConfirmationEmail, sendInternalOrderNotification }) => {
-                        sendOrderConfirmationEmail(id).catch((emailErr) =>
-                            console.error('[GET ordenes] Error email:', emailErr)
-                        );
-                        sendInternalOrderNotification(id).catch((notifErr) =>
-                            console.error('[GET ordenes] Error aviso interno:', notifErr)
-                        );
-                    }).catch(() => console.warn('[GET ordenes] Email module not available'));
+                    //
+                    // ⚠️ VAN DENTRO DE `after()`, NO sueltos.
+                    //
+                    // Antes se disparaban sin await y sin after: la ruta respondía
+                    // y Vercel congelaba la instancia con las promesas a medio
+                    // camino. En serverless, el trabajo async que sobrevive a la
+                    // respuesta NO está garantizado — hay que declararlo, y para
+                    // eso existe `after()` (el webhook de NAVE ya lo usaba).
+                    //
+                    // Lo destapó la orden 67, la primera compra real (2026-08-26):
+                    // los logs mostraban "Stock decrementado" y después NADA — ni
+                    // éxito ni error de los mails. El cliente no recibió su
+                    // confirmación y el equipo no recibió el aviso, pero
+                    // `email_sent` ya había quedado en true, así que no se iba a
+                    // reintentar nunca.
+                    after(async () => {
+                        try {
+                            const { sendOrderConfirmationEmail, sendInternalOrderNotification } =
+                                await import('@/lib/email');
+
+                            try {
+                                await sendOrderConfirmationEmail(id);
+                                console.log('[GET ordenes] ✅ Email de confirmación enviado — orden:', id);
+                            } catch (emailErr) {
+                                console.error('[GET ordenes] Error email:', emailErr);
+                            }
+
+                            try {
+                                await sendInternalOrderNotification(id);
+                            } catch (notifErr) {
+                                console.error('[GET ordenes] Error aviso interno:', notifErr);
+                            }
+                        } catch (modErr) {
+                            console.error('[GET ordenes] No se pudo cargar el módulo de email:', modErr);
+                        }
+                    });
                 } else {
                     console.log('[GET ordenes] ⏭️ Email ya enviado');
                 }
