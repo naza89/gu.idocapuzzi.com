@@ -4,6 +4,32 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-08-31
+
+### 🔴 Un pago aprobado quedó como `cancelado`: el reintento tras un rechazo rompe el circuito
+- **Problema encontrado:** Nicolás Sotera (orden 70, $60.000) pagó, le salió **rechazado**, reintentó y el segundo pago **salió aprobado** en el panel de NAVE. La orden quedó igual en `cancelado`: sin mail al cliente, sin aviso interno y **sin descuento de stock**. La plata está cobrada. La causa es el guard anti-replay de `webhooks/nave/route.ts:146`: cuando llegó el webhook del pago aprobado, la orden **ya tenía `nave_payment_id`** — el del pago rechazado — así que el guard lo tomó por una notificación ajena y salió con un `return` antes de tocar nada. El guard existe para cortar el replay de un `payment_id` ajeno contra órdenes caras, y **desde adentro un reintento legítimo es indistinguible de eso**: otro `payment_id` sobre una orden que ya tiene uno. El reintento se hizo sobre la **misma orden** (no hay una orden 71 en la base, el front reusó `_currentCheckoutOrdenId`).
+- **Lo que agrava el caso:** ninguna de las dos redes de rescate la mira, porque las dos filtran por `pago_pendiente` y esta orden está `cancelado` — ni la red de seguridad del GET (`[id]/route.ts:121` y `:149`) ni el cron de conciliación (`conciliar-pagos/route.ts:116`). **Un `cancelado` es un callejón sin salida: no se arregla solo nunca.**
+- **Solución adoptada:** ninguna todavía. Queda diagnosticado y documentado para la próxima sesión.
+- **Archivo a tocar:** `src/app/api/webhooks/nave/route.ts` (el guard), y contemplar el rescate de órdenes `cancelado` en la red de seguridad y el cron.
+- **Pendiente:** rescatar la orden 70 a mano (marcarla `pagado`, descontar stock, disparar los mails) y arreglar el guard para que no vuelva a pasar. **Un rechazo seguido de reintento no es un caso raro** — tarjeta sin límite, CVV mal, banco que rebota la primera — así que con la tienda abierta va a repetirse.
+
+### El webhook de NAVE ya funciona
+- **Problema encontrado:** venía sin llegar desde el 21-ago, incluso después de que NAVE actualizara la URL. Las órdenes 63, 66 y 67 habían reconciliado todas por la red de seguridad.
+- **Solución adoptada:** del lado de NAVE. Se confirma por la base, sin depender de logs: las órdenes **68 y 69 tienen `nave_status: APPROVED` y `nave_payment_id` real**, y esos dos valores **sólo los escribe el webhook** — la red de seguridad escribe `SUCCESS_PROCESSED` y deja el `payment_id` en null. Naza ya tiene la respuesta de ellos y retoma el hilo la próxima sesión.
+- **Pendiente:** cerrar el flujo para que los mails salgan por webhook y el cron quede sólo como respaldo, no como el camino principal.
+
+### Los mails del post-pago se perdían: faltaba `after()`
+- **Problema encontrado:** la orden 67 —primera compra real, día de la apertura— no disparó ni la confirmación a la clienta ni el aviso interno. Los logs lo mostraban **por omisión**: `✅ Stock decrementado` y después nada, ni éxito ni error. Los dos envíos se hacían sin `await` y sin `after()`, así que la ruta respondía y Vercel congelaba la instancia con las promesas a medio camino. En serverless el trabajo async que sobrevive a la respuesta **no está garantizado: hay que declararlo**. El webhook ya usaba `after()`; el GET había quedado sin él. Lo peor era la combinación: fallaba en silencio **y sin reintento**, porque `email_sent` se escribe con un `await` y quedaba en `true` aunque no saliera un solo mail — el claim atómico, que existe para que no se manden dos veces, garantizaba que no se mandaran nunca.
+- **Solución adoptada:** los dos envíos pasan a ir dentro de `after()`, awaiteados y con su propio `try`, más un log de éxito para poder verificarlo en producción en vez de deducirlo de un silencio. Verificado con el reenvío de la orden 67: ahora loguea `✅ Email de confirmación enviado` y `✅ Aviso de venta enviado`.
+- **Archivo modificado:** `src/app/api/ordenes/[id]/route.ts`. Commit `c905849`.
+- **Pendiente:** ninguno de este bug. Vale anotar que **sólo podía aparecer con una venta real**: el E2E no lo agarraba porque Naza volvía a la confirmación y se quedaba mirando la página, así que la función seguía viva y los mails salían. Hizo falta una clienta que pagara y cerrara la pestaña.
+
+### Corrección de talle en la orden 67
+- **Problema encontrado:** María Belén eligió talle L y quería M, confirmado por WhatsApp.
+- **Solución adoptada:** migración 23, ya corrida. **No alcanzaba con cambiar el texto del talle**: el descuento de stock se había hecho sobre la variante L, así que hubo que devolver la unidad a L y descontarla de M (L 6→7, M 14→13) y reapuntar el `variante_id` del item. Después se reenviaron los dos mails, ya con el talle corregido — se liberó sólo el claim de `email_sent`, así que el stock **no** se volvió a tocar (`⏭️ Stock ya decrementado` en los logs).
+- **Archivo modificado:** `backend/sql/23_correccion_talle_orden_67.sql`.
+- **Pendiente:** vienen **más cambios de talle** de otros clientes que se confundieron. Mismo procedimiento: mover el stock en las dos variantes, no sólo el texto.
+
 ## 2026-08-26
 
 ### La web abre al público — precios, retiro coordinado, medidas reales y aviso interno
