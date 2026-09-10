@@ -4962,12 +4962,15 @@ body.state-legales #legales-container {
     font-weight: bold;
 }
 
-/* Subtítulo de subsección — bold, margen arriba como separador visual */
+/* Subtítulo de subsección — bold, margen arriba como separador visual.
+   Condensed como el resto de la jerarquía de títulos de LEGALES (.legales-title
+   y .legales-section-title ya lo eran): estaba en la cara de texto y era el
+   único escalón que cambiaba de tipografía. */
 .legales-block-title {
-    font-family: 'Helvetica', sans-serif;
+    font-family: 'Helvetica Neue Condensed', sans-serif;
     font-weight: bold;
     font-size: var(--fs-body);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--color-black);
     display: block;
