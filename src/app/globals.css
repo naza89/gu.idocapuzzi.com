@@ -6786,21 +6786,27 @@ body.state-legales #legales-container {
         max-width: 100%;
     }
 
-    /* Botones: columna única en mobile, más grandes, ancho = header */
+    /* Botones: dos columnas también en mobile (igual que desktop), uno al lado
+       del otro. Estaban apilados en una sola columna. */
     .login-actions {
-        grid-template-columns: 1fr;
-        gap: 12px;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
         margin-top: 28px;
         width: 100%;
     }
 
     .login-actions button {
-        padding: 18px;
-        font-size: 1rem;
+        padding: 16px 6px;
+        font-size: 0.95rem;
     }
 
     .login-actions button .button-text {
-        font-size: 1rem;
+        font-size: 0.95rem;
+    }
+
+    /* CONTACTO tiene un solo botón (ENVIAR): sin par al lado, ocupa el ancho. */
+    #account-contact .login-actions {
+        grid-template-columns: 1fr;
     }
 
     /* Sobreescribir overrides de #account-create que usan margin-top menor */
