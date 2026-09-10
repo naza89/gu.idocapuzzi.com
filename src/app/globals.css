@@ -1643,6 +1643,14 @@ body.state-contact #account-contact {
 }
 
 .size-btn {
+    /* Sin este reset, iOS Safari dibuja el <button> con su chrome propio:
+       pinta el texto en el azul del sistema y le mete su padding. Por eso las
+       cajas de talle salían celestes en mobile y sólo la activa —la única con
+       `color` propio, ver .size-btn.active— se veía negra. */
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    color: var(--color-black);
     background: none;
     border: 1px solid transparent;
     padding: 0;
@@ -1651,7 +1659,12 @@ body.state-contact #account-contact {
     font-family: 'Helvetica Neue Condensed', sans-serif;
     cursor: pointer;
     font-size: 13.5px;
-    line-height: 21px;
+    /* Centrado por flex y no por line-height: iOS ignora el line-height de los
+       botones, y la letra quedaba descentrada dentro del cuadrado. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal;
     text-align: center;
     transition: all 0.2s;
 }
@@ -7025,7 +7038,7 @@ body.mobile-menu-open #mobile-menu {
         width: 23px;
         height: 23px;
         font-size: 14.5px;
-        line-height: 21px;
+        line-height: normal;
     }
 
     .pdp-selectors .size-guide-trigger {
