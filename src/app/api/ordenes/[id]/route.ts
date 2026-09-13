@@ -68,6 +68,7 @@ export async function GET(
                     variante_id,
                     variantes_producto:variante_id (
                         producto_id,
+                        sku,
                         productos:producto_id (
                             imagenes
                         )

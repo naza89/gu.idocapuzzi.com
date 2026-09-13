@@ -3448,10 +3448,46 @@ document.addEventListener('DOMContentLoaded', () => {
             const pixelKey = `pixel_purchase_${ordenId}`;
             if (window.fbq && !localStorage.getItem(pixelKey)) {
                 const pixelItems = Array.isArray(orden.items_orden) ? orden.items_orden : [];
+
+                // El catálogo de Meta identifica cada producto por su `slug`: es el
+                // `id` del feed (ver scripts/generar-feed-meta.mjs) y es lo que ya
+                // mandan ViewContent y AddToCart. Acá sólo tenemos el SKU de la
+                // variante (`SKU_PRODUCTO-TALLE`), así que volvemos al catálogo para
+                // recuperar el slug.
+                //
+                // Antes se mandaba `variante_id`, que es el UUID de Supabase: no
+                // coincide con ningún id del catálogo ni con los otros tres eventos,
+                // así que Meta no podía atribuir la venta a un producto — que es
+                // justamente lo que hace funcionar a los anuncios de catálogo.
+                const slugDeItem = function (item) {
+                    const skuVariante = (item.variantes_producto && item.variantes_producto.sku) || '';
+                    if (skuVariante) {
+                        // El SKU del producto es prefijo del de la variante; el sufijo
+                        // es el talle. Comparamos con el guión para que un SKU no
+                        // matchee por accidente con otro más largo.
+                        const porSku = products.find(function (p) {
+                            return p.sku && skuVariante.startsWith(p.sku + '-');
+                        });
+                        if (porSku && porSku.slug) return porSku.slug;
+                    }
+                    // Órdenes viejas o variantes sin SKU: caemos a nombre + color.
+                    // Ese par no siempre es único — las dos REMERA LOGO GÜIDO STRASS
+                    // son ambas 'Negro' y sólo las separa el colorway, que no se
+                    // guarda en items_orden. Si hay más de un candidato preferimos no
+                    // mandar nada: un id equivocado le atribuye la venta al producto
+                    // que no es y el catálogo termina optimizando hacia ahí.
+                    const porNombre = products.filter(function (p) {
+                        return p.name === item.nombre_producto && p.color === item.color;
+                    });
+                    return (porNombre.length === 1 && porNombre[0].slug) || '';
+                };
+
                 window.fbq('track', 'Purchase', {
                     value: (orden.total_centavos || 0) / 100,
                     currency: 'ARS',
-                    content_ids: pixelItems.map(function(i) { return i.variante_id || i.nombre_producto || ''; }),
+                    // Sin slug preferimos no mandar nada antes que mandar un id que
+                    // el catálogo no conoce.
+                    content_ids: pixelItems.map(slugDeItem).filter(Boolean),
                     content_type: 'product',
                     num_items: pixelItems.reduce(function(sum, i) { return sum + (i.cantidad || 0); }, 0),
                 });
