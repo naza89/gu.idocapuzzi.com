@@ -4,6 +4,37 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-09-13
+
+### Feed de productos para el catálogo de Meta
+- **Problema encontrado:** el formato de anuncio que quiere Naza —colección con escaparate, la imagen grande arriba y la grilla de productos abajo— **no se carga a mano**: Meta arma la grilla leyendo un catálogo, y el catálogo se alimenta de un feed. No había ninguno, y sin eso ese formato es inaccesible.
+- **Solución adoptada:** `scripts/generar-feed-meta.mjs` genera `public/feed-meta.csv` desde el catálogo que ve el cliente, que vive como literal JS en `public/js/start.js` — **no en Supabase**, que tiene 15 productos contra los 23 del front. Reusa `leerCatalogoDelFront` de `scripts/catalogo-front.mjs`, el mismo loader del verificador de catálogo. Se genera en `prebuild` y no en una API route porque una función serverless de Vercel puede no tener `start.js` en el filesystem, y el catálogo sólo cambia en el deploy: sale estático y lo sirve el CDN. **19 items** — 17 disponibles, 2 agotados.
+- **Decisión de diseño:** quedan **afuera las `CATEGORIAS_RESTRINGIDAS`** (`TOPS / MUSCULOSAS` y `BERMUDAS / SHORTS`). El Shop las muestra como teaser pero no se pueden comprar, y pautar una prenda sin botón de compra es tirar el presupuesto. Los `soldOut` **sí entran**, marcados `out of stock`: Meta no los muestra pero los reactiva solo si vuelve el stock.
+- **Archivo modificado:** `scripts/generar-feed-meta.mjs` (nuevo), `package.json` (`prebuild` + `feed:meta`). Commit `9faa4ae`.
+- **Verificado:** live en producción, idéntico al local, 19 filas. Ver Píxel y Feed de Catálogo.
+
+### El `Purchase` del píxel mandaba UUIDs: nunca hubiera atribuido una venta
+- **Problema encontrado:** `ViewContent` y `AddToCart` identifican el producto por su `slug` —que es también el `id` del feed— pero el `Purchase` mandaba **`variante_id`, el UUID de Supabase**. Ese id no coincide con ningún producto del catálogo ni con los otros tres eventos, así que **Meta no podía atribuir una venta a un producto**: justo lo que hace funcionar a los anuncios de catálogo. Estaba así desde que se instaló el píxel.
+- **Solución adoptada:** la orden no traía con qué resolverlo, así que el `select` de `/api/ordenes/[id]` ahora incluye el **`sku` de la variante** en el join, y el evento vuelve al catálogo para recuperar el slug. El SKU del producto es prefijo del de la variante (`REM-STR-NRO` → `REM-STR-NRO-M`); se compara con el guión para que un SKU no matchee por accidente con otro más largo.
+- **El caso borde:** el fallback por nombre + color **no siempre es único** — las dos `REMERA LOGO GÜIDO STRASS` son ambas `'Negro'` y sólo las separa el colorway, que no se guarda en `items_orden`. Ante la duda **no se manda nada**: un id equivocado le atribuye la venta al producto que no es y el catálogo termina optimizando hacia ahí. Peor que no saber.
+- **Archivo modificado:** `public/js/start.js`, `src/app/api/ordenes/[id]/route.ts`. Commit `ad0058d`.
+- **Verificado:** 92/92 variantes resuelven al slug correcto por SKU; los dos casos ambiguos sin SKU se omiten. Build, 87 tests, lint y `verificar:catalogo` en verde.
+
+### Diagnóstico de la cuenta de Meta vía MCP oficial
+- **Qué se hizo:** se conectó el **MCP oficial de Meta** (`https://mcp.facebook.com/ads`, publicado el 16-jul-2026) y se relevó la cuenta por lectura directa de la API. Se eligió sobre Adspirer porque trae gestión de catálogo y diagnóstico de señal nativos, sin intermediario comercial con acceso a los datos.
+- **El píxel está sano:** `GÜIDO Pixel` (`862180773603752`) activo, cookie de origen habilitada, **disparando ese mismo día a las 11:07**. El ID coincide con el del código.
+- **Lo que no existe:** cero catálogos, cero audiencias personalizadas, cero campañas. Y `server_last_fired_time` en época cero: el píxel **nunca disparó server-side**, o sea que no hay Conversions API y todo llega por navegador.
+- **🔴 La decisión que quedó abierta:** hay dos cuentas publicitarias y ninguna sirve como está. La que tiene medio de pago está en **pesos** pero es la **personal**, fuera del portfolio donde vive el píxel; la que está en el portfolio correcto está en **dólares** y sin medio de pago. **La moneda de una cuenta no se puede cambiar nunca**, así que hay que crear una en ARS dentro de `gu.idocapuzzi`. Detalle en Meta Ads.
+- **Pendiente:** cuenta en ARS, crear el catálogo, verificar el dominio (es un IDN: hay que verificar el punycode), resolver el Instagram en la cuenta publicitaria y definir presupuesto.
+
+### Carpeta `Pauta` en el vault
+- **Qué se hizo:** se creó la carpeta **`Pauta/`** para documentar todo lo de publicidad paga, a pedido de Naza. Tres notas: Pauta (estado general), Meta Ads (estado operativo de las cuentas) y Píxel y Feed de Catálogo (el setup técnico del lado de la web). Google Ads entra cuando llegue.
+- **Criterio:** lo conceptual de Meta —qué es el píxel, qué es un catálogo— sigue en Meta, en Tech. La carpeta nueva es el **estado real**: qué hay montado, qué falta y qué se decidió.
+
+### Corrección de un dato de sesiones anteriores
+- **Qué pasó:** el conteo rápido de tablas de Supabase reportaba **1 producto y 8 variantes**, y así se comunicó al principio de la sesión. El verificador de catálogo, que cuenta de verdad, da **15 productos y 80 variantes** — el primero era una estimación de estadísticas de Postgres, no un conteo real.
+- **Qué no cambia:** el front tiene 23 productos, así que la base sigue sin cubrir el catálogo completo y el feed igual tiene que salir de `start.js`.
+
 ## 2026-08-31
 
 ### 🔴 Un pago aprobado quedó como `cancelado`: el reintento tras un rechazo rompe el circuito
