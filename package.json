@@ -5,12 +5,13 @@
   "scripts": {
     "predev": "node scripts/vendor-supabase.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/vendor-supabase.mjs",
+    "prebuild": "node scripts/vendor-supabase.mjs && node scripts/generar-feed-meta.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"tests/**/*.test.ts\"",
+    "feed:meta": "node scripts/generar-feed-meta.mjs",
     "verificar:catalogo": "node --env-file-if-exists=.env.local scripts/verificar-catalogo.mjs",
     "vendor:supabase": "node scripts/vendor-supabase.mjs"
   },
