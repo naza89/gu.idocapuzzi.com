@@ -5384,10 +5384,26 @@ document.addEventListener('DOMContentLoaded', () => {
             // El pixel ya está inicializado en layout.tsx con consent revocado.
             // Al aceptar cookies: grant consent + disparar primer PageView.
             if (window.fbq) {
+                restoreClickId();
                 window.fbq('consent', 'grant');
                 window.fbq('track', 'PageView');
             }
             console.log('[Cookies] Tracking activado');
+        }
+
+        // layout.tsx captura el fbclid del anuncio en memoria antes de que el
+        // router borre el query string. Recién acá, ya con el consentimiento
+        // dado, lo escribimos como _fbc: el pixel lee esa cookie y recupera la
+        // atribución del clic. Sin esto Meta ve la visita pero no sabe de qué
+        // anuncio vino — que es lo que dejaba 273 clics en 19 visitas atribuidas.
+        function restoreClickId() {
+            // __gcFbclid solo existe si ESTA carga vino de un clic de anuncio,
+            // asi que si esta seteado siempre pisa el _fbc anterior: un clic nuevo
+            // reemplaza la atribucion del viejo, igual que hace el pixel de Meta.
+            const fbclid = window.__gcFbclid;
+            if (!fbclid) return;
+            const secure = location.protocol === 'https:' ? ';Secure' : '';
+            document.cookie = `_fbc=fb.1.${Date.now()}.${fbclid};path=/;max-age=7776000;SameSite=Lax${secure}`;
         }
     })();
 

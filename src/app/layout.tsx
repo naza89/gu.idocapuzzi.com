@@ -22,6 +22,15 @@ const pixelScript = `
   document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('consent', 'revoke');
   fbq('init', '${PIXEL_ID}');
+  // El router del SPA reescribe la URL al cargar y se lleva el query string,
+  // así que el fbclid del anuncio desaparece antes de que el usuario llegue a
+  // aceptar las cookies. Lo guardamos en memoria — no en una cookie — para no
+  // escribir nada de publicidad antes del consentimiento; activateTracking()
+  // lo convierte en la cookie _fbc recién al aceptar.
+  try {
+    var gcClickId = /[?&]fbclid=([^&#]+)/.exec(window.location.search);
+    if (gcClickId) window.__gcFbclid = decodeURIComponent(gcClickId[1]);
+  } catch (e) {}
 `;
 
 export default function RootLayout({
