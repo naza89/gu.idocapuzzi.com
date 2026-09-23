@@ -4,6 +4,91 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-09-23
+
+### Auditoría de los prompts de Claude
+- **Problema encontrado:** los prompts del repo tenían datos vencidos (`start.js` "3220 líneas" → son 6249; "9 migraciones" → son 23), `/deploy-check` llamaba a una herramienta de Vercel que no existe (`get_deployment_build_logs`), el CLAUDE.md mandaba a `/wrap-up` y `/sync-bitacora` (no existen) y los subagentes tenían fijado `claude-sonnet-4-6`. Además, `guido-backend`, `guido-frontend` y `guido-marketing` tenían el frontmatter en **YAML inválido** (`: ` sin comillas en `description`) y Claude Code los descartó al recargarlos.
+- **Solución adoptada:** números fuera de los prompts (la migración siguiente la resuelve `/crear-migracion`), `list_deployment_events` en `/deploy-check`, registro de sesión con `/sync`, subagentes en `model: sonnet` y descripciones entre comillas (los 5 validan con `js-yaml`). `/mapa` pasa a sacar los conteos de `scripts/mapa-vault.mjs` (67 notas, 603 links en la primera corrida) y el modelo sólo interpreta. Ver Automatizaciones.
+- **Archivo modificado:** `CLAUDE.md`, `.claude/agents/*.md`, `.claude/commands/{deploy-check,fantasma,mapa,semana,sync}.md`, `scripts/mapa-vault.mjs` (nuevo).
+- **Pendiente:** confirmar en sesión nueva que aparecen los 5 subagentes; resolver la contradicción sobre el estado de crear envío en OCA entre CLAUDE.md y `guido-backend`.
+
+### Primera campaña de Meta en el aire
+- **Qué se hizo:** la campaña `GC · AR · Ventas` quedó **activa** con dos anuncios en el ad set `AR · Amplio`: el **reel publicado** *Selvedge denim* y un **carrusel de catálogo** con 15 productos. **ARS 7.000/día** con un **tope de gasto de ARS 100.000** cargado como `spend_cap` de la campaña (se corta sola al llegar; ~14 días). Sin errores; los anuncios quedaron en revisión de Meta al cierre. Ver Meta Ads.
+- **El presupuesto:** lo movió Naza desde Ads Manager — de 9.000 a 5.000 (8:33) y de 5.000 a 7.000 (8:54). Se detectó por el historial de la cuenta: todos los cambios figuran con actor *Naza Capuzzi* porque el MCP usa sus credenciales, pero `application_name` los separa (**`ads MCP server`** = agente, **`Power Editor`** = Ads Manager).
+- **El ad set quedó apagado:** Naza prendió campaña y anuncios pero no el ad set, así que no se entregaba nada. Todo lo que crea el MCP nace en pausa, y para entregar tienen que estar prendidos **los tres niveles**. Ads Manager no avisa si falta uno.
+- **Pendiente:** no tocar la campaña durante la primera semana — cada cambio importante reinicia la fase de aprendizaje. Primera lectura a los 2-3 días.
+
+### El fix del `fbclid` llegó a producción
+- **Qué se hizo:** `8e49097` pusheado. El `__gcFbclid` apareció en `www.xn--gidocapuzzi-thb.com` a los ~20 s del deploy.
+- **Cómo se va a confirmar que funciona:** con la pauta corriendo, las **visitas a la página de destino** del panel tienen que acercarse a los **PageViews del píxel**. En el piloto fueron 19 contra 171. Si siguen lejos, el fix no está alcanzando a algún anuncio.
+- **Pendiente:** confirmar que el reel apunta al punycode. La API no devuelve la URL de destino de un anuncio armado sobre un post existente, y si quedó `güidocapuzzi.com` con diéresis, el redirect puede tirar el `fbclid` y el fix no aplica a ese anuncio.
+
+### Catálogo de Meta creado y apuntado al feed
+- **Qué se hizo** (noche del 22-sep): catálogo **`GÜIDO CAPUZZI`** (`1351085130431349`) en el portfolio `gu.idocapuzzi`, con el feed `1408555190695403` leyendo `/feed-meta.csv` **todos los días a las 6 AM** hora argentina (país AR, moneda ARS). **19 de 19 productos ingresados, 0 errores, 0 diagnósticos.** El píxel quedó conectado al catálogo: como los eventos mandan el `slug` y el catálogo usa el mismo `slug` como id, Meta ya puede cruzar qué producto miró cada persona.
+- **La duda que se resolvió:** las imágenes del feed son `.webp` y se temía que Meta las rechazara (históricamente pide JPG o PNG). **Las acepta**: todas pasaron a `fetched`.
+- **Conjunto de productos:** `Grilla · Selvedge + Remeras` (`1053739544139996`) — los 3 jeans selvedge + las 12 remeras, filtrado por `in stock`. Es **dinámico**: si algo se agota sale solo, y vuelve si se repone. 15 productos hoy.
+- **Cómo se mantiene:** el feed se regenera en cada deploy y Meta lo relee cada mañana, así que un cambio de precio o stock en `start.js` llega al catálogo al día siguiente sin intervención. Ver Píxel y Feed de Catálogo.
+
+### Los anuncios: reel + carrusel (la Colección no existe en la cuenta)
+- **El plan era:** el reel publicado + una **Colección** (portada con video y la grilla de a 2 productos en Stories, cada uno linkeado a su PDP).
+- **La Colección no está disponible**, ni por MCP ni en Ads Manager. Con *subida manual* el formato sólo ofrece *Una sola imagen o video* y *Secuencia*; con *catálogo Advantage+*, sólo *Secuencia*. Meta viene absorbiendo ese formato dentro de los anuncios de catálogo.
+- **Decisión de Naza:** reel + carrusel. Meta reparte el presupuesto hacia el que rinde mejor.
+- **Reel · Selvedge denim** (`120251845480120364`): lo armó Naza en Ads Manager sobre el **post existente**, así conserva los me gusta y comentarios que ya tiene. El texto es el caption tal cual, con el 15% off y las 6 cuotas.
+- **Carrusel catálogo · Selvedge + Remeras** (`120251845292780364`): creado por MCP sobre el conjunto de productos. Texto *Selvedge denim y remeras.* (sin la promo, porque no estaba confirmado si es permanente), título `{{product.name}}`, descripción `{{product.price}}`, botón *Comprar*. Mejoras automáticas de Advantage+ **apagadas** para que Meta no retoque las fotos de producto.
+- **Por qué pautar un video ya publicado:** conserva la prueba social, ya estaba probado (4,9% de clics en el piloto) y es vertical 9:16 de 8 s, lo que piden Stories y Reels.
+- **"Anuncios multianunciante"** viene tildado por defecto: el anuncio puede salir en un bloque junto a otras marcas y **puede recortarse**. Se recomendó destildarlo por control de marca. En el carrusel hay que revisarlo a mano: la API no expone esa opción.
+
+### El error de ubicación #1870194: una contradicción de Meta
+- **Problema encontrado:** al intentar prender el ad set, Ads Manager tiró *"Tu público contiene una opción de segmentación por lugar que se eliminó"*. El ad set tenía `location_types: ["frequently_in","home"]`, que **Meta completó solo** al crearlo por API — nunca se especificó.
+- **Lo que no funcionó:** actualizar la segmentación sin `location_types`, o forzando `["home"]`. La API acepta el cambio pero **vuelve a mostrar el mismo valor**: para un país entero, Meta guarda su representación interna.
+- **Solución adoptada:** **activar el ad set por API**, que pasó **sin error**. El rechazo era sólo de la validación del editor de Ads Manager.
+- **Lección:** si vuelve a pasar con un ad set creado por API, prenderlo por API y no pelear con el editor. Y **descartar el borrador** que quede en Ads Manager con la segmentación vieja, para que no pise la buena.
+
+### Lo que no puede hacer el MCP de Meta (verificado)
+- **Colección / Experiencia instantánea:** `ads_create_creative` no la soporta.
+- **Post de IG existente dentro de un ad set propio:** `ads_boost_ig_post` crea su **propia campaña**, por fuera del tope. Se hace en Ads Manager con *Usar publicación existente*.
+- **Subir archivos locales:** `LOCAL_FILE` no está habilitado en esta cuenta; sólo URL pública. Al final no hizo falta: el reel se armó sobre el post existente y la Colección no existe. Para cuando haga falta: el original (`CONTENIDO/REELS/Cambio 1 - con logo + audio.mp4`) es 1080×1920, y el que sirve Instagram está recomprimido a 720p.
+- **Leer borradores de Ads Manager:** todavía no habilitado para la cuenta.
+- **Leer "Anuncios multianunciante" y la URL de destino de un post existente:** no los expone.
+
+## 2026-09-22
+
+### El `fbclid` se perdía antes del consentimiento: el 93% del tráfico pago no se podía atribuir
+- **Problema encontrado:** el piloto del 21-sep gastó **ARS 17.966,93** y el panel mostraba **273 clics en el enlace contra 19 visitas a la página de destino**. La causa no era la gente rebotando. El píxel arranca con el consentimiento revocado por completo —no el consent mode granular— y el router del SPA reescribe la URL al cargar (`history.replaceState`, `start.js:6229` y `:5202`) llevándose el query string. El visitante llegaba con `?fbclid=...`, el píxel estaba revocado y **no escribía la cookie `_fbc`**, el router borraba la URL, y a los 1,5 s aparecía el banner: si aceptaba, disparaba `PageView` **pero el `fbclid` ya no existía**. Meta veía la visita y no sabía de qué anuncio venía. Estaba así desde que se instaló el píxel.
+- **El tamaño del agujero:** el píxel registró **171 PageViews** entre el 19 y el 21 de septiembre contra las **19** atribuidas. Sobre 171 visitas el costo real da **~ARS 105**, no ARS 946. El piloto rindió aproximadamente **9x mejor** de lo que mostraba el panel.
+- **Solución adoptada:** `layout.tsx` captura el `fbclid` **en memoria** (`window.__gcFbclid`) dentro del script síncrono del `<head>`, que corre antes que el router. `start.js` lo convierte en la cookie `_fbc` dentro de `activateTracking()`, es decir **recién al aceptar cookies**. Se eligió memoria y no cookie a propósito: así **no se escribe ninguna cookie de publicidad antes del consentimiento** y el Consent Mode v2 queda intacto.
+- **Autocorrección:** la primera versión traía un guard que impedía pisar un `_fbc` existente. Estaba mal — `activateTracking()` corre en **cada** carga cuando ya hay consentimiento, así que un cliente que volvía y clickeaba un anuncio nuevo se quedaba con la atribución del viejo. Se sacó: un clic nuevo siempre pisa al anterior, igual que hace el píxel de Meta.
+- **Archivo modificado:** `src/app/layout.tsx`, `public/js/start.js`. Commit `8e49097`, **sin pushear**.
+- **Verificado:** en browser contra el dev server — el `fbclid` sobrevive al borrado de la URL, no se escribe nada antes de aceptar, al aceptar queda `_fbc=fb.1.<ts>.<fbclid>`, y un segundo anuncio distinto pisa al primero. Build, lint (0 errores), 87/87 tests y `verificar:catalogo` en verde.
+- **Pendiente:** confirmar la atribución en producción con **Eventos de prueba** de Events Manager, mirando que el `Purchase` llegue con `fbc`. Es lo único que no se puede verificar en local.
+
+### El piloto de Meta no estaba en ninguna cuenta publicitaria
+- **Problema encontrado:** se buscó el anuncio de 48 hs en las dos cuentas publicitarias, con todos los rangos de fecha, y no aparecía. Lo único que había era una campaña de **agosto de 2025** con intereses de iluminación y hogar (Lámpara LED, Luz eléctrica, Vivienda) que se analizó por error como si fuera de GÜIDO.
+- **La causa:** esa campaña es de **Tec-Elec** — la cuenta personal tiene asignada la página `tecelec.ar`. Y el anuncio real de GÜIDO se promocionó **desde la app de Instagram**, flujo que crea el anuncio **fuera de las cuentas publicitarias que la API expone**. Por eso la sesión anterior registró cero campañas.
+- **Lección operativa:** lo que se promociona desde la app de IG es una **caja negra** — no se puede medir, segmentar ni gestionar, ni desde Ads Manager ni por MCP. Para pautar en serio hay que crear desde la cuenta publicitaria. Ver Meta Ads.
+- **Los números del piloto** (de la captura del panel de IG): ARS 17.966,93 · 5.600 espectadores · 273 clics en el enlace · 19 visitas a la página · 267 visitas al perfil · 66 reacciones · **0 ventas**. Completado el 21-sep.
+
+### Primera campaña armada: `GC · AR · Ventas` en pausa
+- **Qué se hizo:** Naza destrabó por su cuenta dos cosas — cambió **GÜIDO ADS a ARS** (se puede mientras la cuenta no haya gastado nunca; la sesión anterior lo había dado por imposible) y conectó el **Instagram** `gu.idocapuzzi` (`17841476530396947`). Con eso se armó la estructura completa por MCP.
+- **4 audiencias web** creadas sobre el píxel `862180773603752`: `WEB · Todos los visitantes 180d` (`120251831100790364`), `WEB · Vieron producto 30d` (`120251831104140364`), `WEB · Carrito abandonado 30d` (`120251831104500364`, AddToCart excluyendo Purchase) y `WEB · Compradores 180d` (`120251831104610364`). Requirieron que **Naza aceptara el ToS de públicos personalizados** (error `2663`): es un consentimiento legal que no puede dar un agente.
+- **Campaña** `GC · AR · Ventas` (`120251831890120364`) — objetivo Ventas, CBO **ARS 9.000/día**, menor costo, **PAUSADA**.
+- **Ad set** `AR · Amplio` (`120251831910230364`) — `OFFSITE_CONVERSIONS` sobre `CONTENT_VIEW`, geo **Argentina**, excluye `WEB · Compradores 180d`, Advantage+ Audience y ubicaciones Advantage+, **PAUSADO**.
+- **Por qué se optimiza a ViewContent y no a Purchase:** en 28 días el píxel registró 965 PageView, 385 ViewContent, 12 AddToCart, 6 InitiateCheckout y **2 Purchase**. Meta necesita ~50 eventos por ad set por semana para salir de aprendizaje. Con 0,5 compras por semana una campaña optimizada a Purchase **nunca aprende**; ViewContent (~90/semana) es el único evento de intención que supera el umbral.
+- **La trampa que costó 4 intentos:** el enum de la API es **`CONTENT_VIEW`**, mientras que el evento del píxel se llama `ViewContent`. Con el valor equivocado Meta devuelve un **error interno genérico**, no un error de validación. Hubo que aislarlo creando ad sets de prueba, ya borrados.
+- **Pendiente:** el **creativo** del anuncio (Naza lo define) y el **medio de pago** de GÜIDO ADS, que sigue sin cargar. Sin eso no entrega, aunque esté todo armado.
+
+### Argentina y no LATAM: el motivo es más duro que el presupuesto
+- **Qué se evaluó:** Naza había creado una audiencia Moda contemplando Chile, Uruguay y otros, y dudaba de si convenía. Conviene restringirse a Argentina, pero no por una cuestión de escala.
+- **El motivo real:** el checkout **no tiene campo de país** (`page.tsx:947` sólo pide provincia), OCA Integración es doméstico con origen en Haedo y NAVE Integración es Galicia en pesos. **Un clic chileno no puede comprar aunque quiera.** Pautar a LATAM es comprar tráfico que rebota en el checkout por diseño.
+- **Dato:** esa audiencia **nunca se usó** en ninguna entrega — el piloto ejecutó el 100% del gasto en AR.
+- **Aclaración conceptual:** un *público guardado* (geo + edad + intereses) **no es** una audiencia personalizada. El MCP no lista ni crea públicos guardados. Y la geografía **no vive en la audiencia**: se define en el ad set.
+
+### Correcciones a diagnósticos previos
+- **La moneda de una cuenta publicitaria sí se puede cambiar** mientras no haya gastado nunca. La sesión del 13-sep lo dio por imposible y planificó crear una cuenta nueva en ARS; no hizo falta.
+- **`ads_get_ad_account_pages` devolviendo vacío no es un problema.** Ese endpoint lista las páginas *promocionadas bajo* la cuenta y se llena recién cuando existe un anuncio que las usa. La lista que importa es la de páginas con permiso `CREATE_ADS`, y ahí `Güido Capuzzi` (`1008417085698082`) siempre estuvo. Se mandó a Naza a asignar la página, que nunca estuvo desasignada.
+- **El error de Meta al conectar la Página** decía *Unable to connect Instagram Account*: es el flujo de vincular IG **a la Página**, y rebotaba porque esa Página **ya tenía** un Instagram conectado. No había nada que arreglar.
+- **La orden 70 quedó resuelta** — Naza la rescató y Nicolás Sotera ya recibió la compra. Sale de la lista de riesgos.
+
 ## 2026-09-13
 
 ### Feed de productos para el catálogo de Meta
