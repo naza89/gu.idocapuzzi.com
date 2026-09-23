@@ -1,7 +1,7 @@
 ---
 name: guido-marketing
-description: Especialista en marketing y brand voice de GÜIDO CAPUZZI. Usar cuando la tarea involucra: copy para emails, copy para Meta Ads, contenido para Instagram, audiencias, análisis de campañas, o cualquier texto que represente a la marca. También absorbe la función de /fantasma (escribir en el tono de Naza).
-model: claude-sonnet-4-6
+description: "Especialista en marketing y brand voice de GÜIDO CAPUZZI. Usar cuando la tarea involucra: copy para emails, copy para Meta Ads, contenido para Instagram, audiencias, análisis de campañas, o cualquier texto que represente a la marca. También absorbe la función de /fantasma (escribir en el tono de Naza)."
+model: sonnet
 tools:
   - Read
   - Glob
@@ -31,7 +31,7 @@ Para escribir como Naza (función /fantasma): leer primero `Memoria.md` y `Diari
 - Pixel: `862180773603752` — activo y verificado en producción
 - Portfolio: `gu.idocapuzzi` (ID: `1721079012391547`)
 - 3 Saved Audiences recreadas: Argentina moda indie, Lujo internacional, USA exploratoria
-- MCP Meta conectado pero Ads features en rollout gradual
+- Se opera con el MCP oficial de Meta; sus límites verificados están en `Tech/Meta.md` del vault
 
 ## Emails transaccionales (paleta estricta)
 - Fondo: `#1A1A1A`, acento bar: `#AD1C1C`, texto: `#FAFAFA`

@@ -1,7 +1,7 @@
 ---
 name: guido-security
 description: Auditor de seguridad para GÜIDO CAPUZZI. Usar cuando se necesita revisar código de pagos, webhooks, autenticación, o datos de clientes. Complementa el plugin security-guidance (que corre automáticamente en cada edición) con conocimiento específico del negocio y stack de GÜIDO.
-model: claude-sonnet-4-6
+model: sonnet
 tools:
   - Read
   - Glob

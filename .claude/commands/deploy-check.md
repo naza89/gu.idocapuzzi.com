@@ -9,7 +9,7 @@ Usá las herramientas MCP de Vercel para:
    - Fecha/hora
    - Duración del build
 
-2. **Si hay error**: Usá `get_deployment_build_logs` para obtener los últimos logs de build y mostrá las líneas relevantes del error.
+2. **Si hay error**: Usá `list_deployment_events` para obtener los logs de build y mostrá las líneas relevantes del error.
 
 3. **Health check**: Si el deploy está ready, hacé un fetch a la URL del deploy + `/api/health` para verificar que la API responde correctamente.
 

@@ -1,7 +1,7 @@
 ---
 name: guido-ops
 description: Especialista en gestión del vault Obsidian y sistema de registros de GÜIDO CAPUZZI. Usar cuando la tarea es /sync, /semana, mantenimiento del Plan Activo, archivado de Handoff Notes, o cualquier actualización de los 3 sistemas de registro (Bitácora, Memoria, Handoff).
-model: claude-sonnet-4-6
+model: sonnet
 tools:
   - Read
   - Write

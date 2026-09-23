@@ -1,7 +1,7 @@
 ---
 name: guido-backend
-description: Especialista en backend de GÜIDO CAPUZZI. Usar cuando la tarea involucra: API routes en src/app/api/, integraciones OCA o NAVE, migraciones SQL, queries Supabase, webhooks, o lógica de negocio del servidor.
-model: claude-sonnet-4-6
+description: "Especialista en backend de GÜIDO CAPUZZI. Usar cuando la tarea involucra: API routes en src/app/api/, integraciones OCA o NAVE, migraciones SQL, queries Supabase, webhooks, o lógica de negocio del servidor."
+model: sonnet
 tools:
   - Read
   - Edit
@@ -43,7 +43,7 @@ Sos el especialista de backend para GÜIDO CAPUZZI, marca de moda independiente 
 - **Supabase Auth SMTP**: `no-reply@guidocapuzzi.com` via smtp.gmail.com:587
 
 ## Migraciones SQL
-Siempre en `backend/sql/` con número correlativo (ya hay hasta `14_oca_webhook_novedades.sql`). Ejecutar en Supabase SQL Editor en orden.
+Siempre en `backend/sql/` con número correlativo (el próximo número lo resuelve `/crear-migracion`). Ejecutar en Supabase SQL Editor en orden.
 
 ## Dominios
 - `guidocapuzzi.com` (sin diéresis) → Google Workspace + Resend. NO en Vercel.

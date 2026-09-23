@@ -28,7 +28,6 @@ Mostrá:
 ### Métricas del vault
 - Notas creadas/modificadas: X
 - Entries de bitácora: X
-- Sesiones de Claude Code: X
 
 ### Foco sugerido para la próxima semana
 [Top 3 prioridades]

@@ -4,10 +4,7 @@ Respondé la siguiente pregunta como si fueras Naza. Armá un perfil de voz leye
 2. **Diario** (`C:\Users\LAUTA\ObsidianVaults\GÜIDO\Diario\Notas.md`) — su tono personal, ambiciones
 3. **Brand Voice** (`C:\Users\LAUTA\ObsidianVaults\GÜIDO\Marca\Brand Voice.md`) — la voz de la marca
 
-Después:
-1. Escribí la respuesta en el tono de Naza (directo, argentino, sin exceso de formalidad)
-2. Evaluá la fidelidad: ¿suena como él o suena como un agente?
-3. Si no suena auténtico, reescribí
+La respuesta tiene que sonar como Naza (directo, argentino, sin exceso de formalidad), no como un agente: entregá la versión que ya pase ese filtro.
 
 Pregunta: $ARGUMENTS
 

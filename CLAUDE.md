@@ -33,13 +33,13 @@ src/
     oca/                  # config, client, xml-generator, xml-parser, calculators, types, validations
 public/
   js/
-    start.js              # APP PRINCIPAL (3220 líneas) — SPA vanilla JS, navegación, carrito, UI
+    start.js              # APP PRINCIPAL — SPA vanilla JS, navegación, carrito, UI
     checkout-logic.js     # Checkout Step 1-2 (formulario + Supabase + OCA cotización)
     checkout-payment.js   # Checkout Step 3 (NAVE SDK + QR)
     supabase-config.js    # Cliente Supabase browser + helpers de stock
   assets/                 # brand/, fonts/, icons/, images/products/
 backend/
-  sql/                    # 9 migraciones SQL (01 a 09, ejecutar en orden en Supabase SQL Editor)
+  sql/                    # Migraciones SQL numeradas NN_nombre.sql (ejecutar en orden en Supabase SQL Editor)
 docs/
   ARCHITECTURE.md         # Arquitectura técnica completa
   BRAND_GUIDELINES.md     # Paleta, tipografía, tono, reglas de marca
@@ -122,7 +122,7 @@ Archivos clave:
 
 ### Sistema de registros (OBLIGATORIO)
 
-Cada sesión DEBE actualizar al cerrar (`/wrap-up`):
+Si en la sesión se trabajó en el proyecto, `/sync` actualiza al cerrar:
 
 1. **Bitácora** (vault `Bitácora.md` + repo `docs/BITACORA.md`) — Qué se hizo técnicamente. Tono factual, tercera persona.
 2. **Memoria** (vault `Memoria.md`) — Qué se discutió y decidió. Tono personal, primera persona (como si escribiera Naza).
@@ -131,14 +131,11 @@ Cada sesión DEBE actualizar al cerrar (`/wrap-up`):
 
 El agente **NO** escribe en `Diario/Notas.md` — eso es personal de Naza.
 
-**Regla:** Si se trabajó en el proyecto, se registra en Obsidian. Sin excepciones.
-
 ### Skills de sesión
 - `/resume` — Inicio de sesión: lee handoff notes + plan activo + bitácora + git log
 - `/sync` — Sincronización completa: actualiza handoff notes + plan + bitácora (repo y vault) + memoria
 - `/como-sigo` — Top 5 pasos priorizados para continuar el proyecto
 - `/status-guido` — Dashboard del negocio: catálogo, stock, órdenes, progreso
-- `/wrap-up` o `/sync-bitacora` — Aliases deprecados de `/sync`
 
 ## Documentación detallada
 

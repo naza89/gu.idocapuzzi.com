@@ -95,7 +95,7 @@ Agregá una entry nueva:
 
 ---
 
-## 6. Extras (de cerrar-dia, integrados)
+## 6. Extras
 
 **Action items sueltos:** Revisá si hay tareas mencionadas en la conversación o en notas modificadas hoy que no estén en Plan Activo. Si encontrás, agregalas.
 

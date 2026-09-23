@@ -1,8 +1,6 @@
 Escaneo topológico completo del vault de Obsidian. Analizá la estructura, conexiones y salud general.
 
-1. Listá todos los archivos `.md` en `C:\Users\LAUTA\ObsidianVaults\GÜIDO\`
-2. Para cada archivo, extraé los `[[wikilinks]]` que contiene
-3. Generá un análisis:
+Corré `node scripts/mapa-vault.mjs`: devuelve en JSON las estadísticas, huérfanas, hubs, callejones sin salida y links rotos del vault `C:\Users\LAUTA\ObsidianVaults\GÜIDO\`. Esos números van tal cual al informe; tu parte es leer las notas que haga falta para detectar clusters y escribir las recomendaciones.
 
 ```
 ## Mapa del Vault — GÜIDO CAPUZZI
