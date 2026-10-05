@@ -179,7 +179,7 @@ describe('un secreto faltante no puede tumbar una ruta entera', () => {
     test('ningún módulo del camino del dinero construye un SDK a nivel de módulo', () => {
         // Generaliza el caso de Resend: cualquier `new Cliente(process.env.X)`
         // en el scope de un módulo que importen las rutas es la misma trampa.
-        for (const ruta of ['src/lib/email.ts', 'src/lib/supabase.ts', 'src/lib/nave/client.ts', 'src/lib/oca/client.ts']) {
+        for (const ruta of ['src/lib/email.ts', 'src/lib/supabase.ts', 'src/lib/nave/client.ts', 'src/lib/oca/client.ts', 'src/lib/telegram/client.ts', 'src/lib/telegram/notificar-compra.ts']) {
             const codigo = codigoSinComentarios(ruta);
             const sospechosos = [...codigo.matchAll(/^(?:const|let|var)\s+\w+\s*(?::[^=]+)?=\s*new\s+\w+\s*\([^)]*process\.env/gm)];
             assert.equal(
@@ -194,6 +194,7 @@ describe('ninguna credencial de servidor queda expuesta al browser', () => {
     const SECRETOS = [
         'SUPABASE_SERVICE_ROLE_KEY', 'NAVE_CLIENT_SECRET', 'OCA_CLAVE',
         'ADMIN_API_TOKEN', 'NAVE_WEBHOOK_API_KEY', 'RESEND_API_KEY',
+        'TELEGRAM_BOT_TOKEN',
     ];
 
     test('no existe ninguna env var NEXT_PUBLIC_ con nombre de secreto', () => {

@@ -287,6 +287,17 @@ export async function GET(
                 } else {
                     console.log('[GET ordenes] ⏭️ Email ya enviado');
                 }
+
+                // Aviso a Telegram: fuera del claim de email_sent, con el suyo propio.
+                // Así, si falló en un pase anterior, este GET (o el cron) lo reintenta.
+                after(async () => {
+                    try {
+                        const { notificarCompraTelegram } = await import('@/lib/telegram/notificar-compra');
+                        await notificarCompraTelegram(id);
+                    } catch (tgErr) {
+                        console.error('[GET ordenes] Error aviso Telegram:', tgErr);
+                    }
+                });
             } catch (postPayErr) {
                 console.error('[GET ordenes] Error post-pay:', postPayErr);
             }

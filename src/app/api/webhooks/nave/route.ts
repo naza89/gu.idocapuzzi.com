@@ -22,6 +22,7 @@ import { after } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { verifyPaymentStatus } from '@/lib/nave/client';
 import { sendOrderConfirmationEmail, sendInternalOrderNotification } from '@/lib/email';
+import { notificarCompraTelegram } from '@/lib/telegram/notificar-compra';
 import { crearEnvioOCA } from '@/lib/oca/crear-envio';
 import { safeEqualStr } from '@/lib/security';
 import { TIPO_ENVIO_RETIRO } from '@/lib/envios';
@@ -320,6 +321,10 @@ async function processWebhook(
             } catch (emailErr) {
                 console.error('[webhook/nave] Error al enviar email:', emailErr);
             }
+
+            // 7b'. Aviso a Telegram. Va después del stock para mostrar lo que quedó,
+            // y con su propio claim (no el de email_sent) para poder reintentarse.
+            await notificarCompraTelegram(externalPaymentId);
 
             // 7c. Crear envío OCA — solo si no se creó antes
             const { data: ocaCheck } = await supabase
