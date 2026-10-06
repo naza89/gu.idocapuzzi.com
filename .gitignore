@@ -56,8 +56,6 @@ next-env.d.ts
 public/assets/video/*.mov
 public/assets/images/gráficas/
 
-# Python (agente/)
+# Python
 __pycache__/
 .pytest_cache/
-# Secretos del agente en el VPS (el .env ya lo cubre la regla .env)
-agente/deploy/supabase.env

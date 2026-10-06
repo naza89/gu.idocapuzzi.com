@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Agente de operaciones (WIDO)
+
+El agente que opera la marca por Telegram (stock por chat, ventas) vive en su propio repo:
+**[naza89/wido-agent](https://github.com/naza89/wido-agent)**.
+
+Acá quedan las dos piezas que son de la web:
+- `src/lib/telegram/` — el aviso de cada compra pagada al chat del equipo (no pasa por el agente).
+- `backend/sql/24_movimientos_stock_y_aviso_telegram.sql` — `ajustar_stock()` y `movimientos_stock`,
+  que el agente usa para los ajustes manuales.

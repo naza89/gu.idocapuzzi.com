@@ -79,6 +79,10 @@ docs/
 - Sandbox tuvo errores de timeout (stores_error, qr_generator_error) — problemas del lado NAVE
 - Migración `08_nave_payment.sql` ya ejecutada
 
+### Telegram + agente WIDO — Estado: en producción (2026-10-05)
+- Aviso de compra pagada → Telegram: `src/lib/telegram/` (webhook NAVE + red de seguridad del GET), idempotente con `ordenes.notificado_telegram`
+- El agente (Hermes + MCP, stock por chat) vive en **otro repo**: `naza89/wido-agent` (local: `Naza\wido-agent`). Acá solo la migración 24 (`ajustar_stock`, `movimientos_stock`)
+
 ### OCA ePak (envíos) — Estado: cotización y sucursales funcionando, crear envío pendiente de test
 - Todas las API routes implementadas (cotizar, sucursales, crear-envio, tracking, etiqueta, anular)
 - XML sobre HTTP, proxy via Next.js API routes (OCA no tiene CORS)
