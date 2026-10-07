@@ -4,6 +4,49 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-10-06
+
+### WIDO pasa a su propio repo público (naza89/wido-agent)
+- **Problema encontrado:** el agente vivía en `agente/` dentro del repo de la tienda. Para mostrarlo en el CV hacía falta un proyecto propio, con su CI y su roadmap. Además, la primera pregunta real ("¿qué intervenciones quedan disponibles?") falló: `INTERVENCIONES` es `productos.categoria` y la búsqueda del agente no la mira.
+- **Solución adoptada:** `git subtree split` de `agente/` → repo público `naza89/wido-agent`, con README en inglés (decisiones de diseño, roadmap M0–M6), `docs/ROADMAP.md` (el Plan FASE 2 retomado y adaptado) y CI en GitHub Actions (ruff + pytest, verde al primer run). El repo de la tienda quedó sin `agente/` y con punteros. En el VPS, el contenedor `guido` corre desde un clone en `/srv/guido/wido-agent`; el volumen de Hermes se reutilizó (proyecto de compose `deploy`) con `--force-recreate`. Se sumaron al roadmap M0.5 (el agente entiende el catálogo) y M3b (Meta Ads de solo lectura, como tool y no como RAG). Embeddings decididos: `openai/text-embedding-3-small` vía OpenRouter (1536 dims; la migración 21 corre tal cual).
+- **Archivo modificado:** repo `naza89/wido-agent` (completo); en la tienda: `README.md`, `CLAUDE.md`, `.env.example`, `.gitignore`, se borra `agente/`.
+- **Pendiente:** M0.5 (búsqueda por categoría + `ficha_producto` + glosario de marca), M1 (evals del agente para elegir el modelo).
+
+### Drop de intervenciones: plan, prompts de mockups y fotolitos
+- **Problema encontrado:** el drop de fin de invierno interviene stock existente (cropped, lavados, musculosas) y suma estampas nuevas; faltaban los fotolitos, las bases de mockup y un criterio prenda por prenda.
+- **Solución adoptada:** nota Drop Intervenciones — Mockups y Fotolitos con el plan, 11 prompts de mockups base y un prompt maestro para Codex (`MOCKUPS/drop-oct-2026/PROMPT_CODEX.md`). Fotolitos en `GRÁFICAS/outputs/`: serpiente (negra sobre blanca, inversa en blanco, faded de producción, negra + roja), freakshow (ocre, azul marino y negro con grano), Jesús y Buda para la oversize (faded, pisan el rib), muerte para las waffle (cruda y negra en marrón `#442517` + rojo sin base, faded).
+- **Archivo modificado:** `GRÁFICAS/outputs/{musculosa,oversize,waffle}/`, `MOCKUPS/drop-oct-2026/`.
+- **Pendiente:** prueba física de cada estampa y del lavado; renders que faltan.
+
+### Motor de GRÁFICAS: bugs y features nuevas
+- **Problema encontrado:** al fijar tintas, el gris oscuro de la cara de freakshow caía en el azul marino de las letras (igual de oscuros) y la cara salía azul; la muerte sobre la waffle negra perdía capa y guadaña (el negro no se imprime sobre negro); no había forma de tapar una estampa vieja en prenda clara ni de separar una foto a color.
+- **Solución adoptada:** reparto de tintas con la claridad a mitad de peso; `--estilo xerox` en color (negro con grano, colores planos); `--invertir` en color (da vuelta los neutros); pedir 2+ tintas fuerza color; `--base-tapar`; `--ubicacion`; perfiles `oversize`, `waffle` y `boxy`. 41 tests.
+- **Archivo modificado:** `GRÁFICAS/code/garment_prep/{pipeline,cli}.py`, `core/{separacion,exportar,efectos,inkscape}.py`, `code/tests/test_graficas.py`, `GRÁFICAS/CLAUDE.md`.
+- **Pendiente:** nada en el motor.
+
+### KC sobre la afligida blanca: proceso simulado
+- **Problema encontrado:** la foto de Kurt Cobain tenía que imprimirse con calidad de foto encima del logo viejo, con dibujos de línea y texto rojo encima. La primera trama AM a color salió lavada: con todas las tintas al mismo ángulo, la de arriba tapaba a la de abajo.
+- **Solución adoptada:** proceso simulado AM con puntos apilados (cada tinta de abajo lleva lo suyo + lo de encima, hasta 3 capas) y alternativa FM (`--estilo indice`). Capa plana en pantallas propias: negro de línea sobreimpreso, rojo `#C80000` sólo en el texto calando la foto con trap 0,25 mm. Fotolitos también en TIFF 1 bit a 600 dpi. Foto en alta recortada al encuadre de `kc.png` por template matching. Versión elegida: `boxy/kc_am_6tintas`, 52,8 × 43 cm, 8 pantallas.
+- **Archivo modificado:** `GRÁFICAS/code/tools/componer_kc.py` (nuevo), `GRÁFICAS/outputs/boxy/kc_*`, `outputs/_composiciones/`.
+- **Pendiente:** confirmar con el taller lpi, punto mínimo, ángulo, registro, positivo/negativo y bastidor. Derechos de la foto.
+
+### Renders sobre las bases de Codex
+- **Problema encontrado:** hacía falta ver las estampas reales sobre las prendas intervenidas.
+- **Solución adoptada:** `GRÁFICAS/code/tools/render_prenda.py`: recorta la prenda, la mide a escala real, centra o ubica la estampa y la funde con pliegues y tejido; opcional sunfade de la tela. Renders en `MOCKUPS/drop-oct-2026/renders/`: waffle (muerte 32,3 × 45 centrada + logo lumbar rojo de costura a costura), afligidas navy y negra (logo boxed lavado de 32 cm), afligida blanca con KC.
+- **Archivo modificado:** `GRÁFICAS/code/tools/render_prenda.py` (nuevo).
+- **Pendiente:** renders de logo v2 cropped, STRASS 3ª, oversize Jesús/Buda, musculosas FREAK SHOW y serpiente.
+
+---
+
+## 2026-10-05
+
+### Avisos de compra a Telegram + agente de stock (WIDO) en producción
+- **Problema encontrado:** las ventas en mano no descontaban stock, y las compras web no avisaban por ningún canal rápido.
+- **Solución adoptada:** (1) aviso de cada compra pagada a Telegram desde la web (`src/lib/telegram/`), disparado desde el webhook de NAVE y desde la red de seguridad del GET. Tiene su propio flag `ordenes.notificado_telegram`: si el envío falla se libera y lo reintenta el próximo pase. El mensaje grita SIN STOCK cuando una variante queda en 0. (2) Migración 24 en Supabase: `movimientos_stock` + `ajustar_stock()` (atómica, `FOR UPDATE`, sin stock negativo, solo `service_role`), aplicada y verificada con una transacción revertida. (3) Server MCP `guido` (Python, 7 tools: consultar stock, ventas, movimientos, y preparar → confirmar ajustes con token de un solo uso) + Hermes en el VPS de Pelusa con OpenRouter. En Telegram quedan solo `clarify`, `todo` y `session_search` más el MCP, con la memoria inyectada apagada, el allowlist con el id de Naza y la clave de Supabase en un archivo aparte montado read-only.
+- **Problema encontrado (deploy):** el primer aviso falló con *"the bot can't send messages to the bot"*: en `TELEGRAM_CHAT_IDS` estaba el id del bot (el número antes de los `:` del token). Se corrigió con el id de usuario (@userinfobot) y el aviso de la orden #73 salió.
+- **Archivo modificado:** `backend/sql/24_movimientos_stock_y_aviso_telegram.sql`, `src/lib/telegram/{client,mensaje-compra,notificar-compra}.ts`, `src/app/api/webhooks/nave/route.ts`, `src/app/api/ordenes/[id]/route.ts`, `tests/telegram-mensaje-compra.test.ts`, `tests/invariante-precio-servidor.test.ts`. Commits `860dbc3`, `6787305`.
+- **Pendiente:** que Naza pruebe el bot desde Telegram; decidir el modelo (`gpt-6-luna-pro` vs Claude Sonnet) con evals.
+
 ## 2026-09-23
 
 ### Auditoría de los prompts de Claude
