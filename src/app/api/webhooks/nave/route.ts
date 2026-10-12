@@ -26,6 +26,7 @@ import { notificarCompraTelegram } from '@/lib/telegram/notificar-compra';
 import { crearEnvioOCA } from '@/lib/oca/crear-envio';
 import { safeEqualStr } from '@/lib/security';
 import { TIPO_ENVIO_RETIRO } from '@/lib/envios';
+import { ESTADO_ESPERANDO_TRANSFERENCIA } from '@/lib/pagos';
 
 interface NaveWebhookPayload {
     payment_id: string;
@@ -194,6 +195,15 @@ async function processWebhook(
 
         switch (status) {
             case 'APPROVED':
+                if (orden.estado === ESTADO_ESPERANDO_TRANSFERENCIA) {
+                    // Pagó con tarjeta una orden que ya había pasado a transferencia
+                    // (intento de NAVE abierto antes del cambio). La plata entró: se
+                    // marca pagada, y la transferencia ya no se puede confirmar (409).
+                    console.warn(
+                        '[webhook/nave] ⚠️ APPROVED sobre una orden esperando transferencia — se marca pagada. Revisar que no transfiera también. Orden: %s',
+                        externalPaymentId
+                    );
+                }
                 updateData.estado = 'pagado';
                 updateData.pagado_at = new Date().toISOString();
                 if (paymentData.available_balance?.value) {
@@ -205,7 +215,9 @@ async function processWebhook(
             case 'CANCELLED':
                 // Guarda: no degradar a 'cancelado' una orden que ya avanzó
                 // (evita que un rechazo tardío pise un pago posterior aprobado).
-                if (ESTADOS_TERMINALES_POSITIVOS.includes(orden.estado)) {
+                // Tampoco cancelar una orden que pasó a transferencia: el rechazo es de
+                // un intento con tarjeta anterior, y la reserva sigue vigente.
+                if (ESTADOS_TERMINALES_POSITIVOS.includes(orden.estado) || orden.estado === ESTADO_ESPERANDO_TRANSFERENCIA) {
                     console.warn(
                         '[webhook/nave] ⚠️ %s tardío sobre orden en estado "%s" — no se degrada. Orden: %s',
                         status,

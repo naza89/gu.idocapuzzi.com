@@ -220,6 +220,24 @@ type ClienteOrden = {
     email: string;
 };
 
+/**
+ * Escapa texto para meterlo en el HTML de un mail.
+ *
+ * Nombre, apellido, teléfono, dirección y los nombres/colores/talles de
+ * `items_orden` los escribe el cliente (o su navegador) en el checkout. Sin
+ * escapar, alguien podía cargar HTML en "nombre" con el email de otra persona y
+ * hacer que ventas@guidocapuzzi.com le mande un mail con contenido arbitrario —
+ * con el pago por transferencia eso ya ni requiere pagar.
+ */
+function esc(texto: unknown): string {
+    return String(texto ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function formatARS(centavos: number): string {
     return `$${Math.round(centavos / 100).toLocaleString('es-AR')}`;
 }
@@ -281,8 +299,8 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
     const itemsHTML = items.map(item => `
         <tr class="item-row">
           <td>
-            <p class="item-name">${item.nombre_producto}</p>
-            <p class="item-variant">${item.color} &middot; ${item.talle}</p>
+            <p class="item-name">${esc(item.nombre_producto)}</p>
+            <p class="item-variant">${esc(item.color)} &middot; ${esc(item.talle)}</p>
           </td>
           <td class="item-qty">${item.cantidad}</td>
           <td class="item-price">${formatARS(item.precio_unitario_centavos * item.cantidad)}</td>
@@ -313,7 +331,7 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
       <h1 class="heading">Orden #${orden.numero_orden}<br>confirmada.</h1>
 
       <p class="copy">
-        Hola ${cliente.nombre}, tu pedido fue recibido y el pago fue confirmado.<br>
+        Hola ${esc(cliente.nombre)}, tu pedido fue recibido y el pago fue confirmado.<br>
         ${esRetiroEnMano(orden.tipo_envio)
             ? 'Elegiste retirarlo en persona, así que no hay envío. Te escribimos a este mismo mail para coordinar lugar y horario.<br>Si preferís adelantarte, respondé este mensaje o escribinos a <a href="mailto:ventas@guidocapuzzi.com">ventas@guidocapuzzi.com</a>.'
             : 'En breve nos ponemos en contacto para coordinar el envío.'}
@@ -439,8 +457,8 @@ export async function sendTransferInstructionsEmail(ordenId: string): Promise<vo
     const itemsHTML = items.map(item => `
         <tr class="item-row">
           <td>
-            <p class="item-name">${item.nombre_producto}</p>
-            <p class="item-variant">${item.color} &middot; ${item.talle}</p>
+            <p class="item-name">${esc(item.nombre_producto)}</p>
+            <p class="item-variant">${esc(item.color)} &middot; ${esc(item.talle)}</p>
           </td>
           <td class="item-qty">${item.cantidad}</td>
           <td class="item-price">${formatARS(item.precio_unitario_centavos * item.cantidad)}</td>
@@ -485,7 +503,7 @@ export async function sendTransferInstructionsEmail(ordenId: string): Promise<vo
       <h1 class="heading">Orden #${orden.numero_orden}<br>reservada.</h1>
 
       <p class="copy">
-        Hola ${cliente.nombre}, reservamos tu pedido por ${HORAS_PARA_TRANSFERIR} horas.<br>
+        Hola ${esc(cliente.nombre)}, reservamos tu pedido por ${HORAS_PARA_TRANSFERIR} horas.<br>
         Transferí <strong>${formatARS(orden.total_centavos)}</strong> a la cuenta de abajo y mandá el comprobante a
         <a href="mailto:${datos.emailComprobante}?subject=Comprobante%20orden%20%23${numero}">${datos.emailComprobante}</a>
         indicando tu número de orden (#${numero}).<br>
@@ -683,7 +701,7 @@ export async function sendInternalOrderNotification(ordenId: string): Promise<vo
             linea1 + (piso ? ` — ${piso}` : ''),
             [direccion.ciudad, direccion.provincia].filter(Boolean).join(', '),
             direccion.codigo_postal ? `CP ${direccion.codigo_postal}` : '',
-        ].filter(Boolean).join('<br>');
+        ].filter(Boolean).map(esc).join('<br>');
     } else {
         detalleEntrega = 'Sin dirección registrada — revisar la orden.';
     }
@@ -691,8 +709,8 @@ export async function sendInternalOrderNotification(ordenId: string): Promise<vo
     const itemsHTML = items.map(item => `
         <tr class="item-row">
           <td>
-            <p class="item-name">${item.nombre_producto}</p>
-            <p class="item-variant">${item.color} &middot; TALLE ${item.talle}</p>
+            <p class="item-name">${esc(item.nombre_producto)}</p>
+            <p class="item-variant">${esc(item.color)} &middot; TALLE ${esc(item.talle)}</p>
           </td>
           <td class="item-qty">${item.cantidad}</td>
           <td class="item-price">${formatARS(item.precio_unitario_centavos * item.cantidad)}</td>
@@ -704,7 +722,7 @@ export async function sendInternalOrderNotification(ordenId: string): Promise<vo
       <div class="alerta">
         <p class="alerta-titulo">Acción requerida — retiro coordinado</p>
         <p class="alerta-texto">
-          Escribile a ${cliente?.email || 'el cliente'} para acordar lugar y horario.
+          Escribile a ${esc(cliente?.email || 'el cliente')} para acordar lugar y horario.
           No se genera envío en OCA.
         </p>
       </div>` : '';
@@ -769,8 +787,8 @@ export async function sendInternalOrderNotification(ordenId: string): Promise<vo
       <div class="bloque">
         <p class="bloque-titulo">Cliente</p>
         <p class="bloque-texto">
-          ${cliente?.nombre || ''} ${cliente?.apellido || ''}<br>
-          ${cliente?.email || '—'}${cliente?.telefono ? `<br>${cliente.telefono}` : ''}
+          ${esc(cliente?.nombre)} ${esc(cliente?.apellido)}<br>
+          ${esc(cliente?.email || '—')}${cliente?.telefono ? `<br>${esc(cliente.telefono)}` : ''}
         </p>
       </div>
 
@@ -901,12 +919,12 @@ export async function sendShippingStatusEmail(
             titulo = `¡Llega a sucursal!`;
             contenido = `
                 <p class="copy">
-                    Hola ${cliente.nombre}, tu pedido llegó a la sucursal de OCA y está disponible para retiro.<br>
+                    Hola ${esc(cliente.nombre)}, tu pedido llegó a la sucursal de OCA y está disponible para retiro.<br>
                     ${sucursal ? `
                         <br>
-                        <strong>${sucursal.descripcion ?? 'Sucursal OCA'}</strong><br>
-                        ${[sucursal.calle, sucursal.numero].filter(Boolean).join(' ')}<br>
-                        ${[sucursal.localidad, sucursal.provincia].filter(Boolean).join(', ')}
+                        <strong>${esc(sucursal.descripcion ?? 'Sucursal OCA')}</strong><br>
+                        ${esc([sucursal.calle, sucursal.numero].filter(Boolean).join(' '))}<br>
+                        ${esc([sucursal.localidad, sucursal.provincia].filter(Boolean).join(', '))}
                     ` : ''}
                 </p>
             `;
@@ -919,7 +937,7 @@ export async function sendShippingStatusEmail(
             titulo = `¡Llegó tu pedido!`;
             contenido = `
                 <p class="copy">
-                    Hola ${cliente.nombre}, tu orden fue entregada con éxito.
+                    Hola ${esc(cliente.nombre)}, tu orden fue entregada con éxito.
                     Esperamos que disfrutes tu compra. 👗
                 </p>
             `;
@@ -932,7 +950,7 @@ export async function sendShippingStatusEmail(
             titulo = `Necesitamos tu ayuda.`;
             contenido = `
                 <p class="copy">
-                    Hola ${cliente.nombre}, por el momento no pudimos entregar tu pedido.
+                    Hola ${esc(cliente.nombre)}, por el momento no pudimos entregar tu pedido.
                     ${motivo ? `<br><br><strong>Motivo:</strong> ${motivo}` : ''}
                     <br><br>
                     Por favor contactanos a <a href="mailto:ventas@guidocapuzzi.com">ventas@guidocapuzzi.com</a>
@@ -948,7 +966,7 @@ export async function sendShippingStatusEmail(
             titulo = `Tu pedido en camino.`;
             contenido = `
                 <p class="copy">
-                    Hola ${cliente.nombre}, tu orden está en proceso de entrega.
+                    Hola ${esc(cliente.nombre)}, tu orden está en proceso de entrega.
                 </p>
             `;
     }
