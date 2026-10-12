@@ -347,6 +347,12 @@ document.addEventListener('DOMContentLoaded', () => {
         retiro: 'retiro_local',
     };
 
+    // Pago por transferencia — espejo de src/lib/pagos.ts (este archivo no puede
+    // importar de src/). tests/pago-transferencia.test.ts verifica que coincidan.
+    const METODO_PAGO_TRANSFERENCIA = 'transferencia';
+    const ESTADO_ESPERANDO_TRANSFERENCIA = 'esperando_transferencia';
+    const DESCUENTO_TRANSFERENCIA_PCT = 15;
+
     // Resuelve producto → calce (por prefijo de slug, orden importa) → config
     function getSizeChart(product) {
         const slug = (product && product.slug) || '';
@@ -1535,6 +1541,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? '<button class="add-to-cart-btn font-condensed" disabled aria-disabled="true" style="opacity: 0.45; pointer-events: none;"><span class="btn-label">VENDIDO</span></button>'
                 : '<button class="add-to-cart-btn font-condensed" id="pdp-add-btn"><span class="hover-fill"></span><span class="btn-label">AÑADIR AL CARRITO</span></button>';
 
+            // Cuotas y precio con transferencia, debajo del precio. Es lo que prometen
+            // los anuncios ("15% off con transferencia · hasta 6 cuotas"); antes la
+            // PDP no lo decía en ningún lado. El 15% es informativo: el servidor lo
+            // recalcula al cerrar la compra (src/lib/pagos.ts).
+            const precioPesos = parseInt(String(product.price || '').replace(/[^0-9]/g, ''), 10) || 0;
+            const pagoInfoHTML = (!product.soldOut && precioPesos > 0) ? `
+                                <p class="pdp-pago-info font-condensed">
+                                    6 CUOTAS SIN INTERÉS DE $${Math.round(precioPesos / 6).toLocaleString('es-AR')}<br>
+                                    <strong>$${(precioPesos - Math.round(precioPesos * DESCUENTO_TRANSFERENCIA_PCT / 100)).toLocaleString('es-AR')}</strong> CON TRANSFERENCIA (${DESCUENTO_TRANSFERENCIA_PCT}% OFF)
+                                </p>` : '';
+
             // Bloque de cuidados (denim) — subtítulo CUIDADO + texto, debajo del botón AÑADIR.
             const careHTML = product.care ? `
                         <div class="pdp-care">
@@ -1548,7 +1565,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="pdp-info">
                         <div class="pdp-info-head">
                             <h1 class="pdp-title font-condensed">${product.title || product.name}</h1>
-                            <span class="pdp-price font-condensed">${product.price}</span>
+                            <div class="pdp-price-block">
+                                <span class="pdp-price font-condensed">${product.price}</span>${pagoInfoHTML}
+                            </div>
                         </div>
                         <div class="pdp-colorway-block">
                             <span class="pdp-colorway font-condensed">COLOR: ${product.colorLabel || product.color || product.colorway}</span>
@@ -2382,6 +2401,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function _getOrdenBadge(estado, estado_envio) {
         if (estado === 'cancelado') return { label: 'CANCELADO', cls: 'status-cancelado' };
+        if (estado === ESTADO_ESPERANDO_TRANSFERENCIA) return { label: 'ESPERANDO TRANSFERENCIA', cls: 'status-pendiente' };
         if (estado_envio === 'entregado' || estado === 'entregado') return { label: 'ENTREGADO', cls: 'status-entregado' };
         if (estado_envio === 'no_entregado') return { label: 'INCIDENCIA', cls: 'status-alerta' };
         if (estado_envio === 'en_devolucion') return { label: 'EN DEVOLUCIÓN', cls: 'status-alerta' };
@@ -3337,11 +3357,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Polling: el webhook de NAVE puede tardar unos segundos en setear el payment_id real.
             // Reintentamos hasta 5 veces (cada 3s) si la orden sigue en pago_pendiente.
             var orden = null;
+            var jsonData = null;
             var maxRetries = 5;
             for (var attempt = 0; attempt <= maxRetries; attempt++) {
                 var res = await fetch(`/api/ordenes/${encodeURIComponent(ordenId)}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                var jsonData = await res.json();
+                jsonData = await res.json();
                 orden = jsonData.orden;
 
                 if (orden.estado !== 'pago_pendiente' || attempt === maxRetries) break;
@@ -3427,8 +3448,57 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Payment
+            const esTransferencia = orden.metodo_pago === METODO_PAGO_TRANSFERENCIA;
+            const esperaTransferencia = orden.estado === ESTADO_ESPERANDO_TRANSFERENCIA;
             const pagoEl = document.getElementById('confirmacion-pago-value');
-            if (pagoEl) pagoEl.textContent = 'Tarjeta';
+            if (pagoEl) {
+                pagoEl.textContent = !esTransferencia ? 'Tarjeta / MODO'
+                    : esperaTransferencia ? 'Transferencia — pendiente'
+                    : 'Transferencia';
+            }
+
+            // Filas agregadas por JS (descuento, datos bancarios): se limpian por si
+            // la confirmación se vuelve a poblar sin recargar.
+            document.querySelectorAll('#confirmacion-inner .confirmacion-extra').forEach(el => el.remove());
+            const _filaExtra = (label, valor) => {
+                const row = document.createElement('div');
+                row.className = 'confirmacion-row confirmacion-anim-row confirmacion-extra';
+                const l = document.createElement('span');
+                l.className = 'confirmacion-label';
+                l.textContent = label;
+                const v = document.createElement('span');
+                v.className = 'confirmacion-value';
+                v.textContent = valor;
+                row.append(l, v);
+                return row;
+            };
+
+            // Descuento (transferencia): antes del total
+            const totalRowEl = document.getElementById('confirmacion-total');
+            if (orden.descuento_centavos > 0 && totalRowEl) {
+                const desc = Math.round(orden.descuento_centavos / 100);
+                const etiqueta = esTransferencia ? `Descuento ${DESCUENTO_TRANSFERENCIA_PCT}%` : 'Descuento';
+                totalRowEl.before(_filaExtra(etiqueta, `−$${desc.toLocaleString('es-AR')}`));
+            }
+
+            // Datos para transferir: después del método de pago
+            const datosTr = jsonData && jsonData.datosTransferencia;
+            const pagoRowEl = document.getElementById('confirmacion-pago');
+            if (esperaTransferencia && datosTr && pagoRowEl) {
+                const filas = [
+                    ['Alias', datosTr.alias],
+                    ['CBU', datosTr.cbu],
+                    ['Titular', datosTr.titular],
+                    ['CUIT', datosTr.cuit],
+                    ['Banco', datosTr.banco],
+                ].filter(([, v]) => v);
+                let ancla = pagoRowEl;
+                filas.forEach(([label, valor]) => {
+                    const row = _filaExtra(label, valor);
+                    ancla.after(row);
+                    ancla = row;
+                });
+            }
 
             // Total
             const totalEl = document.getElementById('confirmacion-total-value');
@@ -3437,16 +3507,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalEl.textContent = `$${total.toLocaleString('es-AR')}`;
             }
 
-            // Note
+            // Título + nota
+            const tituloEl = document.querySelector('#confirmacion-inner .confirmacion-titulo');
+            if (tituloEl) tituloEl.textContent = esperaTransferencia ? 'Pedido reservado' : 'Pedido confirmado';
+            if (esperaTransferencia) document.title = 'Pedido reservado — GÜIDO CAPUZZI';
+
             const notaEl = document.getElementById('confirmacion-nota');
             if (notaEl) {
                 const email = orden.clientes?.email || 'tu email';
-                notaEl.textContent = `DETALLES ENVIADOS A ${email.toUpperCase()}`;
+                if (esperaTransferencia && datosTr) {
+                    const total = Math.round((orden.total_centavos || 0) / 100).toLocaleString('es-AR');
+                    const horas = jsonData.horasParaTransferir || 48;
+                    notaEl.textContent =
+                        `TRANSFERÍ $${total} Y MANDÁ EL COMPROBANTE A ${String(datosTr.emailComprobante).toUpperCase()} ` +
+                        `CON TU NÚMERO DE ORDEN. RESERVAMOS TU PEDIDO ${horas} HORAS. ` +
+                        `TAMBIÉN TE MANDAMOS LOS DATOS A ${email.toUpperCase()}.`;
+                } else {
+                    notaEl.textContent = `DETALLES ENVIADOS A ${email.toUpperCase()}`;
+                }
             }
 
             // Meta Pixel — Purchase (dedup con localStorage para evitar doble-fire en reload)
+            // Una transferencia sin acreditar NO es una compra todavía: no se manda.
             const pixelKey = `pixel_purchase_${ordenId}`;
-            if (window.fbq && !localStorage.getItem(pixelKey)) {
+            if (window.fbq && !esperaTransferencia && !localStorage.getItem(pixelKey)) {
                 const pixelItems = Array.isArray(orden.items_orden) ? orden.items_orden : [];
 
                 // El catálogo de Meta identifica cada producto por su `slug`: es el
@@ -4184,10 +4268,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const envioPrecio = envioOpcionEl?.querySelector('.envio-opcion-precio')?.textContent?.trim() || '';
                 const metodoEnvioTexto = envioPrecio ? `${envioNombre} · ${envioPrecio}` : envioNombre;
 
-                // Calcular total con envío
+                // Montos para el Step 3 (informativos: el servidor recalcula)
                 const envioPrecioNum = parseFloat((envioOpcionEl?.dataset?.precio || '0')) / 100;
                 const subtotalNum = cart.reduce((acc, item) => acc + (item.priceValue * item.qty), 0);
-                const totalARS = subtotalNum + envioPrecioNum;
 
                 // Datos de Step 1 para el resumen del Step 3
                 const emailVal = document.getElementById('checkout-email')?.value || '—';
@@ -4203,7 +4286,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const _btnContinuar = document.getElementById('checkout-continue-btn');
                 if (_btnContinuar) {
                     _btnContinuar.dataset.originalText = _btnContinuar.textContent;
-                    _btnContinuar.textContent = 'REDIRIGIENDO...';
+                    _btnContinuar.textContent = 'PROCESANDO...';
                     _btnContinuar.disabled = true;
                     _btnContinuar.style.opacity = '0.6';
                     _btnContinuar.style.cursor = 'wait';
@@ -4260,25 +4343,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // ── Redirigir a NAVE (sin mostrar Step 3) ──
-                if (typeof window.redirigirPagoNave === 'function') {
-                    try {
-                        await window.redirigirPagoNave({
-                            ordenId: ordenId || `orden-${Date.now()}`,
-                            totalARS: totalARS,
-                            cartItems: cart
-                        });
-                    } catch (naveErr) {
-                        alert('No se pudo inicializar el proceso de pago. Intentá nuevamente.');
-                        if (_btnContinuar) {
-                            _btnContinuar.textContent = _btnContinuar.dataset.originalText || 'CONTINUAR AL PAGO';
-                            _btnContinuar.disabled = false;
-                            _btnContinuar.style.opacity = '1';
-                            _btnContinuar.style.cursor = 'pointer';
-                        }
-                    }
+                // ── Step 3: PAGO (transferencia / tarjeta / MODO) ──
+                // Antes se redirigía directo a NAVE desde acá. Ahora el cliente
+                // elige el método en el Step 3 (public/js/checkout-payment.js).
+                if (_btnContinuar) {
+                    _btnContinuar.textContent = _btnContinuar.dataset.originalText || 'CONTINUAR AL PAGO';
+                    _btnContinuar.disabled = false;
+                    _btnContinuar.style.opacity = '1';
+                    _btnContinuar.style.cursor = 'pointer';
+                }
+                if (typeof window.mostrarCheckoutStep3 === 'function' && ordenId) {
+                    window.mostrarCheckoutStep3({
+                        email: emailVal,
+                        ubicacion: ubicacion,
+                        metodoEnvio: metodoEnvioTexto,
+                        ordenId: ordenId,
+                        subtotalARS: subtotalNum,
+                        envioARS: envioPrecioNum,
+                        cartItems: cart,
+                    });
                 } else {
-                    console.error('[Checkout] checkout-payment.js no está cargado. Verificar orden de scripts.');
+                    console.error('[Checkout] checkout-payment.js no está cargado o falta la orden.');
                     alert('Error al cargar el módulo de pago. Por favor recargá la página.');
                 }
             }

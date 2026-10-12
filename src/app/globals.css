@@ -1555,6 +1555,30 @@ body.state-contact #account-contact {
     flex-shrink: 0;
 }
 
+/* Cuotas + precio con transferencia, debajo del precio (2026-10-12).
+   Va DENTRO de .pdp-info-head, en una columna con el precio: así queda pegado
+   a él sin depender del gap de .pdp-info (40px desktop, 32px mobile). La línea
+   de base del encabezado sigue siendo la del precio (primer hijo del bloque).
+   Cuerpo menor que el precio, en gris: informa sin competir con él. */
+.pdp-price-block {
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.pdp-pago-info {
+    font-size: 11px;
+    letter-spacing: 0.01em;
+    line-height: 1.45;
+    color: rgba(26, 26, 26, 0.55);
+    margin: 6px 0 0;
+    white-space: nowrap;
+}
+
+.pdp-pago-info strong {
+    font-weight: inherit;
+    color: #1A1A1A;
+}
+
 /* fila 2: COLOR: X + chip 41.9×15.3 debajo */
 .pdp-colorway {
     display: block;
@@ -4215,6 +4239,7 @@ body.state-checkout #checkout {
 .pago-card-badge.naranja { color: #FF6600; }
 .pago-card-badge.modo    { color: #ffffff; background: #1A1A5E; border-color: #1A1A5E; }
 .pago-card-badge.bancos  { color: #ffffff; background: #1C5AA3; border-color: #1C5AA3; }
+.pago-card-badge.transferencia { color: #AD1C1C; } /* rojo GÜIDO: es la promo */
 
 /* ── CONTENIDO EXPANDIBLE DEL TAB — slide-down ── */
 .pago-metodo-content {

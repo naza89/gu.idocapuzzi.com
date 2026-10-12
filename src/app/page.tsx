@@ -1035,7 +1035,7 @@ const siteHTML = `
                     </div>
                     <!-- END STEP 2 -->
 
-                    <!-- STEP 3: PAGO — NAVE Integration (Hidden by default) -->
+                    <!-- STEP 3: PAGO — Transferencia / Tarjeta / MODO (Hidden by default) -->
                     <div id="checkout-step-pago" style="display: none;">
 
                         <!-- RESUMEN EXTENDIDO (Contacto + Dirección + Envío confirmados) -->
@@ -1077,9 +1077,38 @@ const siteHTML = `
                                 </span>
                             </div>
 
+                            <!--
+                              Tres métodos. TARJETA y MODO cobran por el checkout hosted de NAVE
+                              (redirección); TRANSFERENCIA cierra la orden acá con 15% off y la
+                              confirma el equipo desde WIDO. Ver public/js/checkout-payment.js.
+                              El tab de transferencia arranca oculto: se muestra sólo si
+                              GET /api/checkout/transferencia dice que hay datos bancarios.
+                            -->
+
+                            <!-- TAB: Transferencia bancaria -->
+                            <div class="pago-metodo-tab" id="pago-tab-transferencia" data-metodo="transferencia" style="display: none;">
+                                <div class="pago-metodo-header">
+                                    <div class="pago-radio-circle"></div>
+                                    <div class="pago-metodo-label">
+                                        <span class="pago-metodo-nombre font-body">Transferencia bancaria</span>
+                                        <div class="pago-metodo-icons">
+                                            <span class="pago-card-badge transferencia" id="pago-badge-transferencia">15% OFF</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pago-metodo-content">
+                                    <div class="pago-qr-wrapper">
+                                        <p class="pago-qr-instruccion font-body" id="pago-transferencia-detalle">
+                                            Pagás con 15% de descuento sobre los productos.
+                                        </p>
+                                        <p class="pago-nave-disclaimer font-body">Al finalizar te mostramos los datos para transferir. Reservamos tu pedido 48 horas.</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- TAB: Tarjeta de crédito / débito -->
-                            <div class="pago-metodo-tab pago-tab-activo" id="pago-tab-tarjeta">
-                                <div class="pago-metodo-header" id="pago-header-tarjeta">
+                            <div class="pago-metodo-tab" id="pago-tab-tarjeta" data-metodo="tarjeta">
+                                <div class="pago-metodo-header">
                                     <div class="pago-radio-circle"></div>
                                     <div class="pago-metodo-label">
                                         <span class="pago-metodo-nombre font-body">Tarjeta de crédito / débito</span>
@@ -1087,51 +1116,39 @@ const siteHTML = `
                                             <span class="pago-card-badge visa">VISA</span>
                                             <span class="pago-card-badge mc">MC</span>
                                             <span class="pago-card-badge amex">AMEX</span>
-                                            <span class="pago-card-badge cabal">CABAL</span>
                                             <span class="pago-card-badge naranja">NARANJA</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="pago-metodo-content" id="pago-content-tarjeta">
-                                    <div id="nave-payment-container" class="nave-sdk-container">
-                                        <div class="nave-sdk-loading" id="nave-sdk-loading">
-                                            <div class="pago-spinner"></div>
-                                            <span class="font-body">Inicializando pasarela de pago...</span>
-                                        </div>
-                                        <!-- RantySDK monta el formulario aquí -->
+                                <div class="pago-metodo-content">
+                                    <div class="pago-qr-wrapper">
+                                        <p class="pago-qr-instruccion font-body" id="pago-tarjeta-detalle">
+                                            Hasta 6 cuotas sin interés.
+                                        </p>
+                                        <p class="pago-nave-disclaimer font-body">Te redirigimos al checkout seguro de <strong>NAVE · Banco Galicia</strong></p>
                                     </div>
-                                    <p class="pago-nave-disclaimer font-body">Procesado de forma segura por <strong>NAVE · Banco Galicia</strong></p>
                                 </div>
                             </div>
 
-                            <!-- TAB: QR / MODO / Billetera virtual -->
-                            <div class="pago-metodo-tab" id="pago-tab-qr">
-                                <div class="pago-metodo-header" id="pago-header-qr">
+                            <!-- TAB: MODO -->
+                            <div class="pago-metodo-tab" id="pago-tab-modo" data-metodo="modo">
+                                <div class="pago-metodo-header">
                                     <div class="pago-radio-circle"></div>
                                     <div class="pago-metodo-label">
-                                        <span class="pago-metodo-nombre font-body">QR · MODO · Billetera virtual</span>
+                                        <span class="pago-metodo-nombre font-body">MODO</span>
                                         <div class="pago-metodo-icons">
                                             <span class="pago-card-badge modo">MODO</span>
                                             <span class="pago-card-badge bancos">BANCOS</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="pago-metodo-content" id="pago-content-qr">
+                                <div class="pago-metodo-content">
                                     <div class="pago-qr-wrapper">
                                         <p class="pago-qr-instruccion font-body">
-                                            Escaneá con tu app bancaria o billetera virtual.<br>
-                                            En dispositivos móviles, abrí directamente con MODO.
+                                            Pagás desde la app de MODO o la de tu banco.
                                         </p>
-                                        <div class="pago-qr-frame">
-                                            <div class="pago-qr-loading" id="pago-qr-loading">
-                                                <div class="pago-spinner"></div>
-                                                <span class="font-body">Generando código QR...</span>
-                                            </div>
-                                            <div id="pago-qr-image-wrapper" style="display: none;"></div>
-                                        </div>
-                                        <p class="pago-qr-expiry font-body" id="pago-qr-expiry"></p>
+                                        <p class="pago-nave-disclaimer font-body">Te redirigimos al checkout seguro de <strong>NAVE · Banco Galicia</strong></p>
                                     </div>
-                                    <p class="pago-nave-disclaimer font-body" style="margin-top: 18px;">Procesado de forma segura por <strong>NAVE · Banco Galicia</strong></p>
                                 </div>
                             </div>
 
@@ -1205,6 +1222,12 @@ const siteHTML = `
                             <div class="checkout-total-row">
                                 <span class="checkout-total-label">Envío</span>
                                 <span class="checkout-total-note">Calculado en el próximo paso</span>
+                            </div>
+                            <!-- Sólo con transferencia elegida en el Step 3. Va DESPUÉS de Envío:
+                                 actualizarSidebarEnvio() en start.js toma la fila de Envío por índice [1]. -->
+                            <div class="checkout-total-row" id="checkout-descuento-row" style="display: none;">
+                                <span class="checkout-total-label" id="checkout-descuento-label">Descuento transferencia</span>
+                                <span class="checkout-total-value" id="checkout-descuento">$0,00</span>
                             </div>
                             <div class="checkout-total-row checkout-total-final">
                                 <span class="checkout-total-label font-condensed">TOTAL</span>
