@@ -72,7 +72,7 @@ export async function notificarCompraTelegram(ordenId: string): Promise<void> {
     }
 }
 
-async function leerDatosCompra(ordenId: string): Promise<DatosCompra | null> {
+export async function leerDatosCompra(ordenId: string): Promise<DatosCompra | null> {
     const supabase = createAdminClient();
     const { data: orden, error } = await supabase
         .from('ordenes')

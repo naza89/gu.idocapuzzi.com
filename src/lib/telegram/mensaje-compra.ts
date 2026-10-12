@@ -127,3 +127,53 @@ export function armarMensajeCompra(d: DatosCompra): string {
 
     return lineas.join('\n');
 }
+
+/**
+ * Mensaje de "hay una transferencia por confirmar".
+ *
+ * Sale cuando el cliente cierra el checkout eligiendo transferencia. La compra
+ * TODAVÍA NO está pagada ni descontó stock: por eso el stock se muestra como
+ * "hay N" (lo que hay ahora) y no "quedan N" como en una compra.
+ *
+ * Cuando el equipo confirma desde WIDO, sale el mensaje de compra normal.
+ */
+export function armarMensajeTransferenciaPendiente(d: DatosCompra, horasParaTransferir: number): string {
+    const e = escaparHTML;
+    const lineas: string[] = [];
+
+    const numero = d.numeroOrden != null ? ` #${d.numeroOrden}` : '';
+    lineas.push(`🏦 <b>TRANSFERENCIA PENDIENTE${numero}</b> — ${formatearARS(d.totalCentavos)}`);
+    lineas.push(`<i>Reservada ${horasParaTransferir} h esperando el comprobante. El stock todavía no se descontó.</i>`);
+    lineas.push('');
+
+    for (const item of d.items) {
+        const sub = formatearARS(item.precioUnitarioCentavos * item.cantidad);
+        lineas.push(`• ${item.cantidad}× <b>${e(item.nombre)}</b> — ${e(item.color)} · talle ${e(item.talle)} — ${sub}`);
+        const stock = item.stockRestante == null
+            ? null
+            : item.stockRestante < item.cantidad
+                ? `⚠️ <b>hay ${item.stockRestante}</b> — no alcanza`
+                : `hay ${item.stockRestante}`;
+        const detalle = [item.sku ? `<code>${e(item.sku)}</code>` : null, stock].filter(Boolean).join(' · ');
+        if (detalle) lineas.push(`   ${detalle}`);
+    }
+    lineas.push('');
+
+    lineas.push(`Subtotal ${formatearARS(d.subtotalCentavos)}`);
+    if (d.descuentoCentavos > 0) lineas.push(`Descuento transferencia −${formatearARS(d.descuentoCentavos)}`);
+    lineas.push(`Envío ${d.costoEnvioCentavos > 0 ? formatearARS(d.costoEnvioCentavos) : 'sin cargo'}`);
+    lineas.push(`<b>A transferir ${formatearARS(d.totalCentavos)}</b>`);
+    lineas.push('');
+
+    lineas.push('<b>Cliente</b>');
+    lineas.push(e(d.cliente.nombre || 'Sin nombre'));
+    if (d.cliente.email) lineas.push(e(d.cliente.email));
+    if (d.cliente.telefono) lineas.push(e(d.cliente.telefono));
+    lineas.push('');
+
+    lineas.push(`<b>Entrega</b> — ${e(d.entrega)}`);
+    lineas.push('');
+    lineas.push(`👉 Cuando llegue el comprobante, pedile a WIDO: <i>confirmá la transferencia de la${numero}</i>`);
+
+    return lineas.join('\n');
+}

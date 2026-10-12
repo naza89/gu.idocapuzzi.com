@@ -62,6 +62,7 @@ docs/
 **Tablas:** `productos`, `variantes_producto`, `clientes`, `direcciones_envio`, `ordenes`, `items_orden`
 
 **Estados de orden:** `pendiente` → `envio_calculado` → `pago_pendiente` → `pagado` → `preparando` → `enviado` → `entregado` | `cancelado`
+Con transferencia: `envio_calculado` → `esperando_transferencia` → `pagado` (lo confirma WIDO vía `POST /api/ordenes/[id]/transferencia`, con `x-admin-token`). Literales y 15% en `src/lib/pagos.ts`; `ordenes.metodo_pago` = `nave` | `transferencia` (migración 25).
 
 **Convenciones:**
 - SKU: `TIPO-MODELO-COLOR-TALLE` (ej: `REM-LOGO-NBL-XS`)

@@ -26,6 +26,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { after } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
 import { TIPO_ENVIO_RETIRO } from '@/lib/envios';
+import { ESTADO_ESPERANDO_TRANSFERENCIA, HORAS_PARA_TRANSFERIR, datosTransferencia } from '@/lib/pagos';
 
 interface PatchOrdenBody {
     tipo_envio?: string;
@@ -53,6 +54,9 @@ export async function GET(
                 id,
                 numero_orden,
                 estado,
+                metodo_pago,
+                subtotal_centavos,
+                descuento_centavos,
                 total_centavos,
                 costo_envio_centavos,
                 tipo_envio,
@@ -301,6 +305,16 @@ export async function GET(
             } catch (postPayErr) {
                 console.error('[GET ordenes] Error post-pay:', postPayErr);
             }
+        }
+
+        // Transferencia sin acreditar: la confirmación le muestra al cliente a dónde
+        // transferir. Son datos públicos (los mismos del mail), no hace falta auth.
+        if (data.estado === ESTADO_ESPERANDO_TRANSFERENCIA) {
+            return NextResponse.json({
+                orden: data,
+                datosTransferencia: datosTransferencia(),
+                horasParaTransferir: HORAS_PARA_TRANSFERIR,
+            });
         }
 
         return NextResponse.json({ orden: data });

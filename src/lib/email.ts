@@ -7,11 +7,18 @@
  *   sendOrderConfirmationEmail(ordenId)              → Confirmación de compra (trigger: webhook NAVE APPROVED)
  *   sendShippingStatusEmail(ordenId, idEstado, ...) → Actualizaciones de estado del envío OCA
  *   sendInternalOrderNotification(ordenId)           → Aviso INTERNO al equipo por cada venta
+ *   sendTransferInstructionsEmail(ordenId)           → Datos para transferir (trigger: checkout por transferencia)
  */
 
 import { Resend } from 'resend';
 import { createAdminClient } from '@/lib/supabase';
 import { etiquetaTipoEnvio, esRetiroEnMano, TIPO_ENVIO_SUCURSAL } from '@/lib/envios';
+import {
+    DESCUENTO_TRANSFERENCIA_PCT,
+    HORAS_PARA_TRANSFERIR,
+    METODO_PAGO_TRANSFERENCIA,
+    datosTransferencia,
+} from '@/lib/pagos';
 
 /**
  * Cliente de Resend, construido perezosamente.
@@ -217,6 +224,21 @@ function formatARS(centavos: number): string {
     return `$${Math.round(centavos / 100).toLocaleString('es-AR')}`;
 }
 
+/**
+ * Fila de descuento para la tabla de totales. Vacía si no hubo descuento, así
+ * los mails de compras con tarjeta quedan exactamente como estaban.
+ */
+function filaDescuento(descuentoCentavos: number | null | undefined, metodoPago: string | null | undefined): string {
+    if (!descuentoCentavos || descuentoCentavos <= 0) return '';
+    const etiqueta = metodoPago === METODO_PAGO_TRANSFERENCIA
+        ? `Descuento transferencia (${DESCUENTO_TRANSFERENCIA_PCT}%)`
+        : 'Descuento';
+    return `<tr class="totals-row">
+          <td class="totals-label">${etiqueta}</td>
+          <td class="totals-value">&minus;${formatARS(descuentoCentavos)}</td>
+        </tr>`;
+}
+
 // ─── Template: Confirmación de compra ─────────────────────────────────────────
 
 export async function sendOrderConfirmationEmail(ordenId: string): Promise<void> {
@@ -229,6 +251,8 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
             total_centavos,
             subtotal_centavos,
             costo_envio_centavos,
+            descuento_centavos,
+            metodo_pago,
             tipo_envio,
             clientes (nombre, apellido, email),
             items_orden (nombre_producto, color, talle, cantidad, precio_unitario_centavos)
@@ -317,6 +341,7 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
           <td class="totals-label">${tipoEnvio}</td>
           <td class="totals-value">${formatARS(orden.costo_envio_centavos || 0)}</td>
         </tr>
+        ${filaDescuento(orden.descuento_centavos, orden.metodo_pago)}
         <tr class="total-row">
           <td>Total</td>
           <td class="total-amount">${formatARS(orden.total_centavos)}</td>
@@ -356,6 +381,193 @@ export async function sendOrderConfirmationEmail(ordenId: string): Promise<void>
         console.error('[email] Resend error:', sendError);
     } else {
         console.log('[email] ✅ Email enviado a:', cliente.email, '— orden:', ordenId);
+    }
+}
+
+// ─── Template: Instrucciones de transferencia ─────────────────────────────────
+
+/**
+ * Mail al cliente que eligió transferencia: la orden quedó reservada y acá están
+ * los datos para pagar. Se manda una vez, al cerrar el checkout
+ * (`POST /api/checkout/transferencia`).
+ *
+ * Cuando el equipo confirma el comprobante desde WIDO, sale el mail de
+ * confirmación de siempre (`sendOrderConfirmationEmail`), por el post-pago.
+ *
+ * Sin flag de idempotencia propio: lo dispara el UPDATE atómico
+ * `envio_calculado → esperando_transferencia`, que sólo puede ganar una vez.
+ */
+export async function sendTransferInstructionsEmail(ordenId: string): Promise<void> {
+    const datos = datosTransferencia();
+    if (!datos) {
+        console.error('[email transferencia] Datos bancarios sin configurar — no se manda el mail');
+        return;
+    }
+
+    const supabase = createAdminClient();
+    const { data: orden, error } = await supabase
+        .from('ordenes')
+        .select(`
+            numero_orden,
+            total_centavos,
+            subtotal_centavos,
+            costo_envio_centavos,
+            descuento_centavos,
+            metodo_pago,
+            tipo_envio,
+            clientes (nombre, apellido, email),
+            items_orden (nombre_producto, color, talle, cantidad, precio_unitario_centavos)
+        `)
+        .eq('id', ordenId)
+        .single();
+
+    if (error || !orden) {
+        console.error('[email transferencia] No se pudo obtener la orden:', error);
+        return;
+    }
+
+    const cliente = orden.clientes as unknown as ClienteOrden | null;
+    if (!cliente?.email) {
+        console.error('[email transferencia] Orden sin email de cliente:', ordenId);
+        return;
+    }
+
+    const items = (orden.items_orden as ItemOrden[]) || [];
+    const tipoEnvio = etiquetaTipoEnvio(orden.tipo_envio);
+    const numero = String(orden.numero_orden).padStart(5, '0');
+
+    const itemsHTML = items.map(item => `
+        <tr class="item-row">
+          <td>
+            <p class="item-name">${item.nombre_producto}</p>
+            <p class="item-variant">${item.color} &middot; ${item.talle}</p>
+          </td>
+          <td class="item-qty">${item.cantidad}</td>
+          <td class="item-price">${formatARS(item.precio_unitario_centavos * item.cantidad)}</td>
+        </tr>
+    `).join('');
+
+    const filaDato = (etiqueta: string, valor: string | null) => valor ? `
+        <tr class="totals-row">
+          <td class="totals-label">${etiqueta}</td>
+          <td class="totals-value">${valor}</td>
+        </tr>` : '';
+
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="supported-color-schemes" content="light only" />
+  <title>Orden #${orden.numero_orden} reservada — GÜIDO CAPUZZI</title>
+  <style>
+    ${emailBaseStyles()}
+    .datos { border: 1px solid #1a1a1a; padding: 18px 20px 14px; margin: 0 0 32px; }
+    .datos-titulo {
+      font-family: 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #999; margin: 0 0 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+
+    <div class="header">
+      <img class="logo-img" src="${LOGO_URL}" alt="Güido Capuzzi" width="500" />
+    </div>
+
+    <div class="body">
+      <p class="eyebrow">Pago por transferencia</p>
+
+      <h1 class="heading">Orden #${orden.numero_orden}<br>reservada.</h1>
+
+      <p class="copy">
+        Hola ${cliente.nombre}, reservamos tu pedido por ${HORAS_PARA_TRANSFERIR} horas.<br>
+        Transferí <strong>${formatARS(orden.total_centavos)}</strong> a la cuenta de abajo y mandá el comprobante a
+        <a href="mailto:${datos.emailComprobante}?subject=Comprobante%20orden%20%23${numero}">${datos.emailComprobante}</a>
+        indicando tu número de orden (#${numero}).<br>
+        Apenas lo confirmemos te llega el mail de confirmación de compra.
+      </p>
+
+      <div class="datos">
+        <p class="datos-titulo">Datos para transferir</p>
+        <table>
+          ${filaDato('Alias', datos.alias)}
+          ${filaDato('CBU', datos.cbu)}
+          ${filaDato('Titular', datos.titular)}
+          ${filaDato('CUIT', datos.cuit)}
+          ${filaDato('Banco', datos.banco)}
+          <tr class="total-row">
+            <td>Monto</td>
+            <td class="total-amount">${formatARS(orden.total_centavos)}</td>
+          </tr>
+        </table>
+      </div>
+
+      <table>
+        <thead class="items-header">
+          <tr>
+            <th>Producto</th>
+            <th>Cant.</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody>${itemsHTML}</tbody>
+      </table>
+
+      <table style="margin-top:16px;">
+        <tr class="totals-row">
+          <td class="totals-label">Subtotal</td>
+          <td class="totals-value">${formatARS(orden.subtotal_centavos)}</td>
+        </tr>
+        ${filaDescuento(orden.descuento_centavos, orden.metodo_pago)}
+        <tr class="totals-row">
+          <td class="totals-label">${tipoEnvio}</td>
+          <td class="totals-value">${formatARS(orden.costo_envio_centavos || 0)}</td>
+        </tr>
+        <tr class="total-row">
+          <td>Total</td>
+          <td class="total-amount">${formatARS(orden.total_centavos)}</td>
+        </tr>
+      </table>
+
+      <hr class="divider" />
+    </div>
+
+    <div class="footer">
+      <p class="footer-note">
+        Si pasan ${HORAS_PARA_TRANSFERIR} horas sin el comprobante, la reserva se libera.
+        Ante cualquier consulta respondé este email a
+        <a href="mailto:ventas@guidocapuzzi.com">ventas@guidocapuzzi.com</a>
+      </p>
+      <p class="footer-domain">GÜIDO CAPUZZI — güidocapuzzi.com</p>
+    </div>
+
+    <div class="accent-bar"></div>
+
+  </div>
+</body>
+</html>
+    `.trim();
+
+    const resend = getResend();
+    if (!resend) return;
+
+    const { error: sendError } = await resend.emails.send({
+        from: 'GÜIDO CAPUZZI <ventas@guidocapuzzi.com>',
+        to: cliente.email,
+        replyTo: datos.emailComprobante,
+        subject: `Orden #${orden.numero_orden} reservada — datos para transferir`,
+        html,
+    });
+
+    if (sendError) {
+        console.error('[email transferencia] Resend error:', sendError);
+    } else {
+        console.log('[email transferencia] ✅ Instrucciones enviadas a:', cliente.email, '— orden:', ordenId);
     }
 }
 
@@ -431,6 +643,8 @@ export async function sendInternalOrderNotification(ordenId: string): Promise<vo
             total_centavos,
             subtotal_centavos,
             costo_envio_centavos,
+            descuento_centavos,
+            metodo_pago,
             tipo_envio,
             id_sucursal_oca,
             nave_status,
@@ -585,6 +799,7 @@ export async function sendInternalOrderNotification(ordenId: string): Promise<vo
           <td class="totals-label">${entrega}</td>
           <td class="totals-value">${formatARS(orden.costo_envio_centavos || 0)}</td>
         </tr>
+        ${filaDescuento(orden.descuento_centavos, orden.metodo_pago)}
         <tr class="total-row">
           <td>Total</td>
           <td class="total-amount">${formatARS(orden.total_centavos)}</td>
@@ -595,6 +810,14 @@ export async function sendInternalOrderNotification(ordenId: string): Promise<vo
 
       <div class="bloque">
         <p class="bloque-titulo">Pago</p>
+        ${orden.metodo_pago === METODO_PAGO_TRANSFERENCIA ? `
+        <p class="bloque-texto">
+          Transferencia bancaria &middot; confirmada a mano<br>
+          Total transferido: ${formatARS(orden.total_centavos)}
+        </p>
+        <p class="bloque-nota">
+          Incluye el ${DESCUENTO_TRANSFERENCIA_PCT}% de descuento por transferencia sobre los productos.
+        </p>` : `
         <p class="bloque-texto">
           NAVE &middot; ${orden.nave_status || orden.estado}<br>
           Cobrado: ${montoCobrado}
@@ -602,7 +825,7 @@ export async function sendInternalOrderNotification(ordenId: string): Promise<vo
         <p class="bloque-nota">
           NAVE no informa el plan de cuotas ni el medio de pago en su API.
           Para saber si fue en cuotas hay que mirar el panel de NAVE.
-        </p>
+        </p>`}
       </div>
     </div>
 
