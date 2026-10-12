@@ -9,6 +9,19 @@
       "autoPort": false
     },
     {
+      "name": "dev-transferencia-prueba",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "autoPort": false,
+      "env": {
+        "TRANSFERENCIA_ALIAS": "PRUEBA.LOCAL.GUIDO",
+        "TRANSFERENCIA_CBU": "0000000000000000000000",
+        "TRANSFERENCIA_TITULAR": "DATOS DE PRUEBA — NO TRANSFERIR",
+        "TRANSFERENCIA_BANCO": "BANCO DE PRUEBA"
+      }
+    },
+    {
       "name": "moodboard",
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8099", "--directory", "../brief"],
