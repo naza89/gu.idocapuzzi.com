@@ -186,3 +186,32 @@ describe('la PDP no puede ofrecer un talle inexistente', () => {
         );
     });
 });
+
+describe('visor de zoom', () => {
+    test('todo producto en FOTOS_ZOOM_HD tiene la versión -zoom.webp de cada foto', async () => {
+        const { readFile } = await import('node:fs/promises');
+        const { existsSync } = await import('node:fs');
+        const fuente = await readFile(START_JS, 'utf8');
+        const m = fuente.match(/const FOTOS_ZOOM_HD = new Set\(\[([\s\S]*?)\]\)/);
+        assert.ok(m, 'no se encontró FOTOS_ZOOM_HD en start.js');
+        const slugs = [...m[1].matchAll(/'([^']+)'/g)].map(x => x[1]);
+        assert.ok(slugs.length > 0);
+
+        const catalogo = await leerCatalogoDelFront(START_JS);
+        for (const slug of slugs) {
+            const producto = catalogo.find(p => p.slug === slug);
+            assert.ok(producto, `${slug} está en FOTOS_ZOOM_HD pero no en el catálogo`);
+            for (const img of producto.images) {
+                const zoom = path.join(RAIZ, 'public', img.replace(/^\//, '').replace(/\.webp$/, '-zoom.webp'));
+                assert.ok(existsSync(zoom), `falta ${path.basename(zoom)}: correr procesar-fotos.mjs --solo-zoom`);
+            }
+        }
+    });
+
+    test('la PDP carga el visor antes que start.js', async () => {
+        const { readFile } = await import('node:fs/promises');
+        const page = await readFile(path.join(RAIZ, 'src', 'app', 'page.tsx'), 'utf8');
+        const zoom = page.indexOf('/js/pdp-zoom.js');
+        assert.ok(zoom > -1 && zoom < page.indexOf('/js/start.js'), 'pdp-zoom.js tiene que cargarse antes que start.js');
+    });
+});

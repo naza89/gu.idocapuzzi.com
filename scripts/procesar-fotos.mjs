@@ -7,6 +7,12 @@
  * Uso:
  *   node scripts/procesar-fotos.mjs             # todas las carpetas con fotos
  *   node scripts/procesar-fotos.mjs BABYTEE_NEGRO TERMAL_BLANCO
+ *   node scripts/procesar-fotos.mjs --solo-zoom JEAN_INDIGO_REGULAR
+ *
+ * --solo-zoom escribe únicamente <slug>-<n>-zoom.webp (3000px de lado largo, q78)
+ * para el visor de zoom de la PDP (public/js/pdp-zoom.js), sin reescribir las
+ * fotos del catálogo. El visor las baja recién cuando alguien hace zoom; los
+ * productos que las tienen se listan en FOTOS_ZOOM_HD de start.js.
  *
  * La convención de nombres y el mapeo prefijo→producto están documentados en
  * docs/internal/FOTOS_PRODUCTO_NOMBRES.md. Los originales no se commitean.
@@ -19,6 +25,8 @@ const IN = 'public/assets/images/fotoproducto';
 const OUT = 'public/assets/images/products';
 const LADO_LARGO = 1800;
 const CALIDAD = 82;
+const LADO_LARGO_ZOOM = 3000;
+const CALIDAD_ZOOM = 78;
 
 /** Prefijo de carpeta → slug del producto en public/js/start.js */
 const PRODUCTOS = {
@@ -47,7 +55,8 @@ const PRODUCTOS = {
     REMERA_LOGO_STRASS_BLANCO: 'remera-guido-strass-blanco',
 };
 
-const pedidos = process.argv.slice(2);
+const SOLO_ZOOM = process.argv.includes('--solo-zoom');
+const pedidos = process.argv.slice(2).filter(a => !a.startsWith('--'));
 const carpetas = (pedidos.length ? pedidos : Object.keys(PRODUCTOS)).filter(p => {
     if (!PRODUCTOS[p]) { console.error(`✖ prefijo desconocido: ${p}`); process.exitCode = 1; return false; }
     return fs.existsSync(path.join(IN, p));
@@ -79,6 +88,17 @@ for (const carpeta of carpetas) {
     const salidas = [];
     for (const { f, n } of validos) {
         const src = path.join(dir, f);
+        if (SOLO_ZOOM) {
+            const dstZoom = path.join(OUT, `${slug}-${n}-zoom.webp`);
+            await sharp(src)
+                .rotate()
+                .resize({ width: LADO_LARGO_ZOOM, height: LADO_LARGO_ZOOM, fit: 'inside', withoutEnlargement: true })
+                .webp({ quality: CALIDAD_ZOOM })
+                .toFile(dstZoom);
+            console.log(`  ${f.padEnd(30)} → ${path.basename(dstZoom).padEnd(34)} ${(fs.statSync(dstZoom).size / 1024).toFixed(0)}KB`);
+            salidas.push(`assets/images/products/${slug}-${n}-zoom.webp`);
+            continue;
+        }
         const dst = path.join(OUT, `${slug}-${n}.webp`);
         const meta = await sharp(src).metadata();
         await sharp(src)

@@ -203,6 +203,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return sizes.length === 1 ? sizes[0] : null;
     }
 
+    // Productos con fotos `-zoom.webp` (3000px) para el visor de zoom. Se generan
+    // con `node scripts/procesar-fotos.mjs --solo-zoom <PREFIJO>`; si un producto
+    // está acá, TODAS sus fotos tienen que tener la versión de zoom.
+    const FOTOS_ZOOM_HD = new Set([
+        'jean-selvedge-suelto-indigo', 'jean-selvedge-regular-indigo', 'jean-selvedge-regular-negro',
+        'jean-pintor-wildcat', 'jean-pintor-faja', 'jean-encerado',
+    ]);
+
     const LABEL_ELEGIR_TALLE = 'ELEGÍ TU TALLE';
     const LABEL_AÑADIR = 'AÑADIR AL CARRITO';
 
@@ -1471,7 +1479,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Galería 2026: carrusel horizontal full-bleed con flechas ‹ › y contador
             // "N/M" arriba a la izquierda (spec: frontend_nuevo/pdp_nuevo_1.svg).
             const slidesHTML = images.length > 0
-                ? images.map((src, i) => `<img src="${absImg(src)}" id="pdp-img-${i}" class="pdp-slide" alt="${product.name}">`).join('')
+                ? images.map((src, i) => `<img src="${absImg(src)}"${FOTOS_ZOOM_HD.has(product.slug) ? ` data-zoom="${absImg(src).replace(/\.webp$/, '-zoom.webp')}"` : ''} id="pdp-img-${i}" class="pdp-slide" alt="${product.name}">`).join('')
                 : '<div class="pdp-slide" style="background:#eff3f4;"></div>';
             const chev = (d) => `<svg viewBox="0 0 12 22" fill="none" aria-hidden="true"><path d="${d}" stroke="#1A1A1A" stroke-width="2.6" stroke-linecap="square"/></svg>`;
             const imagesHTML = `
@@ -1780,6 +1788,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.__pdpGalleryKeys = (e) => {
                 const guide = document.querySelector('.size-guide-overlay.open');
                 if (guide) return;
+                if (document.querySelector('.gz.is-open')) return;   // manda el visor de zoom
                 if (e.key === 'ArrowLeft') go(idx - 1);
                 else if (e.key === 'ArrowRight') go(idx + 1);
             };
@@ -1800,6 +1809,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }, { passive: true });
 
             render();
+
+            // Zoom (public/js/pdp-zoom.js): tocar o clickear una foto la abre a
+            // pantalla completa. Un swipe de más de 40px no genera click, así que
+            // deslizar la galería no lo dispara.
+            if (window.GuidoZoom) window.GuidoZoom.bind(slides, '.pdp-slide');
         }
         // El scroll-spy del rail viejo ya no existe: si quedó colgado de una PDP
         // anterior, se desengancha.

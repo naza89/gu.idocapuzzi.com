@@ -1687,6 +1687,7 @@ const siteHTML = `
     <script src="/js/checkout-payment.js"></script>
     <!-- Datos de la página Archivo -->
     <script src="/js/archive-data.js"></script>
+    <script src="/js/pdp-zoom.js"></script>
     <script src="/js/start.js"></script>
 `;
 
