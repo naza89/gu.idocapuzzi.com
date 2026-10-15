@@ -4,6 +4,40 @@ Registro cronológico de decisiones, problemas resueltos y cambios importantes.
 
 ---
 
+## 2026-10-15
+
+### Plan de contenido automatizado y suite storytold instalada
+- **Problema encontrado:** al Instagram le falta movimiento y no había forma de producir reels sin un editor. Inkscape y ffmpeg andaban; de la suite storytold sólo estaba EffectCraft 0.4.
+- **Solución adoptada:** plan en Contenido Automatizado — Serie Denim (formatos, sistema visual con el orillo rojo como transición, pipeline guion → plantilla `.ecproj` → render). Prueba F0: reel de 4 s 1080×1920 armado por MCP en EffectCraft con Helvetica Neue LT Std 77 y el logo exportado con Inkscape CLI, render headless en 22 s. Instalados EffectCraft **0.9.2** (el mismo proyecto renderiza en 15 s) y FilmCraft **0.7.2**, los dos con MCP. Recomendación: un MCP por app, no un wrapper único.
+- **Hallazgos:** un still importado en EffectCraft queda de 0,1 s (usar `layer.addItem` con `duration`); los keyframes van en tiempo de capa; el `.ecproj` es JSON plano.
+- **Archivo modificado:** vault `Marca/Contenido Automatizado — Serie Denim.md` (nueva); `GÜIDO/CONTENIDO/REELS/_pruebas/`.
+- **Pendiente:** plantillas, motor de guiones y primer reel.
+
+### PDP: talle sin preseleccionar
+- **Problema encontrado:** el talle S venía marcado y podía irse al carrito sin que nadie lo eligiera.
+- **Solución adoptada:** `getDefaultSize` sólo devuelve un talle si el producto tiene uno solo (piezas 1/1). Con varios, el botón dice ELEGÍ TU TALLE y, si se toca sin talle, lleva la fila de talles a la vista. El talle sigue viajando en el SKU (`JEA-IND-REG-M`).
+- **Archivo modificado:** `public/js/start.js` (commit `bf1342f`).
+
+### Visor de zoom en la PDP, con fotos HD de los jeans
+- **Problema encontrado:** no había zoom ni en desktop ni en mobile, y el argumento del selvedge es la textura.
+- **Solución adoptada:** `public/js/pdp-zoom.js`, sin dependencias. Mouse: click 2,5× en el punto, la foto sigue al mouse, rueda hasta 4×, flechas y Esc. Touch: pellizco hasta 4×, doble toque, arrastre con zoom, deslizar cambia de foto y deslizar hacia abajo cierra. Las 28 fotos de los 6 jeans tienen versión `-zoom.webp` de 3000px (16 MB, desde los originales de 4000×6000) que se baja recién al hacer zoom. `procesar-fotos.mjs --solo-zoom` las genera, `FOTOS_ZOOM_HD` las lista y un test exige que estén todas.
+- **Archivo modificado:** `public/js/pdp-zoom.js`, `public/js/start.js`, `src/app/globals.css`, `src/app/page.tsx`, `scripts/procesar-fotos.mjs`, `tests/catalogo-front.test.ts` (commit `a8be4a1`).
+- **Pendiente:** fotos HD del resto del catálogo.
+
+### Mobile: carrito, fila de talles y cards del Shop
+- **Problema encontrado:** el carrito no mostraba el talle; en la fila de talles había tres cuerpos distintos y la letra no quedaba centrada en el cuadrado; el texto del botón se veía corrido en el teléfono; en el Shop y en TAMBIÉN TE PUEDE GUSTAR el nombre caía en tres renglones; el carrito usaba los cuerpos de desktop.
+- **Causa del descentrado:** la Helvetica Neue Condensed tiene métricas distintas por plataforma: Windows usa usWin (961/224) y centra bien; Mac, iOS y Android usan hhea (714/286 + 200 de lineGap) y la palabra queda ~2px arriba.
+- **Solución adoptada:** TALLE en el carrito; `text-box: trim-both cap alphabetic` en la etiqueta del botón y en un `<span>` de cada talle; fila de talles en dos renglones (TALLE: ··· TABLA DE TALLES, y XS S M L centrados debajo); cards con nombre, precio y "6 CUOTAS SIN INTERÉS DE $X" apilados y centrados (11 / 11 / 7,5px), con nombres cortos y VENDIDO también en los relacionados; carrito a 13 / 11 / 12px. Desktop sin cambios. `SHORT_NAMES` subió junto a las constantes de pago para que una PDP abierta por URL no lo lea antes de tiempo, y la PDP usa el helper `textoCuotas()`.
+- **Archivo modificado:** `public/js/start.js`, `src/app/globals.css` (commits `fc64d70`, `40db5ab`, `b93f55e`).
+- **Pendiente:** que Naza confirme en su Android; botón fijo y bloque de envío/cambios sin aprobar.
+
+### Crudos de Fini convertidos a ProRes
+- **Problema encontrado:** los crudos de la sesión SS26 son Sony XAVC HS en HEVC 4:2:2 de 10 bits (perfil Rext), grabados en log; Windows no los decodifica.
+- **Solución adoptada:** hojas de contacto de los 24 clips para elegir los 16 con foco en jeans, convertidos con ffmpeg a ProRes 422 HQ (10 bits 4:2:2, rotación de cámara aplicada, timecode de cámara, sin LUT) en `C:\Users\LAUTA\Videos\GÜIDO\CRUDOS SS26 PRORES\`, una carpeta por jean. 22 GB, fuera de OneDrive. Cuadros verificados contra el original uno por uno.
+- **Pendiente:** identificar japonés/italiano y C2763; corrección de color.
+
+---
+
 ## 2026-10-12
 
 ### Balance de la primera campaña de Meta Ads: tráfico sí, ventas no
