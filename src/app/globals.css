@@ -8731,5 +8731,11 @@ html.gz-lock, html.gz-lock body { overflow: hidden; }
         color: rgba(26, 26, 26, 0.55);
     }
     .product-swatches { justify-content: center; margin-left: 0; margin-right: 0; }
+
+    /* Carrito: en mobile heredaba los cuerpos de desktop (16 / 14.4px) y el
+       nombre caía en tres renglones al lado de la foto. */
+    .cart-item .item-name { font-size: 13px; margin-bottom: 4px; }
+    .cart-item .item-color { font-size: 11px; margin-bottom: 3px; }
+    .cart-item .item-price { font-size: 12px; margin-top: 3px; margin-bottom: 14px; }
 }
 /* ═══ fin CARDS Y FILA DE TALLES — MOBILE ══════════════════════════════════ */
