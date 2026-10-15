@@ -8670,3 +8670,66 @@ html.gz-lock, html.gz-lock body { overflow: hidden; }
     .gz-slide img.gz-anim { transition: none; }
 }
 /* ═══ fin VISOR DE ZOOM ════════════════════════════════════════════════════ */
+
+/* ═══ CARDS Y FILA DE TALLES — MOBILE (2026-10-14) ═════════════════════════ */
+
+/* La letra del talle, centrada ópticamente dentro del cuadrado: misma razón
+   que .add-to-cart-btn .btn-label (métricas hhea en Android/iOS). */
+.size-btn-letra {
+    display: block;
+    text-box: trim-both cap alphabetic;
+}
+
+/* Cuotas de la card: sólo mobile; en desktop nombre y precio van en una fila. */
+.product-cuotas {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    /* Fila de talles en dos renglones:
+         TALLE: ··················· TABLA DE TALLES
+                    XS   S   M   L
+       Sin tocar el orden del DOM (que es label, talles, tabla). */
+    .pdp-selectors .selector-group {
+        flex-wrap: wrap;
+        align-items: baseline;
+        row-gap: 18px;
+    }
+    .pdp-selectors .pdp-size-label { order: 1; width: auto; }
+    .pdp-selectors .size-guide-trigger { order: 2; margin-left: auto; padding-bottom: 0; }
+    .pdp-selectors .size-options {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 36px;
+    }
+
+    /* Cards del Shop y de TAMBIÉN TE PUEDE GUSTAR: nombre, precio y cuotas
+       apilados y centrados. En dos columnas, nombre y precio en la misma fila
+       dejaban el nombre en tres renglones. */
+    .product-info {
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+        gap: 3px;
+        padding: 8px 6px 0;
+    }
+    /* Nombre y precio un escalón abajo de los 12px de antes; las cuotas, chicas
+       a propósito (7.5px, pedido de Naza 2026-10-14). */
+    .product-name,
+    .product-price {
+        font-size: 11px;
+    }
+    .product-cuotas {
+        display: block;
+        font-family: 'Helvetica Neue Condensed', sans-serif;
+        font-size: 7.5px;
+        line-height: 1.2;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: rgba(26, 26, 26, 0.55);
+    }
+    .product-swatches { justify-content: center; margin-left: 0; margin-right: 0; }
+}
+/* ═══ fin CARDS Y FILA DE TALLES — MOBILE ══════════════════════════════════ */

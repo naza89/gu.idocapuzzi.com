@@ -365,6 +365,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const METODO_PAGO_TRANSFERENCIA = 'transferencia';
     const ESTADO_ESPERANDO_TRANSFERENCIA = 'esperando_transferencia';
     const DESCUENTO_TRANSFERENCIA_PCT = 15;
+    const CUOTAS_SIN_INTERES = 6;
+
+    /** "6 CUOTAS SIN INTERÉS DE $48.333" a partir de un precio "$290.000"; '' si no hay precio. */
+    function textoCuotas(precio) {
+        const pesos = parseInt(String(precio || '').replace(/[^0-9]/g, ''), 10) || 0;
+        if (!pesos) return '';
+        return `${CUOTAS_SIN_INTERES} CUOTAS SIN INTERÉS DE $${Math.round(pesos / CUOTAS_SIN_INTERES).toLocaleString('es-AR')}`;
+    }
+
+    // Nombres cortos para las cards en mobile (ver .pn-short en globals.css). Va
+    // acá arriba y no junto a la grilla del Shop porque las cards de TAMBIÉN TE
+    // PUEDE GUSTAR también lo usan, y una PDP abierta por URL las arma antes de
+    // que el intérprete llegue a esa parte del archivo.
+    const SHORT_NAMES = {
+        'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO': 'JEAN SELVEDGE JAPONES SUELTO',
+        'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR': 'JEAN SELVEDGE JAPONES REGULAR',
+        'JEAN DE DENIM SELVEDGE ITALIANO FIT REGULAR': 'JEAN SELVEDGE ITALIANO REGULAR',
+        'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE': 'BERMUDA SELVEDGE DOUBLE KNEE',
+        'BERMUDA DE DENIM SELVEDGE PATCHWORK': 'BERMUDA SELVEDGE PATCHWORK',
+        'MUSCULOSA DOBLE SIMBOLO OVERSIZED': 'MUSCULOSA DOBLE SIMBOLO',
+        'REMERA AFLIGIDA BAGGED TEE': 'REMERA AFLIGIDA BAGGED',
+        'REMERA LOGO GÜIDO STRASS': 'REMERA LOGO STRASS'
+    };
 
     // Resuelve producto → calce (por prefijo de slug, orden importa) → config
     function getSizeChart(product) {
@@ -1520,7 +1543,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const attrs = disponible
                     ? ''
                     : ' style="opacity: 0.5; pointer-events: none;" aria-disabled="true" title="Sin stock en este talle"';
-                return `<button class="${clases}"${attrs}>${talle}</button>`;
+                return `<button class="${clases}"${attrs}><span class="size-btn-letra">${talle}</span></button>`;
             }).join('');
 
             // Guía de talles (Feature 1) — trigger + overlay por producto.
@@ -1562,7 +1585,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const precioPesos = parseInt(String(product.price || '').replace(/[^0-9]/g, ''), 10) || 0;
             const pagoInfoHTML = (!product.soldOut && precioPesos > 0) ? `
                                 <p class="pdp-pago-info font-condensed">
-                                    6 CUOTAS SIN INTERÉS DE $${Math.round(precioPesos / 6).toLocaleString('es-AR')}<br>
+                                    ${textoCuotas(product.price)}<br>
                                     <strong>$${(precioPesos - Math.round(precioPesos * DESCUENTO_TRANSFERENCIA_PCT / 100)).toLocaleString('es-AR')}</strong> CON TRANSFERENCIA (${DESCUENTO_TRANSFERENCIA_PCT}% OFF)
                                 </p>` : '';
 
@@ -1897,8 +1920,9 @@ document.addEventListener('DOMContentLoaded', () => {
                    ${absImg ? `<img src="${absImg}" style="width:100%; height:100%; object-fit:cover;">` : ''}
                 </div>
                 <div class="product-info">
-                    <span class="product-name">${p.name}</span>
-                    <span class="product-price">${p.price}</span>
+                    <span class="product-name"><span class="pn-full">${p.name}</span><span class="pn-short">${SHORT_NAMES[p.name] || p.name}</span></span>
+                    <span class="product-price">${p.soldOut ? 'VENDIDO' : p.price}</span>
+                    ${p.soldOut ? '' : `<span class="product-cuotas">${textoCuotas(p.price)}</span>`}
                 </div>
              </div>`
         }).join('');
@@ -1940,16 +1964,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Nombre corto para las cards en mobile: los títulos completos se comían
     // 3 y 4 renglones. Se sacan los conectores ("DE DENIM", "FIT") y se deja
     // lo que identifica la prenda. Sólo entran los que difieren del completo.
-    const SHORT_NAMES = {
-        'JEAN DE DENIM SELVEDGE JAPONES FIT SUELTO': 'JEAN SELVEDGE JAPONES SUELTO',
-        'JEAN DE DENIM SELVEDGE JAPONES FIT REGULAR': 'JEAN SELVEDGE JAPONES REGULAR',
-        'JEAN DE DENIM SELVEDGE ITALIANO FIT REGULAR': 'JEAN SELVEDGE ITALIANO REGULAR',
-        'BERMUDA DE DENIM SELVEDGE DOUBLE KNEE': 'BERMUDA SELVEDGE DOUBLE KNEE',
-        'BERMUDA DE DENIM SELVEDGE PATCHWORK': 'BERMUDA SELVEDGE PATCHWORK',
-        'MUSCULOSA DOBLE SIMBOLO OVERSIZED': 'MUSCULOSA DOBLE SIMBOLO',
-        'REMERA AFLIGIDA BAGGED TEE': 'REMERA AFLIGIDA BAGGED',
-        'REMERA LOGO GÜIDO STRASS': 'REMERA LOGO STRASS'
-    };
 
     function groupByProduct(list) {
         const groups = [];
@@ -2006,6 +2020,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="product-info">
                             <span class="product-name"><span class="pn-full">${group.name}</span><span class="pn-short">${SHORT_NAMES[group.name] || group.name}</span></span>
                             <span class="product-price">${restricted ? 'PRÓXIMAMENTE' : (vendido ? 'VENDIDO' : group.price)}</span>
+                            ${restricted || vendido ? '' : `<span class="product-cuotas">${textoCuotas(group.price)}</span>`}
                         </div>${swatches}
                     </div>`;
     }
