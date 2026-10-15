@@ -1734,6 +1734,9 @@ body.state-contact #account-contact {
 
 /* 479.7 × 39.4 en el SVG → ancho completo de la columna, alto 39 */
 .add-to-cart-btn {
+    /* Sin el reset, iOS Safari le pone su chrome de botón (ver .size-btn). */
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     height: 39px;
     padding: 0;
@@ -1756,6 +1759,13 @@ body.state-contact #account-contact {
     position: relative;
     z-index: 1;
     transition: color 320ms var(--ease-expose);
+    /* Centrado óptico: la caja del texto se recorta a la altura de las
+       mayúsculas, así el flex centra la letra y no la caja de línea. Hace
+       falta porque la Condensed trae métricas distintas por plataforma:
+       Windows usa usWin (961/224) y queda centrada, pero Mac/iOS usan hhea
+       (714/286 + 200 de lineGap) y la palabra quedaba ~2px arriba.
+       Sin soporte (Safari < 18.2) se ve como antes. */
+    text-box: trim-both cap alphabetic;
 }
 
 .add-to-cart-btn .hover-fill {
@@ -7066,17 +7076,19 @@ body.mobile-menu-open #mobile-menu {
         font-size: 14px;
     }
 
-    /* Cajas de talle 23.1×23.1 con paso 51.6, igual que desktop */
+    /* Cajas de talle 23.1×23.1 con paso 51.6, igual que desktop.
+       XS S M L y TABLA DE TALLES van al mismo cuerpo que "TALLE:" (13px);
+       estaban en 14.5 y la fila se veía con tres tamaños (2026-10-14). */
     .size-btn {
         padding: 0;
         width: 23px;
         height: 23px;
-        font-size: 14.5px;
+        font-size: 13px;
         line-height: normal;
     }
 
     .pdp-selectors .size-guide-trigger {
-        font-size: 14.5px;
+        font-size: 13px;
         white-space: nowrap;
     }
 

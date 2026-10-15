@@ -1006,6 +1006,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="item-details">
                     <span class="item-name font-condensed">${item.name}</span>
                     <span class="item-color font-condensed">COLOR ${item.color.toUpperCase()}</span>
+                    ${item.size ? `<span class="item-color font-condensed">TALLE ${item.size}</span>` : ''}
                     <span class="item-price font-condensed">${item.priceString}</span>
                     
                     <div class="cart-qty-selector">
