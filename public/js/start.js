@@ -195,11 +195,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return TALLES_DEFAULT.filter(t => sizes.includes(t));
     }
 
-    /** Talle preseleccionado: S si está disponible, si no el primero que haya. */
+    /** Talle preseleccionado: sólo si el producto tiene uno solo (piezas 1/1).
+     *  Con varios talles no se marca ninguno: un S preseleccionado se iba al
+     *  carrito sin que nadie lo eligiera (2026-10-12). */
     function getDefaultSize(product) {
         const sizes = getSizes(product);
-        return sizes.includes('S') ? 'S' : sizes[0];
+        return sizes.length === 1 ? sizes[0] : null;
     }
+
+    const LABEL_ELEGIR_TALLE = 'ELEGÍ TU TALLE';
+    const LABEL_AÑADIR = 'AÑADIR AL CARRITO';
 
     // -------------------------------------------------------------------------
     // GUÍA DE TALLES — config por tipo de prenda (Feature 1)
@@ -1539,7 +1544,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Botón principal. Una pieza vendida no se puede añadir.
             const addBtnHTML = product.soldOut
                 ? '<button class="add-to-cart-btn font-condensed" disabled aria-disabled="true" style="opacity: 0.45; pointer-events: none;"><span class="btn-label">VENDIDO</span></button>'
-                : '<button class="add-to-cart-btn font-condensed" id="pdp-add-btn"><span class="hover-fill"></span><span class="btn-label">AÑADIR AL CARRITO</span></button>';
+                : `<button class="add-to-cart-btn font-condensed" id="pdp-add-btn"><span class="hover-fill"></span><span class="btn-label">${sizeActivo ? LABEL_AÑADIR : LABEL_ELEGIR_TALLE}</span></button>`;
 
             // Cuotas y precio con transferencia, debajo del precio. Es lo que prometen
             // los anuncios ("15% off con transferencia · hasta 6 cuotas"); antes la
@@ -1674,11 +1679,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const productPage = document.getElementById('product-page');
         if (!productPage) return;
 
-        // Talle por defecto: el que renderizó `getDefaultSize` como .active — que
-        // es el primer talle REAL del producto, no un 'S' fijo. Para una pieza
-        // 1/1 que sólo existe en M, acá sale M.
+        // Talle por defecto: el que renderizó `getDefaultSize` como .active. Sólo
+        // existe cuando el producto tiene un único talle (una pieza 1/1 en M sale
+        // en M); con varios, arranca vacío y el botón pide ELEGÍ TU TALLE.
         const activeSizeBtn = productPage.querySelector('.size-btn.active');
         let selectedSize = activeSizeBtn ? activeSizeBtn.textContent : '';
+        const addLabel = productPage.querySelector('#pdp-add-btn .btn-label');
         let selectedQty = 1;
 
         // 0. Colorway → saltar a la PDP de ese color.
@@ -1700,6 +1706,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sizeBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 selectedSize = btn.textContent;
+                if (addLabel && addLabel.textContent === LABEL_ELEGIR_TALLE) addLabel.textContent = LABEL_AÑADIR;
             });
         });
 
@@ -1710,6 +1717,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const label = addBtn.querySelector('.btn-label');
             addBtn.addEventListener('click', async () => {
                 if (addBtn.dataset.adding === '1') return;
+                // Sin talle no se añade nada: el botón ya dice ELEGÍ TU TALLE, y se
+                // lleva la fila de talles a la vista por si quedó fuera de pantalla.
+                if (!selectedSize) {
+                    productPage.querySelector('.size-options')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
                 addBtn.dataset.adding = '1';
 
                 // Registrar en el carrito
